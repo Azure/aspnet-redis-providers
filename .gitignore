@@ -1,0 +1,44 @@
+bin
+obj
+csx
+
+*.exe
+*.dll
+
+; Visual Studio user state
+*.user
+*.suo
+
+; VC++/C# debug info files
+*.idb
+*.pdb
+*.sdf
+
+; VC++ build output folders
+Debug
+Release
+
+; VC++ unit test log files
+*.tlog
+
+*.azurePubXml
+
+; Redis RDB dump files
+*.rdb
+
+packages
+
+.nuget/nuget.targets
+.NuGet/packages.config
+
+nuget.exe
+redis-*.exe
+redis-*.pdb
+*.nupkg
+*.opensdf
+*.psess
+*.vspx
+
+Build/BinScopeOutDir/
+Build/BinScopeTargetDir/
+
