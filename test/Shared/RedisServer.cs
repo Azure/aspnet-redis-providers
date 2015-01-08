@@ -35,7 +35,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         public RedisServer()
         {
             KillRedisServers();
-            _server = Process.Start("redis-server.exe", "--maxmemory 20000000");
+            _server = Process.Start("..\\..\\..\\..\\..\\..\\packages\\redis-64.2.8.17\\redis-server.exe", "--maxmemory 20000000");
             WaitForRedisToStart();
         }
 
