@@ -15,8 +15,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("Serviceable", "True")]
 
 #if !CODESIGNING
-[assembly: InternalsVisibleTo("Microsoft.Web.RedisSessionStateProvider.Tests")]
-[assembly: InternalsVisibleTo("Microsoft.Web.RedisSessionStateProvider.FunctionalTests")]
+[assembly: InternalsVisibleTo("Microsoft.Web.RedisSessionStateProvider.Unit.Tests")]
+[assembly: InternalsVisibleTo("Microsoft.Web.RedisSessionStateProvider.Functional.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 #endif
 

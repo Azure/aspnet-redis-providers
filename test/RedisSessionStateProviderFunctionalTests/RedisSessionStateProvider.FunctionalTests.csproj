@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Web.Redis.FunctionalTests</RootNamespace>
-    <AssemblyName>Microsoft.Web.RedisSessionStateProvider.FunctionalTests</AssemblyName>
+    <AssemblyName>Microsoft.Web.RedisSessionStateProvider.Functional.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

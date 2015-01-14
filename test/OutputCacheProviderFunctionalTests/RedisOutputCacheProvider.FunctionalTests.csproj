@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Web.Redis.FunctionalTests</RootNamespace>
-    <AssemblyName>Microsoft.Web.RedisOutputCacheProvider.FunctionalTests</AssemblyName>
+    <AssemblyName>Microsoft.Web.RedisOutputCacheProvider.Functional.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>1a5c19f2</NuGetPackageImportStamp>

@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Web.Redis.UnitTests</RootNamespace>
-    <AssemblyName>Microsoft.Web.RedisOutputCacheProvider.UnitTests</AssemblyName>
+    <AssemblyName>Microsoft.Web.RedisOutputCacheProvider.Unit.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>32f72bab</NuGetPackageImportStamp>
