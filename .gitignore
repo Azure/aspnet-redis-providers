@@ -41,4 +41,5 @@ redis-*.pdb
 
 Build/BinScopeOutDir/
 Build/BinScopeTargetDir/
+Scripts/
 
