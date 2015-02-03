@@ -83,12 +83,13 @@ namespace Microsoft.Web.Redis.Tests
             object lockId;
             ISessionStateItemCollection data;
 
-            object[] returnFromRedis = { "Diff-lock-id", "", "15" };
+            object[] returnFromRedis = { "Diff-lock-id", "", "15", true };
 
             var mockRedisClient = A.Fake<IRedisClientConnection>();
             A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                  A<object[]>.That.Matches(o => o.Length == 2))).Returns(returnFromRedis);
             A.CallTo(() => mockRedisClient.GetLockId(A<object>.Ignored)).Returns("Diff-lock-id");
+            A.CallTo(() => mockRedisClient.IsLocked(A<object>.Ignored)).Returns(true);
             A.CallTo(() => mockRedisClient.GetSessionTimeout(A<object>.Ignored)).Returns(15);
 
             RedisConnectionWrapper.sharedConnection = new RedisSharedConnection(null, null);
@@ -103,6 +104,42 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                 A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
             A.CallTo(() => mockRedisClient.GetLockId(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => mockRedisClient.IsLocked(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => mockRedisClient.GetSessionData(A<object>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => mockRedisClient.GetSessionTimeout(A<object>.Ignored)).MustHaveHappened();
+        }
+
+        [Fact]
+        public void TryTakeWriteLockAndGetData_UnableToLockWithSameLockId()
+        {
+            string id = "session_id";
+            DateTime lockTime = DateTime.Now;
+            int lockTimeout = 90;
+            object lockId;
+            ISessionStateItemCollection data;
+
+            object[] returnFromRedis = { lockTime.Ticks.ToString(), "", "15", true };
+
+            var mockRedisClient = A.Fake<IRedisClientConnection>();
+            A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
+                 A<object[]>.That.Matches(o => o.Length == 2))).Returns(returnFromRedis);
+            A.CallTo(() => mockRedisClient.GetLockId(A<object>.Ignored)).Returns(lockTime.Ticks.ToString());
+            A.CallTo(() => mockRedisClient.IsLocked(A<object>.Ignored)).Returns(true);
+            A.CallTo(() => mockRedisClient.GetSessionTimeout(A<object>.Ignored)).Returns(15);
+
+            RedisConnectionWrapper.sharedConnection = new RedisSharedConnection(null, null);
+            RedisConnectionWrapper.sharedConnection.connection = mockRedisClient;
+            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+
+            int sessionTimeout;
+            Assert.False(redisConn.TryTakeWriteLockAndGetData(lockTime, lockTimeout, out lockId, out data, out sessionTimeout));
+            Assert.Equal(lockTime.Ticks.ToString(), lockId);
+            Assert.Null(data);
+            Assert.Equal(15, sessionTimeout);
+            A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
+                A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
+            A.CallTo(() => mockRedisClient.GetLockId(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => mockRedisClient.IsLocked(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => mockRedisClient.GetSessionData(A<object>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => mockRedisClient.GetSessionTimeout(A<object>.Ignored)).MustHaveHappened();
         }
@@ -117,7 +154,7 @@ namespace Microsoft.Web.Redis.Tests
             ISessionStateItemCollection data;
 
             object[] sessionData = { "Key", RedisUtility.GetBytesFromObject("value") };
-            object[] returnFromRedis = { lockTime.Ticks.ToString(), sessionData };
+            object[] returnFromRedis = { lockTime.Ticks.ToString(), sessionData, "15", false };
             ChangeTrackingSessionStateItemCollection sessionDataReturn = new ChangeTrackingSessionStateItemCollection();
             sessionDataReturn["key"] = "value";
 
@@ -125,6 +162,7 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                  A<object[]>.That.Matches(o => o.Length == 2))).Returns(returnFromRedis);
             A.CallTo(() => mockRedisClient.GetLockId(A<object>.Ignored)).Returns(lockTime.Ticks.ToString());
+            A.CallTo(() => mockRedisClient.IsLocked(A<object>.Ignored)).Returns(false);
             A.CallTo(() => mockRedisClient.GetSessionData(A<object>.Ignored)).Returns(sessionDataReturn);
             A.CallTo(() => mockRedisClient.GetSessionTimeout(A<object>.Ignored)).Returns(15);
 
@@ -140,6 +178,7 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                 A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
             A.CallTo(() => mockRedisClient.GetLockId(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => mockRedisClient.IsLocked(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => mockRedisClient.GetSessionData(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => mockRedisClient.GetSessionTimeout(A<object>.Ignored)).MustHaveHappened();
         }

@@ -142,15 +142,18 @@ namespace Microsoft.Web.Redis
                 local retArray = {} 
                 local lockValue = ARGV[1] 
                 local locked = redis.call('SETNX',KEYS[1],ARGV[1])        
+                local IsLocked = true
                 if locked == 0 then
                     lockValue = redis.call('GET',KEYS[1])
                 else
                     redis.call('EXPIRE',KEYS[1],ARGV[2])
+                    IsLocked = false
                 end
                 retArray[1] = lockValue
                 if lockValue == ARGV[1] then retArray[2] = redis.call('HGETALL',KEYS[2]) else retArray[2] = '' end
                 local SessionTimeout = redis.call('HGET', KEYS[3], 'SessionTimeout')
                 if SessionTimeout ~= false then retArray[3] = SessionTimeout else retArray[3] = '-1' end
+                retArray[4] = IsLocked
                 return retArray
                 ");
 
@@ -168,7 +171,8 @@ namespace Microsoft.Web.Redis
 
             lockId = redisConnection.GetLockId(rowDataFromRedis);
             sessionTimeout = redisConnection.GetSessionTimeout(rowDataFromRedis);
-            if (lockId.ToString().Equals(expactedLockId))
+            bool isLocked = redisConnection.IsLocked(rowDataFromRedis);
+            if (!isLocked && lockId.ToString().Equals(expactedLockId))
             {
                 ret = true;
                 data = redisConnection.GetSessionData(rowDataFromRedis);

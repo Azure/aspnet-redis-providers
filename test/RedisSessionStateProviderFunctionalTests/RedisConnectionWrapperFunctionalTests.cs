@@ -243,6 +243,46 @@ namespace Microsoft.Web.Redis.FunctionalTests
         }
 
         [Fact]
+        public void TryTakeWriteLockAndGetData_WriteLockWithOtherWriteLockWithSameLockId()
+        {
+            using (RedisServer redisServer = new RedisServer())
+            {
+                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+
+                // Inserting data into redis server
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                data["key"] = "value";
+                redisConn.Set(data, 900);
+
+                int lockTimeout = 900;
+                // Same LockId 
+                DateTime lockTime = DateTime.Now;
+
+                // Takewrite lock successfully first time
+                object lockId_1;
+                ISessionStateItemCollection dataFromRedis_1;
+                int sessionTimeout;
+                Assert.True(redisConn.TryTakeWriteLockAndGetData(lockTime, lockTimeout, out lockId_1, out dataFromRedis_1, out sessionTimeout));
+                Assert.Equal(lockTime.Ticks.ToString(), lockId_1.ToString());
+                Assert.Equal(1, dataFromRedis_1.Count);
+
+                // try to take write lock and fail and get earlier lock id
+                object lockId_2;
+                ISessionStateItemCollection dataFromRedis_2;
+                Assert.False(redisConn.TryTakeWriteLockAndGetData(lockTime, lockTimeout, out lockId_2, out dataFromRedis_2, out sessionTimeout));
+                Assert.Equal(lockTime.Ticks.ToString(), lockId_2.ToString());
+                Assert.Equal(null, dataFromRedis_2);
+
+                // Get actual connection
+                IDatabase actualConnection = GetRealRedisConnection(redisConn);
+                // remove data and lock from redis
+                actualConnection.KeyDelete(redisConn.Keys.DataKey);
+                actualConnection.KeyDelete(redisConn.Keys.LockKey);
+                DisposeRedisConnectionWrapper(redisConn);
+            }
+        }
+
+        [Fact]
         public void TryTakeReadLockAndGetData_WithoutAnyLock()
         {
             using (RedisServer redisServer = new RedisServer())

@@ -61,6 +61,11 @@ namespace Microsoft.Web.Redis.Tests
             return null;
         }
 
+        public bool IsLocked(object rowDataFromRedis)
+        {
+            return false;
+        }
+
         public int GetSessionTimeout(object rowDataFromRedis)
         {
             return 1200;
