@@ -636,7 +636,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         }
 
         [Fact]
-        public void UpdateExpiryTime_OnValidData()
+        public void TryUpdateIfLockIdMatch_ExpiryTime_OnValidData()
         {
             using (RedisServer redisServer = new RedisServer())
             {

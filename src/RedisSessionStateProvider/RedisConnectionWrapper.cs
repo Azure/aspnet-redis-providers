@@ -57,7 +57,7 @@ namespace Microsoft.Web.Redis
         // if data doesn't exists then do nothing
         static readonly string updateExpiryTimeScript = (@" 
                 local dataExists = redis.call('EXISTS', KEYS[1])
-                if dataExists ~= true then
+                if dataExists == 0 then
                     return 1;
                 end
 

@@ -28,7 +28,8 @@ namespace Microsoft.Web.Redis.Tests
             configuration.DatabaseId = 0;
             configuration.ApplicationName = null;
             configuration.ConnectionTimeoutInMilliSec = 5000;
-            configuration.OperationTimeoutInMilliSec = 5000;
+            configuration.OperationTimeoutInMilliSec = 1000;
+            configuration.RetryTimeout = TimeSpan.Zero;
             configuration.ThrowOnError = true;
             return configuration;
         }
