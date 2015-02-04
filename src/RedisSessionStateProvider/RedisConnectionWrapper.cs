@@ -137,7 +137,7 @@ namespace Microsoft.Web.Redis
         // ARGV = { write-lock-value-that-we-want-to-set, request-timout } 
         // lockValue = 1) (Initially) write lock value that we want to set (ARGV[1]) if we get lock successfully this will return as retArray[1]
         //             2) If another write lock exists than its lock value from cache
-        // retArray = {lockValue , session data if lock was taken successfully}
+        // retArray = {lockValue , session data if lock was taken successfully, session timeout value if exists, wheather lock was taken or not}
         static readonly string writeLockAndGetDataScript = (@" 
                 local retArray = {} 
                 local lockValue = ARGV[1] 
@@ -159,10 +159,10 @@ namespace Microsoft.Web.Redis
 
         public bool TryTakeWriteLockAndGetData(DateTime lockTime, int lockTimeout, out object lockId, out ISessionStateItemCollection data, out int sessionTimeout)
         {
-            string expactedLockId = lockTime.Ticks.ToString();
+            string expectedLockId = lockTime.Ticks.ToString();
             object rowDataFromRedis = null;
             string[] keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
-            object[] valueArgs = new object[] { expactedLockId, lockTimeout };
+            object[] valueArgs = new object[] { expectedLockId, lockTimeout };
 
             rowDataFromRedis = redisConnection.Eval(writeLockAndGetDataScript, keyArgs, valueArgs);
 
@@ -172,7 +172,7 @@ namespace Microsoft.Web.Redis
             lockId = redisConnection.GetLockId(rowDataFromRedis);
             sessionTimeout = redisConnection.GetSessionTimeout(rowDataFromRedis);
             bool isLocked = redisConnection.IsLocked(rowDataFromRedis);
-            if (!isLocked && lockId.ToString().Equals(expactedLockId))
+            if (!isLocked && lockId.ToString().Equals(expectedLockId))
             {
                 ret = true;
                 data = redisConnection.GetSessionData(rowDataFromRedis);
