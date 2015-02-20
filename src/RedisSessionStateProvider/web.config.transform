@@ -21,9 +21,9 @@
           />
         -->
         <add name="MySessionStateStore" type="Microsoft.Web.Redis.RedisSessionStateProvider"
-             host="127.0.0.1"
+             host=""
              accessKey=""
-             ssl="false" />
+             ssl="true" />
       </providers>
     </sessionState>
   </system.web>    

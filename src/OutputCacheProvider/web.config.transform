@@ -20,9 +20,9 @@
           />
           -->
           <add name="MyRedisOutputCache" type="Microsoft.Web.Redis.RedisOutputCacheProvider"
-               host="127.0.0.1"
+               host=""
                accessKey=""
-               ssl="false" />
+               ssl="true" />
         </providers>
       </outputCache>
     </caching>
