@@ -231,7 +231,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
             sessionStateStore.RemoveItem(null, id, "lockId", null);
-            A.CallTo(() => mockCache.TryRemoveIfLockIdMatch(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => mockCache.TryRemoveAndReleaseLockIfLockIdMatch(A<object>.Ignored)).MustHaveHappened();
         }
 
         [Fact]
@@ -289,7 +289,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
             sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, 7, false);
-            A.CallTo(() => mockCache.TryUpdateIfLockIdMatch(A<object>.Ignored, A<ISessionStateItemCollection>.Ignored, 900)).MustNotHaveHappened();
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLockIfLockIdMatch(A<object>.Ignored, A<ISessionStateItemCollection>.Ignored, 900)).MustNotHaveHappened();
         }
 
         [Fact]
@@ -306,7 +306,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
             sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, 7, false);
-            A.CallTo(() => mockCache.TryUpdateIfLockIdMatch(A<object>.Ignored, 
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLockIfLockIdMatch(A<object>.Ignored, 
                 A<ChangeTrackingSessionStateItemCollection>.That.Matches(o => o.Count == 0 && o.GetModifiedKeys().Count == 0 && o.GetDeletedKeys().Count == 1), 900)).MustHaveHappened();
         }
 
@@ -323,7 +323,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
             sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, 7, false);
-            A.CallTo(() => mockCache.TryUpdateIfLockIdMatch(A<object>.Ignored, 
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLockIfLockIdMatch(A<object>.Ignored, 
                 A<ChangeTrackingSessionStateItemCollection>.That.Matches(o => o.Count == 1 && o.GetModifiedKeys().Count == 1 && o.GetDeletedKeys().Count == 0), 900)).MustHaveHappened();  
         }
     }

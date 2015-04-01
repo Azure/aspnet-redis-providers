@@ -255,7 +255,7 @@ namespace Microsoft.Web.Redis
                 end return 1
                 ");
         
-        public void TryRemoveIfLockIdMatch(object lockId)
+        public void TryRemoveAndReleaseLockIfLockIdMatch(object lockId)
         {
             string[] keyArgs = { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
             object[] valueArgs = { lockId.ToString() };
@@ -278,6 +278,7 @@ namespace Microsoft.Web.Redis
                     redis.call('EXPIRE',KEYS[2],ARGV[2])
                     redis.call('HMSET', KEYS[3], 'SessionTimeout', ARGV[2])
                     redis.call('EXPIRE',KEYS[3],ARGV[2]) 
+                    redis.call('DEL',KEYS[1])
                 end return 1");
 
         private bool TryUpdateIfLockIdMatchPrepare(object lockId, ISessionStateItemCollection data, int sessionTimeout, out string[] keyArgs, out object[] valueArgs)
@@ -312,7 +313,7 @@ namespace Microsoft.Web.Redis
             return false;
         }
 
-        public void TryUpdateIfLockIdMatch(object lockId, ISessionStateItemCollection data, int sessionTimeout)
+        public void TryUpdateAndReleaseLockIfLockIdMatch(object lockId, ISessionStateItemCollection data, int sessionTimeout)
         {
             string[] keyArgs;
             object[] valueArgs;
