@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.IO;
+using System.Reflection;
 using System.Web.Configuration;
 using System.Web.Hosting;
 
@@ -66,6 +68,7 @@ namespace Microsoft.Web.Redis
 
         private ProviderConfiguration(NameValueCollection config)
         {
+            EnableLoggingIfParametersAvailable(config);
             // Get connection host, port and password.
             // host, port, accessKey and ssl are firest fetched from appSettings if not found there than taken from web.config
             ConnectionString = GetStringSettings(config, "connectionString", null);
@@ -206,6 +209,32 @@ namespace Microsoft.Web.Redis
                 return attrValues[0];
             }
             return null;
+        }
+
+        internal static void EnableLoggingIfParametersAvailable(NameValueCollection config)
+        {
+            string LoggingClassName = GetStringSettings(config, "loggingClassName", null);
+            string LoggingMethodName = GetStringSettings(config, "loggingMethodName", null);
+            
+            if( !string.IsNullOrEmpty(LoggingClassName) && !string.IsNullOrEmpty(LoggingMethodName) )
+            {
+                // Find 'Type' that is same as fully qualified class name if not found throw appropriate error and ignore case while searching
+                Type LoggingClass = Type.GetType(LoggingClassName, true, true);
+                MethodInfo LoggingMethod = LoggingClass.GetMethod(LoggingMethodName, new Type[] { });
+                if (LoggingMethod == null)
+                {
+                    throw new MissingMethodException(string.Format(RedisProviderResource.LoggingMethodNotFound, LoggingMethodName, LoggingClassName));
+                }
+                if ((LoggingMethod.Attributes & MethodAttributes.Static) == 0)
+                {
+                    throw new MissingMethodException(string.Format(RedisProviderResource.LoggingMethodNotStatic, LoggingMethodName, LoggingClassName));
+                }
+                if (!(typeof(System.IO.TextWriter)).IsAssignableFrom(LoggingMethod.ReturnType))
+                {
+                    throw new MissingMethodException(string.Format(RedisProviderResource.LoggingMethodWrongReturnType, LoggingMethodName, LoggingClassName));
+                }
+                LogUtility.logger = (TextWriter) LoggingMethod.Invoke(null, new object[] {});
+            }
         }
     }
 }

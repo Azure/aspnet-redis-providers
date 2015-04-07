@@ -80,6 +80,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ChangeTrackingSessionStateItemCollectionTests.cs" />
+    <Compile Include="ProviderConfigurationTests.cs" />
     <Compile Include="RedisSharedConnectionTests.cs" />
     <Compile Include="RedisConnectionWrapperTests.cs" />
     <Compile Include="RedisUtilityTests.cs" />

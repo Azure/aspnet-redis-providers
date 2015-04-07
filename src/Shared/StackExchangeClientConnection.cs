@@ -46,7 +46,14 @@ namespace Microsoft.Web.Redis
                     configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
                 }
             }
-            redisMultiplexer = ConnectionMultiplexer.Connect(configOption);
+            if (LogUtility.logger == null)
+            {
+                redisMultiplexer = ConnectionMultiplexer.Connect(configOption);
+            }
+            else
+            {
+                redisMultiplexer = ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
+            }
             this.connection = redisMultiplexer.GetDatabase(configuration.DatabaseId);
         }
 
