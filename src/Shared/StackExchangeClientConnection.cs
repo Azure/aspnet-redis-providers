@@ -35,6 +35,7 @@ namespace Microsoft.Web.Redis
                 }
                 configOption.Password = configuration.AccessKey;
                 configOption.Ssl = configuration.UseSsl;
+                configOption.AbortOnConnectFail = false;
 
                 if (configuration.ConnectionTimeoutInMilliSec != 0)
                 {
