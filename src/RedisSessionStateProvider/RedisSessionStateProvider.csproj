@@ -90,12 +90,23 @@
     <Compile Include="KeyGenerator.cs" />
     <Compile Include="ICacheConnection.cs" />
     <Compile Include="RedisConnectionWrapper.cs" />
+    <Compile Include="RedisProviderResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RedisProviderResource.resx</DependentUpon>
+    </Compile>
     <Compile Include="RedisSessionStateProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="RedisProviderResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>RedisProviderResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="..\..\build\Source.PostProcessing.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
