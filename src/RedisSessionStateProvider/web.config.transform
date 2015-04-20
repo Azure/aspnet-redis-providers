@@ -17,7 +17,9 @@
             applicationName = "" [String]
             connectionTimeoutInMilliseconds = "5000" [number]
             operationTimeoutInMilliseconds = "1000" [number]
-            connectionString = "<valid StackExchange.Redis connection string>" [String]
+            connectionString = "<Valid StackExchange.Redis connection string>" [String]
+            loggingClassName = "<Assembly qualified class name that contains logging method specified below>" [String]
+            loggingMethodName = "<Logging method should be defined in loggingClass. It should be public, static, does not take any parameters and should have a return type of System.IO.TextWriter.>" [String]
           />
         -->
         <add name="MySessionStateStore" type="Microsoft.Web.Redis.RedisSessionStateProvider"
