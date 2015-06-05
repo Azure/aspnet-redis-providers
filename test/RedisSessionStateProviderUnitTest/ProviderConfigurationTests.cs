@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingMethodName, "DummyMethodName");
 
             Exception ex = Assert.Throws<TypeLoadException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
-            Assert.Contains("Could not load type 'DummyClass'", ex.Message);
+            Assert.Contains("The specified class 'DummyClass' could not be loaded", ex.Message);
         }
 
         [Fact]
@@ -37,8 +37,8 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, "Microsoft.Web.Redis.Tests.ProviderConfigurationTests");
             config.Add(loggingMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<TypeLoadException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
-            Assert.Contains("Could not load type 'Microsoft.Web.Redis.Tests.ProviderConfigurationTests'", ex.Message);
+            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Assert.Contains("DummyMethodName", ex.Message);
         }
 
         [Fact]

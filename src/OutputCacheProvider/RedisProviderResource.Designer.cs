@@ -66,6 +66,15 @@ namespace Microsoft.Web.Redis {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified class &apos;{0}&apos; could not be loaded.  Please make sure that the value specified is an assembly qualified class name..
+        /// </summary>
+        internal static string LoggingClassNotFound {
+            get {
+                return ResourceManager.GetString("LoggingClassNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified method &apos;{0}&apos; on the class &apos;{1}&apos; could not be found or does meet the required method signature. Please make sure that it exists, is public and doesn&apos;t take any parameters..
         /// </summary>
         internal static string LoggingMethodNotFound {

@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="LoggingClassNotFound" xml:space="preserve">
+    <value>The specified class '{0}' could not be loaded.  Please make sure that the value specified is an assembly qualified class name.</value>
+  </data>
   <data name="LoggingMethodNotFound" xml:space="preserve">
     <value>The specified method '{0}' on the class '{1}' could not be found or does meet the required method signature. Please make sure that it exists, is public and doesn't take any parameters.</value>
   </data>

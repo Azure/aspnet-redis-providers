@@ -223,8 +223,21 @@ namespace Microsoft.Web.Redis
             
             if( !string.IsNullOrEmpty(LoggingClassName) && !string.IsNullOrEmpty(LoggingMethodName) )
             {
-                // Find 'Type' that is same as fully qualified class name if not found throw appropriate error and ignore case while searching
-                Type LoggingClass = Type.GetType(LoggingClassName, true, true);
+                // Find 'Type' that is same as fully qualified class name if not found than also don't throw error and ignore case while searching
+                Type LoggingClass = Type.GetType(LoggingClassName, throwOnError: false, ignoreCase: true);
+                
+                if (LoggingClass == null)
+                {
+                    // If class name is not assembly qualified name than look for class in all assemblies one by one
+                    LoggingClass = GetLoggingClass(LoggingClassName);
+                }
+
+                if (LoggingClass == null)
+                {
+                    // All ways of loading assembly are failed so throw
+                    throw new TypeLoadException (string.Format(RedisProviderResource.LoggingClassNotFound, LoggingClassName));
+                }
+
                 MethodInfo LoggingMethod = LoggingClass.GetMethod(LoggingMethodName, new Type[] { });
                 if (LoggingMethod == null)
                 {
@@ -240,6 +253,26 @@ namespace Microsoft.Web.Redis
                 }
                 LogUtility.logger = (TextWriter) LoggingMethod.Invoke(null, new object[] {});
             }
+        }
+
+        internal static Type GetLoggingClass(string LoggingClassName)
+        {
+            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                // If class name is not assembly qualified name than look for class name in all assemblies one by one
+                Type LoggingClass = a.GetType(LoggingClassName, throwOnError: false, ignoreCase: true);
+                if (LoggingClass == null)
+                {
+                    // If class name is not assembly qualified name and it also doesn't contain namespace (it is just class name) than
+                    // try to use assembly name as namespace and try to load class from all assemblies one by one 
+                    LoggingClass = a.GetType(a.GetName().Name + "." + LoggingClassName, throwOnError: false, ignoreCase: true);
+                }
+                if (LoggingClass != null)
+                {
+                    return LoggingClass;
+                }
+            }
+            return null;
         }
     }
 }
