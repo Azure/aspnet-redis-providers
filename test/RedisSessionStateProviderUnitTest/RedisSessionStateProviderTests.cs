@@ -33,7 +33,7 @@ namespace Microsoft.Web.Redis.Tests
             sessionStateStore.sessionLockId = "session-lock-id";
             sessionStateStore.cache = mockCache;
             sessionStateStore.EndRequest(null);
-            A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(A<object>.Ignored, A<int>.Ignored)).MustHaveHappened();
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace Microsoft.Web.Redis.Tests
             sessionStateStore.cache = mockCache;
             SessionStateStoreData sessionStateStoreData = sessionStateStore.GetItem(null, id, out locked, out lockAge, out lockId, out actions);
             A.CallTo(() => mockCache.TryCheckWriteLockAndGetData(out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
-            A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(mockLockId)).MustHaveHappened(); 
+            A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(mockLockId, A<int>.Ignored)).MustHaveHappened(); 
             
             Assert.Equal(null, sessionStateStoreData);
             Assert.Equal(false, locked);
@@ -248,7 +248,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
             sessionStateStore.ReleaseItemExclusive(null, id, "lockId");
-            A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(A<object>.Ignored, A<int>.Ignored)).MustHaveHappened();
         }
 
         [Fact]

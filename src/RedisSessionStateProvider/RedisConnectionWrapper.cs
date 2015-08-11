@@ -148,16 +148,26 @@ namespace Microsoft.Web.Redis
                 local lockValue = ARGV[1] 
                 local locked = redis.call('SETNX',KEYS[1],ARGV[1])        
                 local IsLocked = true
+                
                 if locked == 0 then
                     lockValue = redis.call('GET',KEYS[1])
                 else
                     redis.call('EXPIRE',KEYS[1],ARGV[2])
                     IsLocked = false
                 end
+                
                 retArray[1] = lockValue
                 if lockValue == ARGV[1] then retArray[2] = redis.call('HGETALL',KEYS[2]) else retArray[2] = '' end
+                
                 local SessionTimeout = redis.call('HGET', KEYS[3], 'SessionTimeout')
-                if SessionTimeout ~= false then retArray[3] = SessionTimeout else retArray[3] = '-1' end
+                if SessionTimeout ~= false then 
+                    retArray[3] = SessionTimeout 
+                    redis.call('EXPIRE',KEYS[2], SessionTimeout) 
+                    redis.call('EXPIRE',KEYS[3], SessionTimeout) 
+                else 
+                    retArray[3] = '-1' 
+                end
+
                 retArray[4] = IsLocked
                 return retArray
                 ");
@@ -199,8 +209,15 @@ namespace Microsoft.Web.Redis
                     end
                     retArray[1] = lockValue
                     if lockValue == '' then retArray[2] = redis.call('HGETALL',KEYS[2]) else retArray[2] = '' end
+                    
                     local SessionTimeout = redis.call('HGET', KEYS[3], 'SessionTimeout')
-                    if SessionTimeout ~= false then retArray[3] = SessionTimeout else retArray[3] = '-1' end
+                    if SessionTimeout ~= false then 
+                        retArray[3] = SessionTimeout 
+                        redis.call('EXPIRE',KEYS[2], SessionTimeout) 
+                        redis.call('EXPIRE',KEYS[3], SessionTimeout) 
+                    else 
+                        retArray[3] = '-1' 
+                    end
                     return retArray
                     ");
         
@@ -231,20 +248,28 @@ namespace Microsoft.Web.Redis
 
 /*-------Start of Lock release operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
         
-        public void TryReleaseLockIfLockIdMatch(object lockId)
+        public void TryReleaseLockIfLockIdMatch(object lockId, int sessionTimeout)
         {
-            string[] keyArgs = { Keys.LockKey };
-            object[] valueArgs = { lockId };
+            string[] keyArgs = { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
+            object[] valueArgs = { lockId, sessionTimeout };
             redisConnection.Eval(releaseWriteLockIfLockMatchScript, keyArgs, valueArgs);
         }
 
-        // KEYS = { write-lock-id}
-        // ARGV = { write-lock-value }
+        // KEYS[1] = write-lock-id, KEYS[2] = data-id, KEYS[3] = internal-id
+        // ARGV = { write-lock-value }, ARGV[2] = session time out
         static readonly string releaseWriteLockIfLockMatchScript = (@" 
                 local writeLockValueFromCache = redis.call('GET',KEYS[1])
                 if writeLockValueFromCache == ARGV[1] then
                     redis.call('DEL',KEYS[1])
-                end return 1
+                end 
+                local SessionTimeout = redis.call('HGET', KEYS[3], 'SessionTimeout')
+                if SessionTimeout ~= false then 
+                    redis.call('EXPIRE',KEYS[2], SessionTimeout) 
+                    redis.call('EXPIRE',KEYS[3], SessionTimeout) 
+                else 
+                    redis.call('EXPIRE',KEYS[2],ARGV[2])
+                end
+                return 1
                 ");
 
 /*-------End of Lock release operation-----------------------------------------------------------------------------------------------------------------------------------------------*/

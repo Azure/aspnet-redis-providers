@@ -234,9 +234,9 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper.sharedConnection.connection = mockRedisClient;
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             
-            redisConn.TryReleaseLockIfLockIdMatch(lockId);
-            A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 1 && s[0].Equals(redisConn.Keys.LockKey)),
-                 A<object[]>.That.Matches(o => o.Length == 1))).MustHaveHappened();
+            redisConn.TryReleaseLockIfLockIdMatch(lockId, 900);
+            A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3 && s[0].Equals(redisConn.Keys.LockKey)),
+                 A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
         }
 
         [Fact]

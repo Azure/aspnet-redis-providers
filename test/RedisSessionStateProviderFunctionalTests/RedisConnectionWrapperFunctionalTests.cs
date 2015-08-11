@@ -410,7 +410,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 Assert.Equal(lockTime.Ticks.ToString(), lockId.ToString());
                 Assert.Equal(1, dataFromRedis.Count);
 
-                redisConn.TryReleaseLockIfLockIdMatch(lockId);
+                redisConn.TryReleaseLockIfLockIdMatch(lockId, 900);
 
                 // Get actual connection and check that lock do not exists
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
@@ -446,7 +446,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 Assert.Equal(1, dataFromRedis.Count);
 
                 object wrongLockId = lockTime.AddSeconds(1).Ticks.ToString();
-                redisConn.TryReleaseLockIfLockIdMatch(wrongLockId);
+                redisConn.TryReleaseLockIfLockIdMatch(wrongLockId, 900);
 
                 // Get actual connection and check that lock do not exists
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);

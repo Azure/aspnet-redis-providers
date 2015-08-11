@@ -114,10 +114,21 @@ namespace Microsoft.Web.Redis
         {
             try
             {
+                // This check is required for unit tests to work
+                int sessionTimeoutInSeconds;
+                if (context != null && context.Session != null)
+                {
+                    sessionTimeoutInSeconds = context.Session.Timeout * FROM_MIN_TO_SEC;
+                }
+                else
+                {
+                    sessionTimeoutInSeconds = (int)configuration.SessionTimeout.TotalSeconds;
+                }
+
                 if (sessionId != null && sessionLockId != null)
                 {
                     GetAccessToStore(sessionId);
-                    cache.TryReleaseLockIfLockIdMatch(sessionLockId);
+                    cache.TryReleaseLockIfLockIdMatch(sessionLockId, sessionTimeoutInSeconds);
                     LogUtility.LogInfo("EndRequest => Session Id: {0}, Session provider object: {1} => Lock Released with lockId {2}.", sessionId, this.GetHashCode(), sessionLockId);
                     sessionId = null;
                     sessionLockId = null;
@@ -311,11 +322,22 @@ namespace Microsoft.Web.Redis
         {
             try
             {
+                // This check is required for unit tests to work
+                int sessionTimeoutInSeconds;
+                if (context != null && context.Session != null)
+                {
+                    sessionTimeoutInSeconds = context.Session.Timeout * FROM_MIN_TO_SEC;
+                }
+                else
+                {
+                    sessionTimeoutInSeconds = (int)configuration.SessionTimeout.TotalSeconds;
+                }
+
                 if (LastException == null && lockId != null)
                 {
                     LogUtility.LogInfo("ReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => For lockId: {2}.", id, this.GetHashCode(), lockId);
                     GetAccessToStore(id);
-                    cache.TryReleaseLockIfLockIdMatch(lockId);
+                    cache.TryReleaseLockIfLockIdMatch(lockId, sessionTimeoutInSeconds);
                     // Either already released lock successfully inside above if block
                     // Or we do not hold lock so we should not release it.
                     sessionId = null;
