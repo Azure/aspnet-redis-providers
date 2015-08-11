@@ -92,7 +92,7 @@ namespace Microsoft.Web.Redis
             }
             catch (Exception ex)
             {
-                LogUtility.LogError("Error GetObjectFromBytes in RedisUtility:", ex.Message, ex.InnerException, ex.StackTrace);
+                LogUtility.LogError("Error GetObjectFromBytes in RedisUtility: {0}", ex.ToString());
                 return null;
             }
         }
