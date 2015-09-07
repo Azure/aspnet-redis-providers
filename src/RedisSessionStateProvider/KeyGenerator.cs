@@ -17,9 +17,9 @@ namespace Microsoft.Web.Redis
         public KeyGenerator(string id, string applicationName)
         {
             this.id = id;
-            DataKey = applicationName + "_" + id + "_Data";
-            LockKey = applicationName + "_" + id + "_Write_Lock";
-            InternalKey = applicationName + "_" + id + "_Internal";
+            DataKey = "{" + applicationName + "_" + id + "}_Data";
+            LockKey = "{" + applicationName + "_" + id + "}_Write_Lock";
+            InternalKey = "{" + applicationName + "_" + id + "}_Internal";
         }
 
         public void RegenerateKeyStringIfIdModified(string id, string applicationName)
@@ -27,9 +27,9 @@ namespace Microsoft.Web.Redis
             if (!id.Equals(this.id))
             {
                 this.id = id;
-                DataKey = applicationName + "_" + id + "_Data";
-                LockKey = applicationName + "_" + id + "_Write_Lock";
-                InternalKey = applicationName + "_" + id + "_Internal";
+                DataKey = "{" + applicationName + "_" + id + "}_Data";
+                LockKey = "{" + applicationName + "_" + id + "}_Write_Lock";
+                InternalKey = "{" + applicationName + "_" + id + "}_Internal";
             }
         }
 
