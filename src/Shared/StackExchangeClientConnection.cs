@@ -5,6 +5,8 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using System.Web.SessionState;
 using StackExchange.Redis;
 
@@ -14,7 +16,7 @@ namespace Microsoft.Web.Redis
     {
 
         ConnectionMultiplexer redisMultiplexer;
-        IDatabase connection;
+        IDatabase _connection;
         ProviderConfiguration configuration;
 
         public StackExchangeClientConnection(ProviderConfiguration configuration)
@@ -26,6 +28,11 @@ namespace Microsoft.Web.Redis
             if (!string.IsNullOrEmpty(configuration.ConnectionString))
             {
                 configOption = ConfigurationOptions.Parse(configuration.ConnectionString);
+
+                if (!string.IsNullOrEmpty(configOption.ServiceName))
+                {
+                    ModifyEndpointsForSentinelConfiguration(configOption);
+                }
             }
             else
             {
@@ -52,20 +59,43 @@ namespace Microsoft.Web.Redis
                     configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
                 }
             }
-            if (LogUtility.logger == null)
+
+            redisMultiplexer = LogUtility.logger == null ? ConnectionMultiplexer.Connect(configOption) : ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
+
+            _connection = redisMultiplexer.GetDatabase(configuration.DatabaseId);
+        }
+
+        private static void ModifyEndpointsForSentinelConfiguration(ConfigurationOptions configOption)
+        {
+            var sentinelConfiguration = new ConfigurationOptions
             {
-                redisMultiplexer = ConnectionMultiplexer.Connect(configOption);
-            }
-            else
+                CommandMap = CommandMap.Sentinel,
+                TieBreaker = "",
+                ServiceName = configOption.ServiceName,
+                SyncTimeout = configOption.SyncTimeout
+            };
+
+            EndPoint masterEndPoint = null;
+
+            foreach (var endpoint in configOption.EndPoints)
             {
-                redisMultiplexer = ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
+                sentinelConfiguration.EndPoints.Add(endpoint);
+                var sentinelConnection = ConnectionMultiplexer.Connect(sentinelConfiguration);
+                masterEndPoint = sentinelConnection.GetServer(endpoint).SentinelGetMasterAddressByName(sentinelConfiguration.ServiceName);
+
+                if (masterEndPoint != null)
+                {
+                    break;
+                }
             }
-            this.connection = redisMultiplexer.GetDatabase(configuration.DatabaseId);
+
+            configOption.EndPoints.Clear();
+            configOption.EndPoints.Add(masterEndPoint);
         }
 
         public IDatabase RealConnection
         {
-            get { return connection; }
+            get { return _connection; }
         }
 
         public void Open()
@@ -80,14 +110,14 @@ namespace Microsoft.Web.Redis
         {
             TimeSpan timeSpan = new TimeSpan(0, 0, timeInSeconds);
             RedisKey redisKey = key;
-            return (bool)RetryLogic(() => connection.KeyExpire(redisKey,timeSpan));
+            return (bool)RetryLogic(() => _connection.KeyExpire(redisKey,timeSpan));
         }
 
         public object Eval(string script, string[] keyArgs, object[] valueArgs)
         {
             RedisKey[] redisKeyArgs = new RedisKey[keyArgs.Length];
             RedisValue[] redisValueArgs = new RedisValue[valueArgs.Length];
-            
+
             int i = 0;
             foreach (string key in keyArgs)
             {
@@ -110,7 +140,7 @@ namespace Microsoft.Web.Redis
                 }
                 i++;
             }
-            return RetryLogic(() => connection.ScriptEvaluate(script, redisKeyArgs, redisValueArgs));
+            return RetryLogic(() => _connection.ScriptEvaluate(script, redisKeyArgs, redisValueArgs));
         }
 
         private object RetryForScriptNotFound(Func<object> redisOperation)
@@ -220,7 +250,7 @@ namespace Microsoft.Web.Redis
             if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
             {
                 RedisResult[] data = (RedisResult[])lockScriptReturnValueArray[1];
-                
+
                 // LUA script returns data as object array so keys and values are store one after another
                 // This list has to be even because it contains pair of <key, value> as {key, value, key, value}
                 if (data != null && data.Length != 0 && data.Length % 2 == 0)
@@ -247,23 +277,23 @@ namespace Microsoft.Web.Redis
             RedisKey redisKey = key;
             RedisValue redisValue = data;
             TimeSpan timeSpanForExpiry = utcExpiry - DateTime.UtcNow;
-            connection.StringSet(redisKey, redisValue, timeSpanForExpiry);
+            _connection.StringSet(redisKey, redisValue, timeSpanForExpiry);
         }
 
         public byte[] Get(string key)
         {
             RedisKey redisKey = key;
-            RedisValue redisValue = connection.StringGet(redisKey);
+            RedisValue redisValue = _connection.StringGet(redisKey);
             return (byte[]) redisValue;
         }
 
         public void Remove(string key)
         {
             RedisKey redisKey = key;
-            connection.KeyDelete(redisKey);
+            _connection.KeyDelete(redisKey);
         }
 
-        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis) 
+        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis)
         {
             RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
             return (byte[]) rowDataAsRedisResult;
