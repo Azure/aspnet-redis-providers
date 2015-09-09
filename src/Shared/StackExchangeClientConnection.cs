@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Web.SessionState;
 using StackExchange.Redis;
@@ -15,13 +14,13 @@ namespace Microsoft.Web.Redis
     internal class StackExchangeClientConnection : IRedisClientConnection
     {
 
-        ConnectionMultiplexer redisMultiplexer;
+        ConnectionMultiplexer _redisMultiplexer;
         IDatabase _connection;
-        ProviderConfiguration configuration;
+        ProviderConfiguration _configuration;
 
         public StackExchangeClientConnection(ProviderConfiguration configuration)
         {
-            this.configuration = configuration;
+            this._configuration = configuration;
             ConfigurationOptions configOption;
 
             // If connection string is given then use it otherwise use individual options
@@ -60,9 +59,9 @@ namespace Microsoft.Web.Redis
                 }
             }
 
-            redisMultiplexer = LogUtility.logger == null ? ConnectionMultiplexer.Connect(configOption) : ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
+            _redisMultiplexer = LogUtility.logger == null ? ConnectionMultiplexer.Connect(configOption) : ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
 
-            _connection = redisMultiplexer.GetDatabase(configuration.DatabaseId);
+            _connection = _redisMultiplexer.GetDatabase(configuration.DatabaseId);
         }
 
         private static void ModifyEndpointsForSentinelConfiguration(ConfigurationOptions configOption)
@@ -103,7 +102,7 @@ namespace Microsoft.Web.Redis
 
         public void Close()
         {
-            redisMultiplexer.Close();
+            _redisMultiplexer.Close();
         }
 
         public bool Expiry(string key, int timeInSeconds)
@@ -176,18 +175,16 @@ namespace Microsoft.Web.Redis
                 catch (Exception)
                 {
                     TimeSpan passedTime = DateTime.Now - startTime;
-                    if (configuration.RetryTimeout < passedTime)
+                    if (_configuration.RetryTimeout < passedTime)
                     {
                         throw;
                     }
-                    else
+
+                    var remainingTimeout = (int)(_configuration.RetryTimeout.TotalMilliseconds - passedTime.TotalMilliseconds);
+                    // if remaining time is less than 1 sec than wait only for that much time and than give a last try
+                    if (remainingTimeout < timeToSleepBeforeRetryInMiliseconds)
                     {
-                        int remainingTimeout = (int)(configuration.RetryTimeout.TotalMilliseconds - passedTime.TotalMilliseconds);
-                        // if remaining time is less than 1 sec than wait only for that much time and than give a last try
-                        if (remainingTimeout < timeToSleepBeforeRetryInMiliseconds)
-                        {
-                            timeToSleepBeforeRetryInMiliseconds = remainingTimeout;
-                        }
+                        timeToSleepBeforeRetryInMiliseconds = remainingTimeout;
                     }
 
                     // First time try after 20 msec after that try after 1 second
@@ -206,7 +203,7 @@ namespace Microsoft.Web.Redis
             int sessionTimeout = (int)lockScriptReturnValueArray[2];
             if (sessionTimeout == -1)
             {
-                sessionTimeout = (int) configuration.SessionTimeout.TotalSeconds;
+                sessionTimeout = (int) _configuration.SessionTimeout.TotalSeconds;
             }
             // converting seconds to minutes
             sessionTimeout = sessionTimeout / 60;
@@ -224,7 +221,7 @@ namespace Microsoft.Web.Redis
 
         public string GetLockId(object rowDataFromRedis)
         {
-            return StackExchangeClientConnection.GetLockIdStatic(rowDataFromRedis);
+            return GetLockIdStatic(rowDataFromRedis);
         }
 
         internal static string GetLockIdStatic(object rowDataFromRedis)
@@ -237,7 +234,7 @@ namespace Microsoft.Web.Redis
 
         public ISessionStateItemCollection GetSessionData(object rowDataFromRedis)
         {
-            return StackExchangeClientConnection.GetSessionDataStatic(rowDataFromRedis);
+            return GetSessionDataStatic(rowDataFromRedis);
         }
 
         internal static ISessionStateItemCollection GetSessionDataStatic(object rowDataFromRedis)
@@ -284,7 +281,7 @@ namespace Microsoft.Web.Redis
         {
             RedisKey redisKey = key;
             RedisValue redisValue = _connection.StringGet(redisKey);
-            return (byte[]) redisValue;
+            return redisValue;
         }
 
         public void Remove(string key)
