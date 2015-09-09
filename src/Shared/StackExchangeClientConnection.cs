@@ -20,7 +20,7 @@ namespace Microsoft.Web.Redis
 
         public StackExchangeClientConnection(ProviderConfiguration configuration)
         {
-            this._configuration = configuration;
+            _configuration = configuration;
             ConfigurationOptions configOption;
 
             // If connection string is given then use it otherwise use individual options
