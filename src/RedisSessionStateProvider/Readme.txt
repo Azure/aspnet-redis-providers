@@ -10,3 +10,6 @@ MSDN - http://msdn.microsoft.com/en-us/library/azure/dn690522.aspx
 More info on Azure Redis Cache service can be found here - 
 Blog - http://azure.microsoft.com/blog/2014/06/04/lap-around-azure-redis-cache-preview/
 MSDN - http://msdn.microsoft.com/en-us/library/azure/dn690523.aspx
+
+## Version 2.0.0
+ * This is a breaking change. Key names (used to stored session data in redis) are modified to contains brackets to support clustering. As a result of that old session data will become invalid when you update your app. You can not use clustering without this update.
