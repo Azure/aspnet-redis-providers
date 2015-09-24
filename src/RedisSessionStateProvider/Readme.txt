@@ -12,4 +12,4 @@ Blog - http://azure.microsoft.com/blog/2014/06/04/lap-around-azure-redis-cache-p
 MSDN - http://msdn.microsoft.com/en-us/library/azure/dn690523.aspx
 
 ## Version 2.0.0
- * This is a breaking change. Key names (used to stored session data in redis) are modified to contains brackets to support clustering. As a result of that old session data will become invalid when you update your app. You can not use clustering without this update.
+ * This release contains a breaking change from '1.*' versions in the format of key names used to store session data.  In order to support Redis Clusters, key names now include brackets. As a result of this change, existing session data will not be recognized by this session state provider. 
