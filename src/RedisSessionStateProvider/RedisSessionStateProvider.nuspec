@@ -13,7 +13,7 @@
         <copyright>Microsoft © 2014</copyright>
         <tags>session sessionstateprovider azure microsoft windowsazureofficial redis</tags>
         <dependencies>
-          <dependency id="StackExchange.Redis.StrongName" version="1.0.450" />
+          <dependency id="StackExchange.Redis.StrongName" version="1.0.481" />
         </dependencies>
         <frameworkAssemblies>
           <frameworkAssembly assemblyName="System" targetFramework="net40" />
