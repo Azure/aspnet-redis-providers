@@ -7,7 +7,7 @@
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
         <licenseUrl>http://www.microsoft.com/web/webpi/eula/aspnetcomponent_rtw_enu.htm</licenseUrl>
-        <projectUrl>http://blogs.msdn.com/b/webdev/archive/2014/05/12/announcing-asp-net-session-state-provider-for-redis-preview-release.aspx</projectUrl>
+        <projectUrl>https://github.com/Azure/aspnet-redis-providers/wiki</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>Custom session state provider for redis cache.</description>
         <copyright>Microsoft © 2014</copyright>
