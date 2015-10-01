@@ -36,11 +36,11 @@ namespace Microsoft.Web.Redis
         internal static ProviderConfiguration ProviderConfigurationForSessionState(NameValueCollection config)
         {
             ProviderConfiguration configuration = new ProviderConfiguration(config);
-            
+
             configuration.ThrowOnError = GetBoolSettings(config, "throwOnError", true);
             int retryTimeoutInMilliSec = GetIntSettings(config, "retryTimeoutInMilliseconds", 5000);
             configuration.RetryTimeout = new TimeSpan(0, 0, 0, 0, retryTimeoutInMilliSec);
-            
+
             // Get request timeout from config
             HttpRuntimeSection httpRuntimeSection = ConfigurationManager.GetSection("system.web/httpRuntime") as HttpRuntimeSection;
             configuration.RequestTimeout = httpRuntimeSection.ExecutionTimeout;
@@ -57,10 +57,10 @@ namespace Microsoft.Web.Redis
         internal static ProviderConfiguration ProviderConfigurationForOutputCache(NameValueCollection config)
         {
             ProviderConfiguration configuration = new ProviderConfiguration(config);
-            
+
             // No retry login for output cache provider
             configuration.RetryTimeout = TimeSpan.Zero;
-            
+
             // Session state specific attribute which are not applicable to output cache
             configuration.ThrowOnError = true;
             configuration.RequestTimeout = TimeSpan.Zero;
@@ -81,7 +81,7 @@ namespace Microsoft.Web.Redis
             Port = GetIntSettings(config, "port", 0);
             AccessKey = GetStringSettings(config, "accessKey", null);
             UseSsl = GetBoolSettings(config, "ssl", true);
-            
+
             // All below parameters are only fetched from web.config
             DatabaseId = GetIntSettings(config, "databaseId", 0);
             ApplicationName = GetStringSettings(config, "applicationName", null);
@@ -127,6 +127,12 @@ namespace Microsoft.Web.Redis
             if (string.IsNullOrEmpty(literalValue))
             {
                 return defaultVal;
+            }
+
+            string connectionStringValue = GetFromConnectionString(literalValue);
+            if (!string.IsNullOrEmpty(connectionStringValue))
+            {
+                return connectionStringValue;
             }
 
             string appSettingsValue = GetFromAppSetting(literalValue);
@@ -205,6 +211,20 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
+        private static string GetFromConnectionString(string connectionStringName)
+        {
+            if (!string.IsNullOrEmpty(connectionStringName))
+            {
+                var connectionString = ConfigurationManager.ConnectionStrings[connectionStringName];
+
+                if (connectionString != null)
+                {
+                    return connectionString.ConnectionString;
+                }
+            }
+            return null;
+        }
+
         // Reads string value from web.config session state section
         private static string GetFromConfig(NameValueCollection config, string attrName)
         {
@@ -220,12 +240,12 @@ namespace Microsoft.Web.Redis
         {
             string LoggingClassName = GetStringSettings(config, "loggingClassName", null);
             string LoggingMethodName = GetStringSettings(config, "loggingMethodName", null);
-            
+
             if( !string.IsNullOrEmpty(LoggingClassName) && !string.IsNullOrEmpty(LoggingMethodName) )
             {
                 // Find 'Type' that is same as fully qualified class name if not found than also don't throw error and ignore case while searching
                 Type LoggingClass = Type.GetType(LoggingClassName, throwOnError: false, ignoreCase: true);
-                
+
                 if (LoggingClass == null)
                 {
                     // If class name is not assembly qualified name than look for class in all assemblies one by one
@@ -264,7 +284,7 @@ namespace Microsoft.Web.Redis
                 if (LoggingClass == null)
                 {
                     // If class name is not assembly qualified name and it also doesn't contain namespace (it is just class name) than
-                    // try to use assembly name as namespace and try to load class from all assemblies one by one 
+                    // try to use assembly name as namespace and try to load class from all assemblies one by one
                     LoggingClass = a.GetType(a.GetName().Name + "." + LoggingClassName, throwOnError: false, ignoreCase: true);
                 }
                 if (LoggingClass != null)
