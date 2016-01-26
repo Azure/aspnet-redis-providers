@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis
 {
@@ -33,8 +34,9 @@ namespace Microsoft.Web.Redis
             {
                 foreach (string key in sessionItems.GetModifiedKeys())
                 {
+                    var byteArray = GetBytesFromObject(sessionItems[key]);
                     list.Add(key);
-                    list.Add(GetBytesFromObject(sessionItems[key]));
+                    list.Add(byteArray);
                     noOfItemsUpdated++;
                 }
             }
@@ -59,11 +61,17 @@ namespace Microsoft.Web.Redis
                 data = new RedisNull();
             }
 
+            if (data is MainStreet.BusinessFlow.SDK.Cart)
+            {
+                data = new SerializableCart((MainStreet.BusinessFlow.SDK.Cart)data);
+            }
+
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 binaryFormatter.Serialize(memoryStream, data);
                 byte[] objectDataAsStream = memoryStream.ToArray();
+
                 return objectDataAsStream;
             }
         }
@@ -84,6 +92,10 @@ namespace Microsoft.Web.Redis
                 if (retObject.GetType() == typeof(RedisNull))
                 {
                     return null;
+                }
+                else if (retObject.GetType() == typeof(SerializableCart))
+                {
+                    return ((SerializableCart)retObject).ToCart();
                 }
                 return retObject;
             }
