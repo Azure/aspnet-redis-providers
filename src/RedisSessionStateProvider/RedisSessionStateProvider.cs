@@ -192,6 +192,8 @@ namespace Microsoft.Web.Redis
 
         private SessionStateStoreData GetItemFromSessionStore(bool isWriteLockRequired, HttpContext context, string id, out bool locked, out TimeSpan lockAge, out object lockId, out SessionStateActions actions)
         {
+            bool restoreHttpContext = false;
+            HttpContext storedContext = HttpContext.Current;
             try
             {
                 SessionStateStoreData sessionStateStoreData = null;
@@ -201,9 +203,17 @@ namespace Microsoft.Web.Redis
                 actions = SessionStateActions.None;
                 GetAccessToStore(id);
                 ISessionStateItemCollection sessionData = null;
-            
+                
                 int sessionTimeout;
                 bool isLockTaken = false;
+                
+                if (HttpContext.Current == null && context != null)
+                {
+                    // Alleviates issues with deserialized third party components that reference the HttpContext in default constructors without checking first if it's null
+                    HttpContext.Current = context;
+                    restoreHttpContext = true;
+                }
+
                 //Take read or write lock and if locking successful than get data in sessionData and also update session timeout
                 if (isWriteLockRequired)
                 {
@@ -270,6 +280,12 @@ namespace Microsoft.Web.Redis
                     throw;
                 }
                 return null;
+            }
+            finally
+            {
+                // Just in case downstream components are depending on the original value
+                if (restoreHttpContext)
+                    HttpContext.Current = storedContext;
             }
         }
        
