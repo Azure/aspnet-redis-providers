@@ -42,9 +42,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3); 
                 
                 provider.Initialize("name", config);
-                provider.Set("key1", "data1", utxExpiry);
-                object data = provider.Get("key1");
-                Assert.Equal("data1", data);
+                provider.Set("key2", "data2", utxExpiry);
+                object data = provider.Get("key2");
+                Assert.Equal("data2", data);
             }
         }
 
@@ -59,10 +59,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
 
                 provider.Initialize("name", config);
-                provider.Set("key1", "data1", utxExpiry);
-                provider.Add("key1", "data3", utxExpiry);
-                object data = provider.Get("key1");
-                Assert.Equal("data1", data);
+                provider.Set("key3", "data3", utxExpiry);
+                provider.Add("key3", "data3.1", utxExpiry);
+                object data = provider.Get("key3");
+                Assert.Equal("data3", data);
             }            
         }
 
@@ -77,9 +77,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
 
                 provider.Initialize("name", config);
-                provider.Add("key1", "data1", utxExpiry);
-                object data = provider.Get("key1");
-                Assert.Equal("data1", data);
+                provider.Add("key4", "data4", utxExpiry);
+                object data = provider.Get("key4");
+                Assert.Equal("data4", data);
             }
         }
 
@@ -94,16 +94,16 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
                 
                 provider.Initialize("name", config);
-                provider.Set("key1", "data1", utxExpiry);
-                object data = provider.Get("key1");
-                Assert.Equal("data1", data);
+                provider.Set("key5", "data5", utxExpiry);
+                object data = provider.Get("key5");
+                Assert.Equal("data5", data);
 
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 utxExpiry = DateTime.UtcNow.AddMinutes(3);
-                provider.Add("key1", "data3", utxExpiry);
-                data = provider.Get("key1");
-                Assert.Equal("data3", data);
+                provider.Add("key5", "data5.1", utxExpiry);
+                data = provider.Get("key5");
+                Assert.Equal("data5.1", data);
             }
         }
 
@@ -118,8 +118,8 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
 
                 provider.Initialize("name", config);
-                provider.Remove("key1");
-                object data = provider.Get("key1");
+                provider.Remove("key6");
+                object data = provider.Get("key6");
                 Assert.Equal(null, data);
             }
         }
@@ -135,9 +135,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
 
                 provider.Initialize("name", config);
-                provider.Set("key1", "data1", utxExpiry);
-                provider.Remove("key1");
-                object data = provider.Get("key1");
+                provider.Set("key7", "data7", utxExpiry);
+                provider.Remove("key7");
+                object data = provider.Get("key7");
                 Assert.Equal(null, data);
             }
         }
@@ -153,10 +153,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
 
                 provider.Initialize("name", config);
-                provider.Set("key1", "data1", utxExpiry);
+                provider.Set("key8", "data8", utxExpiry);
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
-                object data = provider.Get("key1");
+                object data = provider.Get("key8");
                 Assert.Equal(null, data);
             }
         }
