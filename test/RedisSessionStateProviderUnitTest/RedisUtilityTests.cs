@@ -148,5 +148,17 @@ namespace Microsoft.Web.Redis.Tests
             Assert.NotNull(deserializedData);
             Assert.Equal(deserializedData.Length, data.Length);
         }
+
+        [Fact]
+        public void IsAbortConnectSetTests()
+        {
+            Assert.True(RedisUtility.IsAbortConnectSet("mycache.redis.cache.windows.net,abortConnect=false,ssl=true,password=abc"));
+            Assert.True(RedisUtility.IsAbortConnectSet("mycache.redis.cache.windows.net, abortConnect = false,ssl=true,password=abc"));
+            Assert.True(RedisUtility.IsAbortConnectSet("mycache.redis.cache.windows.net, abortConnect       = false,ssl=true,password=abc"));
+            Assert.True(RedisUtility.IsAbortConnectSet("mycache.redis.cache.windows.net, ABORTConnect= false,ssl=true,password=abc"));
+
+            Assert.False(RedisUtility.IsAbortConnectSet("mycache.redis.cache.windows.net,ssl=true,password=abc"));
+            Assert.False(RedisUtility.IsAbortConnectSet("ABORTConnect.redis.cache.windows.net,ssl=true,password=abc"));
+        }
     }
 }
