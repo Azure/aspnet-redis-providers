@@ -88,19 +88,5 @@ namespace Microsoft.Web.Redis
                 return retObject;
             }
         }
-
-        internal static bool IsAbortConnectSet(string connectionString)
-        {
-            string[] keyValues = connectionString.Split(',');
-            foreach(string keyValue in keyValues)
-            { 
-                string[] pair = keyValue.Split('=');
-                if (pair.Length > 0 && pair[0].Trim().Equals("abortconnect", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }

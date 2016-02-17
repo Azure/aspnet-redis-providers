@@ -26,12 +26,9 @@ namespace Microsoft.Web.Redis
             if (!string.IsNullOrEmpty(configuration.ConnectionString))
             {
                 configOption = ConfigurationOptions.Parse(configuration.ConnectionString);
-
-                // if connection string is not setting explicitly 'abortconnect' then set it to false by default
-                if (!RedisUtility.IsAbortConnectSet(configuration.ConnectionString))
-                {
-                    configOption.AbortOnConnectFail = false;
-                }
+                // Setting explicitly 'abortconnect' to false. It will overwrite customer provided value for 'abortconnect'
+                configOption.AbortOnConnectFail = false;
+                
             }
             else
             {
