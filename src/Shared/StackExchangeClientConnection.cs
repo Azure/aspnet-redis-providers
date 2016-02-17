@@ -27,8 +27,9 @@ namespace Microsoft.Web.Redis
             {
                 configOption = ConfigurationOptions.Parse(configuration.ConnectionString);
                 // Setting explicitly 'abortconnect' to false. It will overwrite customer provided value for 'abortconnect'
+                // As it doesn't make sense to allow to customer to set it to true as we don't give them access to ConnectionMultiplexer
+                // in case of failure customer can not create ConnectionMultiplexer so right choice is to automatically create it by providing AbortOnConnectFail = false
                 configOption.AbortOnConnectFail = false;
-                
             }
             else
             {

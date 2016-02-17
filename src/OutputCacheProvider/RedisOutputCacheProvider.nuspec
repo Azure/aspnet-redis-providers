@@ -13,7 +13,7 @@
         <copyright>Microsoft © 2014</copyright>
         <tags>outputcache outputcacheprovider azure microsoft windowsazureofficial redis</tags>
         <dependencies>
-          <dependency id="StackExchange.Redis.StrongName" version="1.0.481" />
+          <dependency id="StackExchange.Redis.StrongName" version="1.0.488" />
         </dependencies>
         <frameworkAssemblies>
           <frameworkAssembly assemblyName="System" targetFramework="net40" />
