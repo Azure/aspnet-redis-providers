@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -112,6 +113,15 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "GetTextWriterWithStreamWriterReturn");
             ProviderConfiguration.EnableLoggingIfParametersAvailable(config);
+        }
+
+        [Fact]
+        public void UseConnectionStringByName()
+        {
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionString", "RedisSession");
+            Assert.Equal(ConfigurationManager.ConnectionStrings["RedisSession"].ConnectionString,
+                ProviderConfiguration.ProviderConfigurationForSessionState(config).ConnectionString);
         }
     }
 
