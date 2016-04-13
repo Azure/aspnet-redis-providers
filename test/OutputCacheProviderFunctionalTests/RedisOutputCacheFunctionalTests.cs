@@ -25,8 +25,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Initialize("name", config);
+                
+                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 Assert.Equal(null, provider.Get("key1"));
             }
         }
@@ -39,9 +40,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3); 
-                
                 provider.Initialize("name", config);
+                
+                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3); 
                 provider.Set("key2", "data2", utxExpiry);
                 object data = provider.Get("key2");
                 Assert.Equal("data2", data);
@@ -56,9 +57,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-
                 provider.Initialize("name", config);
+                
+                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Set("key3", "data3", utxExpiry);
                 provider.Add("key3", "data3.1", utxExpiry);
                 object data = provider.Get("key3");
@@ -74,9 +75,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-
                 provider.Initialize("name", config);
+                
+                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Add("key4", "data4", utxExpiry);
                 object data = provider.Get("key4");
                 Assert.Equal("data4", data);
@@ -91,9 +92,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
-                
                 provider.Initialize("name", config);
+
+                DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
                 provider.Set("key5", "data5", utxExpiry);
                 object data = provider.Get("key5");
                 Assert.Equal("data5", data);
@@ -115,8 +116,6 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-
                 provider.Initialize("name", config);
                 provider.Remove("key6");
                 object data = provider.Get("key6");
@@ -132,9 +131,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-
                 provider.Initialize("name", config);
+                
+                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Set("key7", "data7", utxExpiry);
                 provider.Remove("key7");
                 object data = provider.Get("key7");
@@ -150,9 +149,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
-                DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
-
                 provider.Initialize("name", config);
+                
+                DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
                 provider.Set("key8", "data8", utxExpiry);
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
