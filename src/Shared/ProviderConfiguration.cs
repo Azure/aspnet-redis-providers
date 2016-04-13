@@ -77,6 +77,13 @@ namespace Microsoft.Web.Redis
             // Get connection host, port and password.
             // host, port, accessKey and ssl are firest fetched from appSettings if not found there than taken from web.config
             ConnectionString = GetStringSettings(config, "connectionString", null);
+
+            if (!string.IsNullOrEmpty(ConnectionString) &&
+                ConfigurationManager.ConnectionStrings[ConnectionString] != null)
+            {
+                ConnectionString = ConfigurationManager.ConnectionStrings[ConnectionString].ConnectionString;
+            }
+
             Host = GetStringSettings(config, "host", "127.0.0.1");
             Port = GetIntSettings(config, "port", 0);
             AccessKey = GetStringSettings(config, "accessKey", null);
