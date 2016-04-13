@@ -20,6 +20,8 @@
             connectionString = "<Valid StackExchange.Redis connection string>" [String]
             loggingClassName = "<Assembly qualified class name that contains logging method specified below>" [String]
             loggingMethodName = "<Logging method should be defined in loggingClass. It should be public, static, does not take any parameters and should have a return type of System.IO.TextWriter.>" [String]
+            settingsClassName = "<Assembly qualified class name that contains settings method specified below. Which basically return 'connectionString' value>" [String]
+            settingsMethodName = "<Settings method should be defined in settingsClass. It should be public, static, does not take any parameters and should have a return type of 'String', which is basically 'connectionString' value.>" [String]
           />
         -->
         <add name="MySessionStateStore" type="Microsoft.Web.Redis.RedisSessionStateProvider"

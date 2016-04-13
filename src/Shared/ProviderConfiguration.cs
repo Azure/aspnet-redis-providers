@@ -76,7 +76,7 @@ namespace Microsoft.Web.Redis
             EnableLoggingIfParametersAvailable(config);
             // Get connection host, port and password.
             // host, port, accessKey and ssl are firest fetched from appSettings if not found there than taken from web.config
-            ConnectionString = GetStringSettings(config, "connectionString", null);
+            ConnectionString = GetConnectionString(config);
 
             if (!string.IsNullOrEmpty(ConnectionString) &&
                 ConfigurationManager.ConnectionStrings[ConnectionString] != null)
@@ -223,6 +223,52 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
+        internal static string GetConnectionString(NameValueCollection config)
+        {
+            string SettingsClassName = GetStringSettings(config, "settingsClassName", null);
+            string SettingsMethodName = GetStringSettings(config, "settingsMethodName", null);
+
+            String connectionString = null;
+            if (!string.IsNullOrEmpty(SettingsClassName) && !string.IsNullOrEmpty(SettingsMethodName))
+            {
+                // Find 'Type' that is same as fully qualified class name if not found than also don't throw error and ignore case while searching
+                Type SettingsClass = Type.GetType(SettingsClassName, throwOnError: false, ignoreCase: true);
+
+                if (SettingsClass == null)
+                {
+                    // If class name is not assembly qualified name than look for class in all assemblies one by one
+                    SettingsClass = GetClassFromAssemblies(SettingsClassName);
+                }
+
+                if (SettingsClass == null)
+                {
+                    // All ways of loading assembly are failed so throw
+                    throw new TypeLoadException(string.Format(RedisProviderResource.ClassNotFound, SettingsClassName));
+                }
+
+                MethodInfo SettingsMethod = SettingsClass.GetMethod(SettingsMethodName, new Type[] { });
+                if (SettingsMethod == null)
+                {
+                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodNotFound, SettingsMethodName, SettingsClassName));
+                }
+                if ((SettingsMethod.Attributes & MethodAttributes.Static) == 0)
+                {
+                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodNotStatic, SettingsMethodName, SettingsClassName));
+                }
+                if (!(typeof(String)).IsAssignableFrom(SettingsMethod.ReturnType))
+                {
+                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodWrongReturnType, SettingsMethodName, SettingsClassName));
+                }
+                connectionString = (String)SettingsMethod.Invoke(null, new object[] { });
+            }
+
+            if(string.IsNullOrWhiteSpace(connectionString))
+            {
+                connectionString = GetStringSettings(config, "connectionString", null);
+            }
+            return connectionString;
+        }
+
         internal static void EnableLoggingIfParametersAvailable(NameValueCollection config)
         {
             string LoggingClassName = GetStringSettings(config, "loggingClassName", null);
@@ -236,47 +282,47 @@ namespace Microsoft.Web.Redis
                 if (LoggingClass == null)
                 {
                     // If class name is not assembly qualified name than look for class in all assemblies one by one
-                    LoggingClass = GetLoggingClass(LoggingClassName);
+                    LoggingClass = GetClassFromAssemblies(LoggingClassName);
                 }
 
                 if (LoggingClass == null)
                 {
                     // All ways of loading assembly are failed so throw
-                    throw new TypeLoadException (string.Format(RedisProviderResource.LoggingClassNotFound, LoggingClassName));
+                    throw new TypeLoadException (string.Format(RedisProviderResource.ClassNotFound, LoggingClassName));
                 }
 
                 MethodInfo LoggingMethod = LoggingClass.GetMethod(LoggingMethodName, new Type[] { });
                 if (LoggingMethod == null)
                 {
-                    throw new MissingMethodException(string.Format(RedisProviderResource.LoggingMethodNotFound, LoggingMethodName, LoggingClassName));
+                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodNotFound, LoggingMethodName, LoggingClassName));
                 }
                 if ((LoggingMethod.Attributes & MethodAttributes.Static) == 0)
                 {
-                    throw new MissingMethodException(string.Format(RedisProviderResource.LoggingMethodNotStatic, LoggingMethodName, LoggingClassName));
+                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodNotStatic, LoggingMethodName, LoggingClassName));
                 }
                 if (!(typeof(System.IO.TextWriter)).IsAssignableFrom(LoggingMethod.ReturnType))
                 {
-                    throw new MissingMethodException(string.Format(RedisProviderResource.LoggingMethodWrongReturnType, LoggingMethodName, LoggingClassName));
+                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodWrongReturnType, LoggingMethodName, LoggingClassName, "System.IO.TextWriter"));
                 }
                 LogUtility.logger = (TextWriter) LoggingMethod.Invoke(null, new object[] {});
             }
         }
 
-        internal static Type GetLoggingClass(string LoggingClassName)
+        internal static Type GetClassFromAssemblies(string ClassName)
         {
             foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
             {
                 // If class name is not assembly qualified name than look for class name in all assemblies one by one
-                Type LoggingClass = a.GetType(LoggingClassName, throwOnError: false, ignoreCase: true);
-                if (LoggingClass == null)
+                Type ClassType = a.GetType(ClassName, throwOnError: false, ignoreCase: true);
+                if (ClassType == null)
                 {
                     // If class name is not assembly qualified name and it also doesn't contain namespace (it is just class name) than
                     // try to use assembly name as namespace and try to load class from all assemblies one by one 
-                    LoggingClass = a.GetType(a.GetName().Name + "." + LoggingClassName, throwOnError: false, ignoreCase: true);
+                    ClassType = a.GetType(a.GetName().Name + "." + ClassName, throwOnError: false, ignoreCase: true);
                 }
-                if (LoggingClass != null)
+                if (ClassType != null)
                 {
-                    return LoggingClass;
+                    return ClassType;
                 }
             }
             return null;
