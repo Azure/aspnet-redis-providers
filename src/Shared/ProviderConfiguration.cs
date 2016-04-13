@@ -257,7 +257,7 @@ namespace Microsoft.Web.Redis
                 }
                 if (!(typeof(String)).IsAssignableFrom(SettingsMethod.ReturnType))
                 {
-                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodWrongReturnType, SettingsMethodName, SettingsClassName));
+                    throw new MissingMethodException(string.Format(RedisProviderResource.MethodWrongReturnType, SettingsMethodName, SettingsClassName, "String"));
                 }
                 connectionString = (String)SettingsMethod.Invoke(null, new object[] { });
             }

@@ -210,7 +210,7 @@ namespace Microsoft.Web.Redis.Tests
             NameValueCollection config = new NameValueCollection();
             config.Add(settingsClassName, typeof(SettingsProvider).AssemblyQualifiedName);
             config.Add(settingsMethodName, "GetSettings");
-            ProviderConfiguration.GetConnectionString(config);
+            Assert.Equal("localhost:6380", ProviderConfiguration.GetConnectionString(config));
         }
     }
 
