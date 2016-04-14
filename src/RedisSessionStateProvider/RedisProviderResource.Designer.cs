@@ -70,6 +70,15 @@ namespace Microsoft.Web.Redis {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Either use combination of parameters &quot;settingsClassName&quot; and &quot;settingsMethodName&quot; to provide value of connection string or use parameter &quot;connectionString&quot; but not both..
+        /// </summary>
+        internal static string ConnectionStringException {
+            get {
+                return ResourceManager.GetString("ConnectionStringException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified method &apos;{0}&apos; on the class &apos;{1}&apos; could not be found or does meet the required method signature. Please make sure that it exists, is public and doesn&apos;t take any parameters..
         /// </summary>
         internal static string MethodNotFound {

@@ -77,13 +77,6 @@ namespace Microsoft.Web.Redis
             // Get connection host, port and password.
             // host, port, accessKey and ssl are firest fetched from appSettings if not found there than taken from web.config
             ConnectionString = GetConnectionString(config);
-
-            if (!string.IsNullOrEmpty(ConnectionString) &&
-                ConfigurationManager.ConnectionStrings[ConnectionString] != null)
-            {
-                ConnectionString = ConfigurationManager.ConnectionStrings[ConnectionString].ConnectionString;
-            }
-
             Host = GetStringSettings(config, "host", "127.0.0.1");
             Port = GetIntSettings(config, "port", 0);
             AccessKey = GetStringSettings(config, "accessKey", null);
@@ -140,6 +133,33 @@ namespace Microsoft.Web.Redis
             if (!string.IsNullOrEmpty(appSettingsValue))
             {
                 return appSettingsValue;
+            }
+            return literalValue;
+        }
+
+        // 1) Use key available inside AppSettings
+        // 2) Use key available inside ConnectionStrings section
+        // 3) Use literal value as given in config
+        // 4) Both are null than use default value.
+        private static string GetConnectionStringFromConfig(NameValueCollection config, string attrName, string defaultVal)
+        {
+            string literalValue = GetFromConfig(config, attrName);
+            if (string.IsNullOrEmpty(literalValue))
+            {
+                return defaultVal;
+            }
+
+            string appSettingsValue = GetFromAppSetting(literalValue);
+            if (!string.IsNullOrEmpty(appSettingsValue))
+            {
+                return appSettingsValue;
+            }
+
+            if (!string.IsNullOrWhiteSpace(literalValue) 
+                && ConfigurationManager.ConnectionStrings[literalValue] != null
+                && !string.IsNullOrWhiteSpace(ConfigurationManager.ConnectionStrings[literalValue].ConnectionString))
+            {
+                return ConfigurationManager.ConnectionStrings[literalValue].ConnectionString;
             }
             return literalValue;
         }
@@ -223,12 +243,25 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
+
+        // Preference for fetching connection string
+        // Either use "settingsClassName" and "settingsMethodName" to provide connectionString
+        // Or use "connectionString" web.config settings to fetch value
+        // If using "connectionString" then it trys to do following in order
+        // 1) Fetch value from App Settings section for key which is value for "connectionString"
+        // 2) If option 1 is not working, Fetch value from Web.Config ConnectionStrings section for key which is value for "connectionString"
+        // 3) If option 1 and 2 is not working, use value of "connectionString" as it is
         internal static string GetConnectionString(NameValueCollection config)
         {
             string SettingsClassName = GetStringSettings(config, "settingsClassName", null);
             string SettingsMethodName = GetStringSettings(config, "settingsMethodName", null);
+            string connectionString = connectionString = GetConnectionStringFromConfig(config, "connectionString", null);
 
-            String connectionString = null;
+            if (!string.IsNullOrWhiteSpace(connectionString) && (!string.IsNullOrEmpty(SettingsClassName) || !string.IsNullOrEmpty(SettingsMethodName)))
+            {
+                throw new ConfigurationErrorsException(RedisProviderResource.ConnectionStringException);
+            }
+
             if (!string.IsNullOrEmpty(SettingsClassName) && !string.IsNullOrEmpty(SettingsMethodName))
             {
                 // Find 'Type' that is same as fully qualified class name if not found than also don't throw error and ignore case while searching
@@ -260,11 +293,6 @@ namespace Microsoft.Web.Redis
                     throw new MissingMethodException(string.Format(RedisProviderResource.MethodWrongReturnType, SettingsMethodName, SettingsClassName, "String"));
                 }
                 connectionString = (String)SettingsMethod.Invoke(null, new object[] { });
-            }
-
-            if(string.IsNullOrWhiteSpace(connectionString))
-            {
-                connectionString = GetStringSettings(config, "connectionString", null);
             }
             return connectionString;
         }

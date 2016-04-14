@@ -128,6 +128,32 @@ namespace Microsoft.Web.Redis.Tests
         private string settingsMethodName = "settingsMethodName";
 
         [Fact]
+        public void GetConnectionString_EitherOfTwoSettings()
+        {
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionString", "DummyString");
+            config.Add(settingsClassName, "DummyClass");
+            config.Add(settingsMethodName, "DummyMethodName");
+
+            Exception ex = Assert.Throws<ConfigurationErrorsException>(() => ProviderConfiguration.GetConnectionString(config));
+            Assert.Contains("Either use combination of parameters \"settingsClassName\" and \"settingsMethodName\" to provide value of connection string or use parameter \"connectionString\" but not both.", ex.Message);
+            
+            NameValueCollection config2 = new NameValueCollection();
+            config2.Add("connectionString", "DummyString");
+            config2.Add(settingsClassName, "DummyClass");
+
+            Exception ex2 = Assert.Throws<ConfigurationErrorsException>(() => ProviderConfiguration.GetConnectionString(config2));
+            Assert.Contains("Either use combination of parameters \"settingsClassName\" and \"settingsMethodName\" to provide value of connection string or use parameter \"connectionString\" but not both.", ex2.Message);
+            
+            NameValueCollection config3 = new NameValueCollection();
+            config3.Add("connectionString", "DummyString");
+            config3.Add(settingsMethodName, "DummyMethodName");
+
+            Exception ex3 = Assert.Throws<ConfigurationErrorsException>(() => ProviderConfiguration.GetConnectionString(config3));
+            Assert.Contains("Either use combination of parameters \"settingsClassName\" and \"settingsMethodName\" to provide value of connection string or use parameter \"connectionString\" but not both.", ex3.Message);
+        }
+
+        [Fact]
         public void GetConnectionString_WrongClassName()
         {
             NameValueCollection config = new NameValueCollection();
