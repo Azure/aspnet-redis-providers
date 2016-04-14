@@ -3,7 +3,7 @@
   <system.web>
     <sessionState mode="Custom" customProvider="MySessionStateStore">
       <providers>
-        <!-- Either use 'connectionString' and provide all parameters as string OR use 'host','port','accessKey','ssl','connectionTimeoutInMilliseconds' and 'operationTimeoutInMilliseconds'. -->
+        <!-- Either use 'connectionString' OR 'settingsClassName' and 'settingsMethodName' OR use 'host','port','accessKey','ssl','connectionTimeoutInMilliseconds' and 'operationTimeoutInMilliseconds'. -->
         <!-- 'throwOnError','retryTimeoutInMilliseconds','databaseId' and 'applicationName' can be used with both options. -->
         <!--
           <add name="MySessionStateStore" 
@@ -18,10 +18,10 @@
             connectionTimeoutInMilliseconds = "5000" [number]
             operationTimeoutInMilliseconds = "1000" [number]
             connectionString = "<Valid StackExchange.Redis connection string>" [String]
-            loggingClassName = "<Assembly qualified class name that contains logging method specified below>" [String]
-            loggingMethodName = "<Logging method should be defined in loggingClass. It should be public, static, does not take any parameters and should have a return type of System.IO.TextWriter.>" [String]
             settingsClassName = "<Assembly qualified class name that contains settings method specified below. Which basically return 'connectionString' value>" [String]
             settingsMethodName = "<Settings method should be defined in settingsClass. It should be public, static, does not take any parameters and should have a return type of 'String', which is basically 'connectionString' value.>" [String]
+            loggingClassName = "<Assembly qualified class name that contains logging method specified below>" [String]
+            loggingMethodName = "<Logging method should be defined in loggingClass. It should be public, static, does not take any parameters and should have a return type of System.IO.TextWriter.>" [String]
           />
         -->
         <add name="MySessionStateStore" type="Microsoft.Web.Redis.RedisSessionStateProvider"
