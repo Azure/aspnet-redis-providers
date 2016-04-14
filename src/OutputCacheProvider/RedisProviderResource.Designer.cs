@@ -70,7 +70,7 @@ namespace Microsoft.Web.Redis {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Either use combination of parameters &quot;settingsClassName&quot; and &quot;settingsMethodName&quot; to provide value of connection string or use parameter &quot;connectionString&quot; but not both..
+        ///   Looks up a localized string similar to Either use the combination of parameters &quot;settingsClassName&quot; and &quot;settingsMethodName&quot; to provide the value of connection string or use the parameter &quot;connectionString&quot; but not both..
         /// </summary>
         internal static string ConnectionStringException {
             get {
