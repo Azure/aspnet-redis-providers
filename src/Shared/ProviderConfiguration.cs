@@ -255,7 +255,7 @@ namespace Microsoft.Web.Redis
         {
             string SettingsClassName = GetStringSettings(config, "settingsClassName", null);
             string SettingsMethodName = GetStringSettings(config, "settingsMethodName", null);
-            string connectionString = connectionString = GetConnectionStringFromConfig(config, "connectionString", null);
+            string connectionString = GetConnectionStringFromConfig(config, "connectionString", null);
 
             if (!string.IsNullOrWhiteSpace(connectionString) && (!string.IsNullOrEmpty(SettingsClassName) || !string.IsNullOrEmpty(SettingsMethodName)))
             {
