@@ -4,6 +4,7 @@
     <caching>
       <outputCache defaultProvider="MyRedisOutputCache">
         <providers>
+          <!-- For more details check https://github.com/Azure/aspnet-redis-providers/wiki -->
           <!-- Either use 'connectionString' OR 'settingsClassName' and 'settingsMethodName' OR use 'host','port','accessKey','ssl','connectionTimeoutInMilliseconds' and 'operationTimeoutInMilliseconds'. -->
           <!-- 'databaseId' and 'applicationName' can be used with both options. -->
           <!--
