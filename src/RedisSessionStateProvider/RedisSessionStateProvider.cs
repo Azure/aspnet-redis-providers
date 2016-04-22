@@ -4,6 +4,7 @@
 //
 
 using System;
+using System.Runtime.Serialization;
 using System.Web;
 using System.Web.SessionState;
 
@@ -408,6 +409,12 @@ namespace Microsoft.Web.Redis
                     throw;
                 }
             }
+        }
+
+        public static void UseCustomSerializationBinder(SerializationBinder binder)
+        {
+            if(binder == null) throw new ArgumentNullException(nameof(binder));
+            RedisUtility.CustomBinder = binder;
         }
     }
 }

@@ -6,12 +6,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Microsoft.Web.Redis
 {
     internal static class RedisUtility
     {
+        internal static SerializationBinder CustomBinder { get; set; }    
+
         public static int AppendRemoveItemsInList(ChangeTrackingSessionStateItemCollection sessionItems, List<object> list)
         {
             int noOfItemsRemoved = 0;
@@ -76,6 +79,10 @@ namespace Microsoft.Web.Redis
             }
 
             BinaryFormatter binaryFormatter = new BinaryFormatter();
+            if (CustomBinder != null)
+            {
+                binaryFormatter.Binder = CustomBinder;
+            }
             using (MemoryStream memoryStream = new MemoryStream(dataAsBytes, 0, dataAsBytes.Length))
             {
                 memoryStream.Seek(0, System.IO.SeekOrigin.Begin);

@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-    <metadata minClientVersion="2.6">
-        <id>Microsoft.Web.RedisSessionStateProvider</id>
-        <version>1.0.0.0</version>
-        <title>RedisSessionStateProvider</title>
-        <authors>Microsoft</authors>
-        <owners>Microsoft</owners>
+    <metadata>
+        <id>Microsoft.Web.RedisSessionStateProvider_CniMod</id>
+        <version>1.6.5.0</version>
+        <title>RedisSessionStateProvider_CniMod</title>
+        <authors>Microsoft,CNI</authors>
+        <owners>Julian Kwieciński</owners>
         <licenseUrl>http://www.microsoft.com/web/webpi/eula/aspnetcomponent_rtw_enu.htm</licenseUrl>
         <projectUrl>http://blogs.msdn.com/b/webdev/archive/2014/05/12/announcing-asp-net-session-state-provider-for-redis-preview-release.aspx</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -13,19 +13,19 @@
         <copyright>Microsoft © 2014</copyright>
         <tags>session sessionstateprovider azure microsoft windowsazureofficial redis</tags>
         <dependencies>
-          <dependency id="StackExchange.Redis.StrongName" version="1.0.450" />
+            <dependency id="StackExchange.Redis.StrongName" version="1.0.450" />
         </dependencies>
         <frameworkAssemblies>
-          <frameworkAssembly assemblyName="System" targetFramework="net40" />
-          <frameworkAssembly assemblyName="System.Configuration" targetFramework="net40" />
-          <frameworkAssembly assemblyName="System.Web" targetFramework="net40" />
-          <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework="net40" />
+            <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.0" />
+            <frameworkAssembly assemblyName="System.Configuration" targetFramework=".NETFramework4.0" />
+            <frameworkAssembly assemblyName="System.Web" targetFramework=".NETFramework4.0" />
+            <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.0" />
         </frameworkAssemblies>
     </metadata>
-  <files>
-    <file src="web.config.transform" target="content\net40\web.config.transform" />
-    <file src="..\..\bin\Release\Signed\v4.0\Microsoft.Web.RedisSessionStateProvider.dll" target="lib\net40\Microsoft.Web.RedisSessionStateProvider.dll" />
-    <file src="..\..\bin\Release\Microsoft.Web.RedisSessionStateProvider\v4.0\Microsoft.Web.RedisSessionStateProvider.pdb" target="lib\net40\Microsoft.Web.RedisSessionStateProvider.pdb" />
-    <file src="Readme.txt" target="Readme.txt" /> 
-  </files>
+    <files>
+        <file src="web.config.transform" target="content\net40\web.config.transform" />
+        <file src="..\..\bin\Release\Microsoft.Web.RedisSessionStateProvider\v4.0\Microsoft.Web.RedisSessionStateProvider.dll" target="lib\net40\Microsoft.Web.RedisSessionStateProvider.dll" />
+        <file src="..\..\bin\Release\Microsoft.Web.RedisSessionStateProvider\v4.0\Microsoft.Web.RedisSessionStateProvider.pdb" target="lib\net40\Microsoft.Web.RedisSessionStateProvider.pdb" />
+        <file src="Readme.txt" target="Readme.txt" />
+    </files>
 </package>
