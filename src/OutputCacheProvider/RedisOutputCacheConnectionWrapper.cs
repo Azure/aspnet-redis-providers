@@ -39,13 +39,14 @@ namespace Microsoft.Web.Redis
         // ARGV = { page data, expiry time in miliseconds } 
         // retArray = { page data from cache or new }
         static readonly string addScript = (@"
-                    local retVal = redis.call('GET',KEYS[1])
-                    if retVal == false then
-                       redis.call('SET',KEYS[1], ARGV[1])
-                       redis.call('PEXPIRE',KEYS[1], ARGV[2])
-                       retVal = ARGV[1]
+                    if redis.call('TTL',KEYS[1]) < 1 then
+                       if tonumber(ARGV[2]) > 0 then
+                            redis.call('SET',KEYS[1], ARGV[1])
+                            redis.call('PEXPIRE',KEYS[1], ARGV[2])
+                       end
+                       return ARGV[1]
                     end
-                    return retVal
+                    return redis.call('GET',KEYS[1])
                     ");
 
         public object Add(string key, object entry, DateTime utcExpiry)
