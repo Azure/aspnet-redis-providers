@@ -28,6 +28,7 @@ namespace Microsoft.Web.Redis
         public int ConnectionTimeoutInMilliSec { get; set; }
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
+        public string KeyPrefix { get; set; }
 
         /* Empty constructor required for testing */
         internal ProviderConfiguration()
@@ -116,6 +117,7 @@ namespace Microsoft.Web.Redis
 
             ConnectionTimeoutInMilliSec = GetIntSettings(config, "connectionTimeoutInMilliseconds", 0);
             OperationTimeoutInMilliSec = GetIntSettings(config, "operationTimeoutInMilliseconds", 0);
+            KeyPrefix = GetStringSettings(config, "keyPrefix", String.Empty);
         }
 
         // 1) Use key available inside AppSettings

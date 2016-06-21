@@ -22,7 +22,7 @@ namespace Microsoft.Web.Redis
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
             this.configuration = configuration;
-            Keys = new KeyGenerator(id, configuration.ApplicationName);
+            Keys = new KeyGenerator(id, configuration.ApplicationName, configuration.KeyPrefix);
             
             // Pool is created by server when it starts. don't want to lock everytime when check pool == null.
             // so that is why pool == null exists twice.
