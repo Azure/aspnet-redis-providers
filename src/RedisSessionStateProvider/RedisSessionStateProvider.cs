@@ -199,6 +199,10 @@ namespace Microsoft.Web.Redis
                 lockAge = TimeSpan.Zero;
                 lockId = 0;
                 actions = SessionStateActions.None;
+                if (id == null)
+                {
+                    return null;
+                }
                 GetAccessToStore(id);
                 ISessionStateItemCollection sessionData = null;
             
