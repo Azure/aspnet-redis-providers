@@ -43,7 +43,7 @@ namespace Microsoft.Web.Redis
 
         public static List<object> GetNewItemsAsList(ChangeTrackingSessionStateItemCollection sessionItems)
         {
-            List<object> list = new List<object>();
+            List<object> list = new List<object>(sessionItems.Keys.Count * 2);
             foreach (string key in sessionItems.Keys)
             {
                 list.Add(key);
