@@ -249,7 +249,7 @@ namespace Microsoft.Web.Redis
                 // Restore action flag from session data
                 if (sessionData["SessionStateActions"] != null) 
                 {
-                    actions = (SessionStateActions)sessionData["SessionStateActions"];
+                    actions = (SessionStateActions)Enum.Parse(typeof(SessionStateActions), sessionData["SessionStateActions"].ToString());
                 }
 
                 //Get data related to this session from sessionDataDictionary and populate session items

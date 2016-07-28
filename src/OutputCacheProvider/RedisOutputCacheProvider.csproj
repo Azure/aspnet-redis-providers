@@ -68,11 +68,17 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\BinarySerializer.cs">
+      <Link>BinarySerializer.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\ChangeTrackingSessionStateItemCollection.cs">
       <Link>ChangeTrackingSessionStateItemCollection.cs</Link>
     </Compile>
     <Compile Include="..\Shared\IRedisClientConnection.cs">
       <Link>IRedisClientConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ISerializer.cs">
+      <Link>ISerializer.cs</Link>
     </Compile>
     <Compile Include="..\Shared\LogUtility.cs">
       <Link>LogUtility.cs</Link>

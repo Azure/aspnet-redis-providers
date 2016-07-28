@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -12,6 +13,16 @@ namespace Microsoft.Web.Redis
 {
     internal static class RedisUtility
     {
+        internal static ISerializer Serializer;
+
+        static RedisUtility()
+        {
+            var serializerType = ConfigurationManager.AppSettings["RedisSerializerType"];
+            Serializer = string.IsNullOrWhiteSpace(serializerType)
+                ? new BinarySerializer()     
+                : (ISerializer)Activator.CreateInstance(Type.GetType(serializerType));
+        }
+
         public static int AppendRemoveItemsInList(ChangeTrackingSessionStateItemCollection sessionItems, List<object> list)
         {
             int noOfItemsRemoved = 0;
@@ -54,39 +65,12 @@ namespace Microsoft.Web.Redis
 
         internal static byte[] GetBytesFromObject(object data)
         {
-            if (data == null)
-            {
-                data = new RedisNull();
-            }
-
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                binaryFormatter.Serialize(memoryStream, data);
-                byte[] objectDataAsStream = memoryStream.ToArray();
-                return objectDataAsStream;
-            }
+            return Serializer.Serialize(data);
         }
 
         internal static object GetObjectFromBytes(byte[] dataAsBytes)
         {
-            if (dataAsBytes == null)
-            {
-                return null;
-            }
-
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            using (MemoryStream memoryStream = new MemoryStream(dataAsBytes, 0, dataAsBytes.Length))
-            {
-                memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
-                object retObject = (object)binaryFormatter.Deserialize(memoryStream);
-
-                if (retObject.GetType() == typeof(RedisNull))
-                {
-                    return null;
-                }
-                return retObject;
-            }
+            return Serializer.Deserialize(dataAsBytes);
         }
     }
 }
