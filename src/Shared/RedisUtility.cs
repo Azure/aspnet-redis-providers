@@ -5,25 +5,35 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Microsoft.Web.Redis
 {
-    internal static class RedisUtility
+    internal sealed class RedisUtility
     {
-        internal static ISerializer Serializer;
+        private readonly ProviderConfiguration _configuration;
+        internal readonly ISerializer _serializer;
 
-        static RedisUtility()
+        public RedisUtility(ProviderConfiguration configuration)
         {
-            var serializerType = ConfigurationManager.AppSettings["RedisSerializerType"];
-            Serializer = string.IsNullOrWhiteSpace(serializerType)
-                ? new BinarySerializer()     
-                : (ISerializer)Activator.CreateInstance(Type.GetType(serializerType));
+            _configuration = configuration;
+            _serializer = GetSerializer();
         }
 
-        public static int AppendRemoveItemsInList(ChangeTrackingSessionStateItemCollection sessionItems, List<object> list)
+        private ISerializer GetSerializer()
+        {
+            string serializerTypeName = _configuration.RedisSerializerType;
+            if (!string.IsNullOrWhiteSpace(serializerTypeName))
+            {
+                var serializerType = Type.GetType(serializerTypeName, true);
+                if (serializerType != null)
+                {
+                    return (ISerializer)Activator.CreateInstance(serializerType);
+                }
+            }
+            return new BinarySerializer();
+        }
+
+        public int AppendRemoveItemsInList(ChangeTrackingSessionStateItemCollection sessionItems, List<object> list)
         {
             int noOfItemsRemoved = 0;
             if (sessionItems.GetDeletedKeys() != null && sessionItems.GetDeletedKeys().Count != 0)
@@ -37,7 +47,7 @@ namespace Microsoft.Web.Redis
             return noOfItemsRemoved;
         }
 
-        public static int AppendUpdatedOrNewItemsInList(ChangeTrackingSessionStateItemCollection sessionItems, List<object> list)
+        public int AppendUpdatedOrNewItemsInList(ChangeTrackingSessionStateItemCollection sessionItems, List<object> list)
         {
             int noOfItemsUpdated = 0;
             if (sessionItems.GetModifiedKeys() != null && sessionItems.GetModifiedKeys().Count != 0)
@@ -52,7 +62,7 @@ namespace Microsoft.Web.Redis
             return noOfItemsUpdated;
         }
 
-        public static List<object> GetNewItemsAsList(ChangeTrackingSessionStateItemCollection sessionItems)
+        public List<object> GetNewItemsAsList(ChangeTrackingSessionStateItemCollection sessionItems)
         {
             List<object> list = new List<object>();
             foreach (string key in sessionItems.Keys)
@@ -63,14 +73,14 @@ namespace Microsoft.Web.Redis
             return list;
         }
 
-        internal static byte[] GetBytesFromObject(object data)
+        internal byte[] GetBytesFromObject(object data)
         {
-            return Serializer.Serialize(data);
+            return _serializer.Serialize(data);
         }
 
-        internal static object GetObjectFromBytes(byte[] dataAsBytes)
+        internal object GetObjectFromBytes(byte[] dataAsBytes)
         {
-            return Serializer.Deserialize(dataAsBytes);
+            return _serializer.Deserialize(dataAsBytes);
         }
     }
 }

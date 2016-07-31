@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.SessionState;
@@ -15,6 +16,8 @@ namespace Microsoft.Web.Redis.Tests
 {
     public class RedisUtilityTests
     {
+        private static RedisUtility RedisUtility = new RedisUtility(Utility.GetDefaultConfigUtility());
+
         [Fact]
         public void AppendRemoveItemsInList_EmptySessionItems()
         {
@@ -148,5 +151,49 @@ namespace Microsoft.Web.Redis.Tests
             Assert.NotNull(deserializedData);
             Assert.Equal(deserializedData.Length, data.Length);
         }
+
+
+        [Fact]
+        public void CustomSerializer_ByAssemblyQualifiedName()
+        {
+            var serTypeName = typeof(TestSerializer).AssemblyQualifiedName;
+            var utility = new RedisUtility(new ProviderConfiguration() { RedisSerializerType = serTypeName });
+            Assert.IsType<TestSerializer>(utility._serializer);
+        }
+
+        [Fact]
+        public void GetObjectFromBytes_GetBytesFromObject_CustomSerializer()
+        {
+            var serTypeName = typeof(TestSerializer).AssemblyQualifiedName;
+            var utility = new RedisUtility(new ProviderConfiguration() { RedisSerializerType = serTypeName });
+
+            var bytes = utility.GetBytesFromObject("test");
+            var obj = utility.GetObjectFromBytes(bytes);
+            var testSerializer = (TestSerializer) utility._serializer;
+            Assert.Equal("test", obj);
+            Assert.Equal(1, testSerializer.DeserializeCount);
+            Assert.Equal(1, testSerializer.SerializeCount);
+        }
+
+        [Fact]
+        public void CustomSerializer_NotExistingType()
+        {
+            var serTypeName = "This.Type.Does.Not.Exists";
+            Assert.Throws<TypeLoadException>(() =>
+            {
+                new RedisUtility(new ProviderConfiguration() {RedisSerializerType = serTypeName});
+            });
+        }
+
+        [Fact]
+        public void CustomSerializer_ExistingTypeNotImplementingISerializer()
+        {
+            var serTypeName = this.GetType().AssemblyQualifiedName;
+            Assert.Throws<InvalidCastException>(() =>
+            {
+                new RedisUtility(new ProviderConfiguration() { RedisSerializerType = serTypeName });
+            });
+        }
+
     }
 }

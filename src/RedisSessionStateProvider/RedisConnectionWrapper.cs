@@ -18,10 +18,12 @@ namespace Microsoft.Web.Redis
         
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
-        
+        private RedisUtility RedisUtility;
+
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
             this.configuration = configuration;
+            this.RedisUtility = new RedisUtility(configuration);
             Keys = new KeyGenerator(id, configuration.ApplicationName);
             
             // Pool is created by server when it starts. don't want to lock everytime when check pool == null.

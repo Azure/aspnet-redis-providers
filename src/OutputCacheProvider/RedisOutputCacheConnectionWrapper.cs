@@ -14,11 +14,12 @@ namespace Microsoft.Web.Redis
 
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
-        
+        private RedisUtility RedisUtility;
+
         public RedisOutputCacheConnectionWrapper(ProviderConfiguration configuration)
         {
             this.configuration = configuration;
-            
+            this.RedisUtility = new RedisUtility(configuration);
             // Shared connection is created by server when it starts. don't want to lock everytime when check == null.
             // so that is why pool == null exists twice.
             if (sharedConnection == null)

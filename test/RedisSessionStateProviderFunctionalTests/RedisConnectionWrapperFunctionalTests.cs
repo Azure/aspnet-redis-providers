@@ -19,8 +19,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
     public class RedisConnectionWrapperFunctionalTests
     {
         static int uniqueSessionNumber = 1;
+        private static RedisUtility RedisUtility = new RedisUtility(Utility.GetDefaultConfigUtility());
+
         private RedisConnectionWrapper GetRedisConnectionWrapperWithUniqueSession()
         {
+            
             return GetRedisConnectionWrapperWithUniqueSession(Utility.GetDefaultConfigUtility());
         }
 

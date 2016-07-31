@@ -16,6 +16,8 @@ namespace Microsoft.Web.Redis.Tests
 {
     public class RedisConnectionWrapperTests
     {
+        private static RedisUtility RedisUtility = new RedisUtility(Utility.GetDefaultConfigUtility());
+
         [Fact]
         public void UpdateExpiryTime_Valid()
         {
