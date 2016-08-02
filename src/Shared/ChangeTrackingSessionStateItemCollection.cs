@@ -17,8 +17,21 @@ namespace Microsoft.Web.Redis
     internal class ChangeTrackingSessionStateItemCollection : NameObjectCollectionBase, ISessionStateItemCollection, ICollection, IEnumerable
     {
         SessionStateItemCollection innerCollection;
+        // key is "session key in lowercase" and value is "actual session key in actual case"
+        Dictionary<string, string> allKeys = new Dictionary<string, string>();
         HashSet<string> modifiedKeys = new HashSet<string>();
         HashSet<string> deletedKeys = new HashSet<string>();
+
+        private string GetSessionNormalizedKeyToUse(string name)
+        { 
+            string actualNameStoredEarlier;
+            if (allKeys.TryGetValue(name.ToLower(), out actualNameStoredEarlier))
+            {
+                return actualNameStoredEarlier;
+            }
+            allKeys.Add(name.ToLower(), name);
+            return name;
+        }
 
         private void addInModifiedKeys(string key)
         {
@@ -88,6 +101,7 @@ namespace Microsoft.Web.Redis
 
         public void Remove(string name)
         {
+            name = GetSessionNormalizedKeyToUse(name);
             if (innerCollection[name] != null)
             {
                 addInDeletedKeys(name);
@@ -116,8 +130,8 @@ namespace Microsoft.Web.Redis
             }
             set
             {
-                innerCollection[index] = value;
                 addInModifiedKeys(innerCollection.Keys[index]);
+                innerCollection[index] = value;
             }
         }
 
@@ -125,6 +139,7 @@ namespace Microsoft.Web.Redis
         {
             get
             {
+                name = GetSessionNormalizedKeyToUse(name);
                 if (IsMutable(innerCollection[name]))
                 {
                     addInModifiedKeys(name);
@@ -133,8 +148,9 @@ namespace Microsoft.Web.Redis
             }
             set
             {
-                innerCollection[name] = value;
+                name = GetSessionNormalizedKeyToUse(name);
                 addInModifiedKeys(name);
+                innerCollection[name] = value;
             }
         }
 

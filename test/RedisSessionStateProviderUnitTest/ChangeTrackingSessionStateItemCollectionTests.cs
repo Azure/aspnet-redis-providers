@@ -198,5 +198,37 @@ namespace Microsoft.Web.Redis.Tests
             Assert.Equal(2, items.Count);
             Assert.Equal(0, items.GetModifiedKeys().Count);
         }
+
+        [Fact]
+        public void DuplicateWithDifferentCase()
+        {
+            // Initial insert to set up value
+            ChangeTrackingSessionStateItemCollection items = new ChangeTrackingSessionStateItemCollection();
+            items["Test"] = "v1";
+            items.Dirty = false;
+
+            foreach (string key in items.Keys)
+            {
+                Assert.Equal("Test", key);
+                Assert.NotEqual("TEST", key);
+                Assert.NotEqual("test", key);
+            }
+            
+            Assert.Equal("v1", (string)items["Test"]);
+            Assert.Equal("v1", (string)items["TEST"]);
+            Assert.Equal("v1", (string)items["test"]);
+
+            items["TEST"] = "v2";
+            foreach (string key in items.Keys)
+            {
+                Assert.Equal("Test", key);
+                Assert.NotEqual("TEST", key);
+                Assert.NotEqual("test", key);
+            }
+
+            Assert.Equal("v2", (string)items["Test"]);
+            Assert.Equal("v2", (string)items["TEST"]);
+            Assert.Equal("v2", (string)items["test"]);
+        }
     }
 }
