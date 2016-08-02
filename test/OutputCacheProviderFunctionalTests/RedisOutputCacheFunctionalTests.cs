@@ -159,5 +159,28 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 Assert.Equal(null, data);
             }
         }
+
+        [Fact]
+        public void AddScriptFixForExpiryTest()
+        {
+            using (RedisServer Server = new RedisServer())
+            {
+                RedisOutputCacheProvider provider = new RedisOutputCacheProvider();
+                NameValueCollection config = new NameValueCollection();
+                config.Add("ssl", "false");
+                provider.Initialize("name", config);
+
+                DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
+                provider.Add("key9", "data9", utxExpiry);
+                object data = provider.Get("key9");
+                Assert.Equal("data9", data);
+                // Wait for 1.1 seconds so that data will expire
+                System.Threading.Thread.Sleep(1100);
+                data = provider.Get("key9");
+                Assert.Equal(null, data);
+            }
+        }
+
+        
     }
 }

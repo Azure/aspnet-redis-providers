@@ -39,14 +39,12 @@ namespace Microsoft.Web.Redis
         // ARGV = { page data, expiry time in miliseconds } 
         // retArray = { page data from cache or new }
         static readonly string addScript = (@"
-                    if redis.call('TTL',KEYS[1]) < 1 then
-                       if tonumber(ARGV[2]) > 0 then
-                            redis.call('SET',KEYS[1], ARGV[1])
-                            redis.call('PEXPIRE',KEYS[1], ARGV[2])
-                       end
-                       return ARGV[1]
+                    local retVal = redis.call('GET',KEYS[1])
+                    if retVal == false then
+                       redis.call('PSETEX',KEYS[1],ARGV[2],ARGV[1])
+                       retVal = ARGV[1]
                     end
-                    return redis.call('GET',KEYS[1])
+                    return retVal
                     ");
 
         public object Add(string key, object entry, DateTime utcExpiry)
@@ -54,7 +52,7 @@ namespace Microsoft.Web.Redis
             key = GetKeyForRedis(key);
             TimeSpan expiryTime = utcExpiry - DateTime.UtcNow;
             string[] keyArgs = new string[] { key };
-            object[] valueArgs = new object[] { RedisUtility.GetBytesFromObject(entry), expiryTime.TotalMilliseconds };
+            object[] valueArgs = new object[] { RedisUtility.GetBytesFromObject(entry), (long) expiryTime.TotalMilliseconds };
 
             object rowDataFromRedis = redisConnection.Eval(addScript, keyArgs, valueArgs);
             return RedisUtility.GetObjectFromBytes(redisConnection.GetOutputCacheDataFromResult(rowDataFromRedis));
