@@ -75,17 +75,25 @@ namespace Microsoft.Web.Redis
                 return null;
             }
 
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            using (MemoryStream memoryStream = new MemoryStream(dataAsBytes, 0, dataAsBytes.Length))
+            try
             {
-                memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
-                object retObject = (object)binaryFormatter.Deserialize(memoryStream);
-
-                if (retObject.GetType() == typeof(RedisNull))
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                using (MemoryStream memoryStream = new MemoryStream(dataAsBytes, 0, dataAsBytes.Length))
                 {
-                    return null;
+                    memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+                    object retObject = (object)binaryFormatter.Deserialize(memoryStream);
+
+                    if (retObject.GetType() == typeof(RedisNull))
+                    {
+                        return null;
+                    }
+                    return retObject;
                 }
-                return retObject;
+            }
+            catch (Exception ex)
+            {
+                LogUtility.LogError("Error GetObjectFromBytes in RedisUtility: {0}", ex.ToString());
+                return null;
             }
         }
     }
