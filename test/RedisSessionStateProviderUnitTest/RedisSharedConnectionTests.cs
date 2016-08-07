@@ -81,6 +81,11 @@ namespace Microsoft.Web.Redis.Tests
             return null;
         }
 
+        public bool Exists(string key)
+        {
+            return false;
+        }
+
         public void Set(string key, byte[] data, DateTime utcExpiry)
         { }
 
