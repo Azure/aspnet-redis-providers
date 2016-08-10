@@ -16,10 +16,12 @@ namespace Microsoft.Web.Redis
         ConnectionMultiplexer redisMultiplexer;
         IDatabase connection;
         ProviderConfiguration configuration;
+        private RedisUtility RedisUtility;
 
         public StackExchangeClientConnection(ProviderConfiguration configuration)
         {
             this.configuration = configuration;
+            this.RedisUtility = new RedisUtility(configuration);
             ConfigurationOptions configOption;
 
             // If connection string is given then use it otherwise use individual options
@@ -210,11 +212,6 @@ namespace Microsoft.Web.Redis
         }
 
         public ISessionStateItemCollection GetSessionData(object rowDataFromRedis)
-        {
-            return StackExchangeClientConnection.GetSessionDataStatic(rowDataFromRedis);
-        }
-
-        internal static ISessionStateItemCollection GetSessionDataStatic(object rowDataFromRedis)
         {
             RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
             RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;

@@ -28,6 +28,7 @@ namespace Microsoft.Web.Redis
         public int ConnectionTimeoutInMilliSec { get; set; }
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
+        public string RedisSerializerType { get; set; }
 
         /* Empty constructor required for testing */
         internal ProviderConfiguration()
@@ -81,7 +82,7 @@ namespace Microsoft.Web.Redis
             Port = GetIntSettings(config, "port", 0);
             AccessKey = GetStringSettings(config, "accessKey", null);
             UseSsl = GetBoolSettings(config, "ssl", true);
-            
+            RedisSerializerType = GetStringSettings(config, "redisSerializerType", null);
             // All below parameters are only fetched from web.config
             DatabaseId = GetIntSettings(config, "databaseId", 0);
             ApplicationName = GetStringSettings(config, "applicationName", null);
@@ -242,7 +243,6 @@ namespace Microsoft.Web.Redis
             }
             return null;
         }
-
 
         // Preference for fetching connection string
         // Either use "settingsClassName" and "settingsMethodName" to provide connectionString
