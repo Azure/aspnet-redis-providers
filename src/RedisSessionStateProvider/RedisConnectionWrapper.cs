@@ -13,17 +13,17 @@ namespace Microsoft.Web.Redis
     {
         internal static RedisSharedConnection sharedConnection;
         static object lockForSharedConnection = new object();
+        internal static RedisUtility redisUtility;
 
         public KeyGenerator Keys { set; get; }
         
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
-        private RedisUtility RedisUtility;
+        
 
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
             this.configuration = configuration;
-            this.RedisUtility = new RedisUtility(configuration);
             Keys = new KeyGenerator(id, configuration.ApplicationName);
             
             // Pool is created by server when it starts. don't want to lock everytime when check pool == null.
@@ -35,6 +35,7 @@ namespace Microsoft.Web.Redis
                     if (sharedConnection == null)
                     {
                         sharedConnection = new RedisSharedConnection(configuration,() => new StackExchangeClientConnection(configuration));
+                        redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
@@ -112,7 +113,7 @@ namespace Microsoft.Web.Redis
             if (data != null && data.Count > 0)
             {
                 ChangeTrackingSessionStateItemCollection sessionItems = (ChangeTrackingSessionStateItemCollection)data;
-                List<object> list = RedisUtility.GetNewItemsAsList(sessionItems);
+                List<object> list = redisUtility.GetNewItemsAsList(sessionItems);
                 if (list.Count > 0)
                 {
                     keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
@@ -321,8 +322,8 @@ namespace Microsoft.Web.Redis
             {
                 List<object> list = new List<object>();
                 ChangeTrackingSessionStateItemCollection sessionItems = (ChangeTrackingSessionStateItemCollection)data;
-                int noOfItemsRemoved = RedisUtility.AppendRemoveItemsInList(sessionItems, list);
-                int noOfItemsUpdated = RedisUtility.AppendUpdatedOrNewItemsInList(sessionItems, list);
+                int noOfItemsRemoved = redisUtility.AppendRemoveItemsInList(sessionItems, list);
+                int noOfItemsUpdated = redisUtility.AppendUpdatedOrNewItemsInList(sessionItems, list);
 
                 keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
                 valueArgs = new object[list.Count + 8]; // this +8 is for first wight values in ARGV that we will add now

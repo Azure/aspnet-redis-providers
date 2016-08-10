@@ -85,6 +85,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="..\Shared\TestSerializer.cs">
+      <Link>TestSerializer.cs</Link>
+    </Compile>
     <Compile Include="ChangeTrackingSessionStateItemCollectionTests.cs" />
     <Compile Include="ProviderConfigurationTests.cs" />
     <Compile Include="RedisSharedConnectionTests.cs" />
@@ -93,7 +96,6 @@
     <Compile Include="RedisSessionStateProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Shared\Utility.cs" />
-    <Compile Include="TestSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

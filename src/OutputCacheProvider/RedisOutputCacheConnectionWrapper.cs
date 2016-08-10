@@ -11,15 +11,15 @@ namespace Microsoft.Web.Redis
     {
         internal static RedisSharedConnection sharedConnection;
         static object lockForSharedConnection = new object();
+        internal static RedisUtility redisUtility;
 
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
-        private RedisUtility RedisUtility;
-
+        
         public RedisOutputCacheConnectionWrapper(ProviderConfiguration configuration)
         {
             this.configuration = configuration;
-            this.RedisUtility = new RedisUtility(configuration);
+            
             // Shared connection is created by server when it starts. don't want to lock everytime when check == null.
             // so that is why pool == null exists twice.
             if (sharedConnection == null)
@@ -29,6 +29,7 @@ namespace Microsoft.Web.Redis
                     if (sharedConnection == null)
                     {
                         sharedConnection = new RedisSharedConnection(configuration,() => new StackExchangeClientConnection(configuration));
+                        redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
@@ -53,10 +54,10 @@ namespace Microsoft.Web.Redis
             key = GetKeyForRedis(key);
             TimeSpan expiryTime = utcExpiry - DateTime.UtcNow;
             string[] keyArgs = new string[] { key };
-            object[] valueArgs = new object[] { RedisUtility.GetBytesFromObject(entry), (long) expiryTime.TotalMilliseconds };
+            object[] valueArgs = new object[] { redisUtility.GetBytesFromObject(entry), (long) expiryTime.TotalMilliseconds };
 
             object rowDataFromRedis = redisConnection.Eval(addScript, keyArgs, valueArgs);
-            return RedisUtility.GetObjectFromBytes(redisConnection.GetOutputCacheDataFromResult(rowDataFromRedis));
+            return redisUtility.GetObjectFromBytes(redisConnection.GetOutputCacheDataFromResult(rowDataFromRedis));
         }
 
 /*-------End of Add operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -64,7 +65,7 @@ namespace Microsoft.Web.Redis
         public void Set(string key, object entry, DateTime utcExpiry)
         {
             key = GetKeyForRedis(key);
-            byte[] data = RedisUtility.GetBytesFromObject(entry);
+            byte[] data = redisUtility.GetBytesFromObject(entry);
             redisConnection.Set(key, data, utcExpiry);
         }
 
@@ -72,7 +73,7 @@ namespace Microsoft.Web.Redis
         {
             key = GetKeyForRedis(key);
             byte[] data = redisConnection.Get(key);
-            return RedisUtility.GetObjectFromBytes(data);
+            return redisUtility.GetObjectFromBytes(data);
         }
 
         public void Remove(string key)

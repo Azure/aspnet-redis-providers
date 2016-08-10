@@ -81,6 +81,9 @@
     <Compile Include="..\Shared\RedisServer.cs">
       <Link>RedisServer.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\TestSerializer.cs">
+      <Link>TestSerializer.cs</Link>
+    </Compile>
     <Compile Include="RedisSessionStateProviderFunctionalTests.cs" />
     <Compile Include="RedisConnectionWrapperFunctionalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
