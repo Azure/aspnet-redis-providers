@@ -77,7 +77,7 @@ namespace Microsoft.Web.Redis
             ProviderConfiguration configuration = new ProviderConfiguration(config);
 
             configuration.RetryTimeout = TimeSpan.Zero;
-            configuration.ThrowOnError = GetBoolSettings(config, "throwOnError", true);
+            configuration.ThrowOnError = GetBoolSettings(config, "throwOnError", false);
             
             // Session state specific attribute which are not applicable to output cache
             configuration.RequestTimeout = TimeSpan.Zero;
