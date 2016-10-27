@@ -36,14 +36,9 @@ namespace Microsoft.Web.Redis
             else
             {
                 configOption = new ConfigurationOptions();
-                if (configuration.Port == 0)
-                {
-                    configOption.EndPoints.Add(configuration.Host);
-                }
-                else
-                {
-                    configOption.EndPoints.Add(configuration.Host + ":" + configuration.Port);
-                }
+
+                ConfigureHosts(configuration, configOption);
+
                 configOption.Password = configuration.AccessKey;
                 configOption.Ssl = configuration.UseSsl;
                 configOption.AbortOnConnectFail = false;
@@ -67,6 +62,21 @@ namespace Microsoft.Web.Redis
                 redisMultiplexer = ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
             }
             this.connection = redisMultiplexer.GetDatabase(configuration.DatabaseId);
+        }
+
+        private static void ConfigureHosts(ProviderConfiguration configuration, ConfigurationOptions configOption)
+        {
+            foreach (var host in configuration.Host.Split(',', ';'))
+            {
+                if (configuration.Port == 0)
+                {
+                    configOption.EndPoints.Add(host);
+                }
+                else
+                {
+                    configOption.EndPoints.Add(host + ":" + configuration.Port);
+                }
+            }
         }
 
         public IDatabase RealConnection
