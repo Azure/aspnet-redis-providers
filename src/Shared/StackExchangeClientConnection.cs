@@ -68,6 +68,9 @@ namespace Microsoft.Web.Redis
         {
             foreach (var host in configuration.Host.Split(',', ';'))
             {
+                if(string.IsNullOrEmpty(host))
+                    continue;
+
                 if (configuration.Port == 0)
                 {
                     configOption.EndPoints.Add(host);
