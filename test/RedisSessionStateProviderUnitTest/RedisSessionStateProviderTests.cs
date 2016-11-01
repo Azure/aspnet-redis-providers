@@ -11,6 +11,7 @@ using System.Configuration.Provider;
 using System.Web.SessionState;
 using System.Collections.Generic;
 using System.Web.Configuration;
+using System.Linq;
 
 namespace Microsoft.Web.Redis.Tests
 {
@@ -330,6 +331,26 @@ namespace Microsoft.Web.Redis.Tests
             sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, 7, false);
             A.CallTo(() => mockCache.TryUpdateAndReleaseLockIfLockIdMatch(A<object>.Ignored, 
                 A<ChangeTrackingSessionStateItemCollection>.That.Matches(o => o.Count == 1 && o.GetModifiedKeys().Count == 1 && o.GetDeletedKeys().Count == 0), 900)).MustHaveHappened();  
+        }
+
+        [Fact]
+        public void ChangeTrackingSessionStateItemCollectionRaceCondition_NotDetected()
+        {
+            Utility.SetConfigUtilityToDefault();
+
+            ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection();
+
+            System.Linq.Enumerable.Range(0, 100)
+                .ToList()
+                .AsParallel()
+                .WithDegreeOfParallelism(10)
+                .ForAll(n =>
+                {
+                    {
+                        sessionData["session-key" + n] = "session-value" + n;
+                    }
+                    Assert.Equal(sessionData["session-key" + n], "session-value" + n);
+                });
         }
     }
 }
