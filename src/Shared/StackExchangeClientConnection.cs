@@ -66,7 +66,8 @@ namespace Microsoft.Web.Redis
             {
                 redisMultiplexer = ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
             }
-            this.connection = redisMultiplexer.GetDatabase(configuration.DatabaseId);
+
+            this.connection = redisMultiplexer.GetDatabase(configOption.DefaultDatabase ?? configuration.DatabaseId);
         }
 
         public IDatabase RealConnection
