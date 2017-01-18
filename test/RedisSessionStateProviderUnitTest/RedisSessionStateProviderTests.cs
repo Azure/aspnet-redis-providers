@@ -180,6 +180,44 @@ namespace Microsoft.Web.Redis.Tests
         }
 
         [Fact]
+        public void GetItemExclusive_LockedRecordUpdated()
+        {
+            Utility.SetConfigUtilityToDefault(); 
+            string id = "session-id";
+            bool locked;
+            TimeSpan lockAge = TimeSpan.FromSeconds(6);
+            object lockId = null;
+            SessionStateActions actions;
+
+            ISessionStateItemCollection sessionStateItemCollection = new ChangeTrackingSessionStateItemCollection();
+            sessionStateItemCollection["session-key"] = "session-value";
+            SessionStateStoreData sssd = new SessionStateStoreData(sessionStateItemCollection, null, 15);
+
+            ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection();
+            sessionData["session-key"] = "session-value";
+            
+            ISessionStateItemCollection mockSessionData = null;
+            object mockLockId = 0;
+            int mockSessionTimeout;
+            int sessionTimeout = (int)RedisSessionStateProvider.configuration.SessionTimeout.TotalMinutes;
+            var mockCache = A.Fake<ICacheConnection>();
+
+            A.CallTo(() => mockCache.TryTakeWriteLockAndGetData(A<DateTime>.Ignored, 90, out lockId, out sessionData, out sessionTimeout)).Returns(false);
+            A.CallTo(() => mockCache.GetLockAge(A<object>.Ignored)).Returns(TimeSpan.FromSeconds(6));
+
+            RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
+            sessionStateStore.cache = mockCache;
+            SessionStateStoreData sessionStateStoreData = sessionStateStore.GetItemExclusive(null, id, out locked, out lockAge, out lockId, out actions);
+            Assert.Equal(null, sessionStateStoreData);
+
+            A.CallTo(() => mockCache.TryTakeWriteLockAndGetData(A<DateTime>.Ignored, 90, out mockLockId, out mockSessionData, out mockSessionTimeout)).Returns(true).AssignsOutAndRefParameters(0, sessionData, (int)RedisSessionStateProvider.configuration.SessionTimeout.TotalMinutes);
+            sessionStateStoreData = sessionStateStore.GetItemExclusive(null, id, out locked, out lockAge, out lockId, out actions);
+
+            Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
+            Assert.Equal(TimeSpan.Zero, lockAge);
+        }
+
+        [Fact]
         public void GetItemExclusive_RecordFound()
         {
             Utility.SetConfigUtilityToDefault(); 

@@ -234,7 +234,13 @@ namespace Microsoft.Web.Redis
                 // lock has been taken more than http request timeout than ASP.NET calls ReleaseItemExclusive and calls this method again to get lock.
                 if (locked) 
                 {
+                    LogUtility.LogInfo("GetItemFromSessionStore => IS LOCKED");
                     lockAge = cache.GetLockAge(lockId);
+                    LogUtility.LogInfo("GetItemFromSessionStore => LockAge: {0}.", lockAge.ToString());
+                    if (lockAge.TotalSeconds > 5)
+                    {
+                        ReleaseItemExclusive(context, id, lockId);
+                    }
                     return null;
                 }
 
