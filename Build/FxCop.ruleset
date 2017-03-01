@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="CacheProviders CodeAnalys Rules" Description="Based on Microsoft Recommend Rules - but not CA2202." ToolsVersion="12.0">
+<RuleSet Name="CacheProviders CodeAnalys Rules" Description="Based on Microsoft Recommend Rules - but not CA2202." ToolsVersion="14.0">
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1001" Action="Warning" />
     <Rule Id="CA1009" Action="Warning" />
