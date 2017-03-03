@@ -50,7 +50,7 @@ namespace Microsoft.Web.Redis.UnitTests
             DateTime utcExpiry = DateTime.Now;
             RedisOutputCacheProvider cache = new RedisOutputCacheProvider();
             cache.cache = fake;
-            cache.Set("key1", "object", A<DateTime>.Ignored);
+            cache.Set("key1", "object", DateTime.Now);
             A.CallTo(() => fake.Set("key1", "object", A<DateTime>.Ignored)).MustHaveHappened();
         }
         [Fact]
