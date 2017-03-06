@@ -25,11 +25,15 @@ namespace Microsoft.Web.Redis
         private string GetSessionNormalizedKeyToUse(string name)
         { 
             string actualNameStoredEarlier;
-            if (allKeys.TryGetValue(name.ToUpperInvariant(), out actualNameStoredEarlier))
+            string nameUpper = name.ToUpperInvariant();
+            lock (allKeys)
             {
-                return actualNameStoredEarlier;
+                if (allKeys.TryGetValue(nameUpper, out actualNameStoredEarlier))
+                {
+                    return actualNameStoredEarlier;
+                }
+                allKeys.Add(nameUpper, name);
             }
-            allKeys.Add(name.ToUpperInvariant(), name);
             return name;
         }
 
