@@ -29,6 +29,16 @@ namespace Microsoft.Web.Redis
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
         public string RedisSerializerType { get; set; }
+        /// <summary>
+        /// Default: {{{0}}}_{1} (Key, Type)
+        /// <para>Defines the format the RedisSessionState-keys should be saved in</para>
+        /// </summary>
+        public string CustomFormat { get; set; }
+        /// <summary>
+        /// Default: {0}_{1} (ApplicationName, Id)
+        /// <para>Defines the format the keys are defined</para>
+        /// </summary>
+        public string CustomKeyFormat { get; set; }
 
         /* Empty constructor required for testing */
         internal ProviderConfiguration()
@@ -85,6 +95,8 @@ namespace Microsoft.Web.Redis
             RedisSerializerType = GetStringSettings(config, "redisSerializerType", null);
             // All below parameters are only fetched from web.config
             DatabaseId = GetIntSettings(config, "databaseId", 0);
+            CustomFormat = GetStringSettings(config, "customFormat", "{{{0}}}_{1}");
+            CustomKeyFormat = GetStringSettings(config, "customKeyFormat", "{0}_{1}");
             ApplicationName = GetStringSettings(config, "applicationName", null);
             if (ApplicationName == null)
             {

@@ -14,22 +14,22 @@ namespace Microsoft.Web.Redis
         public string LockKey { get; private set; }
         public string InternalKey { get; private set; }
 
-        public KeyGenerator(string id, string applicationName)
+        public KeyGenerator(string id, string applicationName, string format, string keyFormat)
         {
             this.id = id;
-            DataKey = "{" + applicationName + "_" + id + "}_Data";
-            LockKey = "{" + applicationName + "_" + id + "}_Write_Lock";
-            InternalKey = "{" + applicationName + "_" + id + "}_Internal";
+            DataKey = string.Format(format, string.Format(keyFormat, applicationName, id), "Data");
+            LockKey = string.Format(format, string.Format(keyFormat, applicationName, id), "Write_Lock");
+            InternalKey = string.Format(format, string.Format(keyFormat, applicationName, id), "Internal");
         }
 
-        public void RegenerateKeyStringIfIdModified(string id, string applicationName)
+        public void RegenerateKeyStringIfIdModified(string id, string applicationName, string format, string keyFormat)
         {
             if (!id.Equals(this.id))
             {
                 this.id = id;
-                DataKey = "{" + applicationName + "_" + id + "}_Data";
-                LockKey = "{" + applicationName + "_" + id + "}_Write_Lock";
-                InternalKey = "{" + applicationName + "_" + id + "}_Internal";
+                DataKey = string.Format(format, string.Format(keyFormat, applicationName, id), "Data");
+                LockKey = string.Format(format, string.Format(keyFormat, applicationName, id), "Write_Lock");
+                InternalKey = string.Format(format, string.Format(keyFormat, applicationName, id), "Internal");
             }
         }
 

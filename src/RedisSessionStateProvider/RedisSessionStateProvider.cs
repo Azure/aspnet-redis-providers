@@ -57,7 +57,7 @@ namespace Microsoft.Web.Redis
             }
             else
             {
-                cache.Keys.RegenerateKeyStringIfIdModified(id, configuration.ApplicationName);
+                cache.Keys.RegenerateKeyStringIfIdModified(id, configuration.ApplicationName, configuration.CustomFormat, configuration.CustomKeyFormat);
             }
         }
 
