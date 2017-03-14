@@ -21,14 +21,14 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void AppendRemoveItemsInList_EmptySessionItems()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             Assert.Equal(0, RedisUtility.AppendRemoveItemsInList(sessionItems, null));
         }
 
         [Fact]
         public void AppendRemoveItemsInList_NothingDeleted()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionItems["key"] = "val";
             Assert.Equal(0, RedisUtility.AppendRemoveItemsInList(sessionItems, null));
         }
@@ -36,7 +36,7 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void AppendRemoveItemsInList_SuccessfulDeleted()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             List<object> list = new List<object>();
             sessionItems["key"] = "val";
             sessionItems.Remove("key");
@@ -47,14 +47,14 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void AppendUpdatedOrNewItemsInList_EmptySessionItems()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             Assert.Equal(0, RedisUtility.AppendUpdatedOrNewItemsInList(sessionItems, null));
         }
 
         [Fact]
         public void AppendUpdatedOrNewItemsInList_NothingUpdated()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionItems["key"] = "val";
             sessionItems.Remove("key");
             Assert.Equal(0, RedisUtility.AppendUpdatedOrNewItemsInList(sessionItems, null));
@@ -63,7 +63,7 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void AppendUpdatedOrNewItemsInList_SuccessfulUpdated()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             List<object> list = new List<object>();
             sessionItems["key"] = "val";
             Assert.Equal(1, RedisUtility.AppendUpdatedOrNewItemsInList(sessionItems, list));
@@ -73,7 +73,7 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void GetNewItemsAsList_EmptySessionData()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             List<object> list = RedisUtility.GetNewItemsAsList(sessionItems);
             Assert.Equal(0, list.Count);
         }
@@ -81,7 +81,7 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void GetNewItemsAsList_WithSessionData()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionItems["key"] = "val";
             sessionItems["key1"] = "val1";
             List<object> list = RedisUtility.GetNewItemsAsList(sessionItems);
@@ -91,7 +91,7 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void GetNewItemsAsList_WithNullSessionData()
         {
-            ChangeTrackingSessionStateItemCollection sessionItems = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionItems["key"] = "val";
             sessionItems["key1"] = null;
             List<object> list = RedisUtility.GetNewItemsAsList(sessionItems);

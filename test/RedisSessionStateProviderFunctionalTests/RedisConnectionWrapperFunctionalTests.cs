@@ -59,7 +59,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(testSerializerRedisUtility);
                 data["key"] = "value";
                 data["key1"] = "value1";
                 redisConn.Set(data, 900);
@@ -70,7 +70,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Check that data shoud be same as what inserted
                 Assert.Equal(2, sessionDataFromRedis.Length);
-                ChangeTrackingSessionStateItemCollection dataFromRedis = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection dataFromRedis = new ChangeTrackingSessionStateItemCollection(testSerializerRedisUtility);
                 foreach (HashEntry entry in sessionDataFromRedis)
                 {
                     dataFromRedis[entry.Name] = testSerializerRedisUtility.GetObjectFromBytes(entry.Value).ToString();
@@ -97,7 +97,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 data["key1"] = "value1";
                 redisConn.Set(data, 900);
@@ -108,7 +108,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Check that data shoud be same as what inserted
                 Assert.Equal(2, sessionDataFromRedis.Length);
-                ChangeTrackingSessionStateItemCollection dataFromRedis = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection dataFromRedis = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 foreach (HashEntry entry in sessionDataFromRedis)
                 {
                     dataFromRedis[entry.Name] = RedisUtility.GetObjectFromBytes(entry.Value).ToString();
@@ -135,7 +135,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 data["key1"] = null;
                 redisConn.Set(data, 900);
@@ -146,7 +146,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Check that data shoud be same as what inserted
                 Assert.Equal(2, sessionDataFromRedis.Length);
-                ChangeTrackingSessionStateItemCollection dataFromRedis = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection dataFromRedis = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 foreach (HashEntry entry in sessionDataFromRedis)
                 {
                     dataFromRedis[entry.Name] = RedisUtility.GetObjectFromBytes(entry.Value);
@@ -163,11 +163,12 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void Set_ExpireData()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
                 // Inserting data into redis server that expires after 1 second
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 1);
 
@@ -187,12 +188,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryTakeWriteLockAndGetData_WithNullData()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = null;
                 redisConn.Set(data, 900);
 
@@ -221,12 +223,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryTakeWriteLockAndGetData_WriteLockWithoutAnyOtherLock()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -237,7 +240,16 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 int sessionTimeout;
                 Assert.True(redisConn.TryTakeWriteLockAndGetData(lockTime, lockTimeout, out lockId, out dataFromRedis, out sessionTimeout));
                 Assert.Equal(lockTime.Ticks.ToString(), lockId.ToString());
+
+                ChangeTrackingSessionStateItemCollection dataFromGet = (ChangeTrackingSessionStateItemCollection)dataFromRedis;
+                Assert.Equal(1, dataFromGet.innerSerializeCollection.Count);
+                Assert.Equal("", dataFromGet.innerCollection["key"]);
                 Assert.Equal(1, dataFromRedis.Count);
+
+                // this will desirialize value
+                Assert.Equal("value", dataFromRedis["key"]);
+                Assert.Equal(0, dataFromGet.innerSerializeCollection.Count);
+                Assert.Equal("value", dataFromGet.innerCollection["key"]);
 
                 // Get actual connection and get data lock from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
@@ -254,12 +266,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryTakeWriteLockAndGetData_WriteLockWithOtherWriteLock()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -294,12 +307,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryTakeWriteLockAndGetData_WriteLockWithOtherWriteLockWithSameLockId()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -334,12 +348,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryTakeReadLockAndGetData_WithoutAnyLock()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -362,12 +377,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryTakeReadLockAndGetData_WithOtherWriteLock()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -399,12 +415,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryTakeWriteLockAndGetData_ExpireWriteLock()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -435,12 +452,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryReleaseLockIfLockIdMatch_ValidWriteLockRelease()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -470,12 +488,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryReleaseLockIfLockIdMatch_InvalidWriteLockRelease()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -507,12 +526,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryRemoveIfLockIdMatch_ValidLockIdAndRemove()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 redisConn.Set(data, 900);
 
@@ -540,12 +560,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryUpdateIfLockIdMatch_WithValidUpdateAndDelete()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key1"] = "value1";
                 data["key2"] = "value2";
                 data["key3"] = "value3";
@@ -571,7 +592,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
                 HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
                 Assert.Equal(2, sessionDataFromRedis.Length);
-                ChangeTrackingSessionStateItemCollection sessionDataFromRedisAsCollection = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection sessionDataFromRedisAsCollection = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 foreach (HashEntry entry in sessionDataFromRedis)
                 {
                     sessionDataFromRedisAsCollection[entry.Name] = RedisUtility.GetObjectFromBytes(entry.Value).ToString();
@@ -589,12 +610,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryUpdateIfLockIdMatch_WithOnlyUpdateAndNoDelete()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key1"] = "value1";
                 data["key2"] = "value2";
                 data["key3"] = "value3";
@@ -619,7 +641,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
                 HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
                 Assert.Equal(3, sessionDataFromRedis.Length);
-                ChangeTrackingSessionStateItemCollection sessionDataFromRedisAsCollection = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection sessionDataFromRedisAsCollection = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 foreach (HashEntry entry in sessionDataFromRedis)
                 {
                     sessionDataFromRedisAsCollection[entry.Name] = RedisUtility.GetObjectFromBytes(entry.Value).ToString();
@@ -638,12 +660,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryUpdateIfLockIdMatch_WithNoUpdateAndOnlyDelete()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key1"] = "value1";
                 data["key2"] = "value2";
                 data["key3"] = "value3";
@@ -668,7 +691,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
                 HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
                 Assert.Equal(2, sessionDataFromRedis.Length);
-                ChangeTrackingSessionStateItemCollection sessionDataFromRedisAsCollection = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection sessionDataFromRedisAsCollection = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 foreach (HashEntry entry in sessionDataFromRedis)
                 {
                     sessionDataFromRedisAsCollection[entry.Name] = RedisUtility.GetObjectFromBytes(entry.Value).ToString();
@@ -686,12 +709,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryUpdateIfLockIdMatch_ExpiryTime_OnValidData()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
             
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key"] = "value";
                 data["key1"] = "value1";
                 redisConn.Set(data, 900);
@@ -724,12 +748,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact]
         public void TryUpdateAndReleaseLockIfLockIdMatch_LargeLockTime_ExpireManuallyTest()
         {
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
                 data["key1"] = "value1";
                 redisConn.Set(data, 900);
 

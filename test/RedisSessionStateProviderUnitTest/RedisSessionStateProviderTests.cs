@@ -40,7 +40,7 @@ namespace Microsoft.Web.Redis.Tests
         public void CreateNewStoreData_WithEmptyStore()
         {
             Utility.SetConfigUtilityToDefault();
-            SessionStateStoreData sssd = new SessionStateStoreData(new ChangeTrackingSessionStateItemCollection(), null, 900);
+            SessionStateStoreData sssd = new SessionStateStoreData(Utility.GetChangeTrackingSessionStateItemCollection(), null, 900);
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStore.CreateNewStoreData(null, 900),sssd));
         }
@@ -124,12 +124,12 @@ namespace Microsoft.Web.Redis.Tests
             object lockId = null;
             SessionStateActions actions;
 
-            ISessionStateItemCollection sessionStateItemCollection = new ChangeTrackingSessionStateItemCollection();
+            ISessionStateItemCollection sessionStateItemCollection = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionStateItemCollection["session-key"] = "session-value";
             sessionStateItemCollection["SessionStateActions"] = SessionStateActions.None;
             SessionStateStoreData sssd = new SessionStateStoreData(sessionStateItemCollection, null, 15);
 
-            ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection();
+            ISessionStateItemCollection sessionData = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionData["session-key"] = "session-value";
             sessionData["SessionStateActions"] = SessionStateActions.None;
             ISessionStateItemCollection mockSessionData = null;
@@ -189,11 +189,11 @@ namespace Microsoft.Web.Redis.Tests
             object lockId = null;
             SessionStateActions actions;
 
-            ISessionStateItemCollection sessionStateItemCollection = new ChangeTrackingSessionStateItemCollection();
+            ISessionStateItemCollection sessionStateItemCollection = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionStateItemCollection["session-key"] = "session-value";
             SessionStateStoreData sssd = new SessionStateStoreData(sessionStateItemCollection, null, 15);
 
-            ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection();
+            ISessionStateItemCollection sessionData = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionData["session-key"] = "session-value";
             
             ISessionStateItemCollection mockSessionData = null;
@@ -270,7 +270,7 @@ namespace Microsoft.Web.Redis.Tests
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
-            ChangeTrackingSessionStateItemCollection sessionStateItemCollection = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionStateItemCollection = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionStateItemCollection["session-key"] = "session-value";
             SessionStateStoreData sssd = new SessionStateStoreData(sessionStateItemCollection, null, 15);
 
@@ -302,7 +302,7 @@ namespace Microsoft.Web.Redis.Tests
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
-            ChangeTrackingSessionStateItemCollection sessionStateItemCollection = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionStateItemCollection = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionStateItemCollection["session-key"] = "session-val";
             sessionStateItemCollection.Remove("session-key");
             SessionStateStoreData sssd = new SessionStateStoreData(sessionStateItemCollection, null, 15);
@@ -320,7 +320,7 @@ namespace Microsoft.Web.Redis.Tests
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
-            ChangeTrackingSessionStateItemCollection sessionStateItemCollection = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionStateItemCollection = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionStateItemCollection["session-key"] = "session-value";
             SessionStateStoreData sssd = new SessionStateStoreData(sessionStateItemCollection, null, 15);
 
