@@ -232,5 +232,79 @@ namespace Microsoft.Web.Redis.Tests
             Assert.Equal("v2", (string)items["TEST"]);
             Assert.Equal("v2", (string)items["test"]);
         }
+
+        [Fact]
+        public void Dirty_AfterLazyDeserialization()
+        {
+            RedisUtility utility = new RedisUtility(Utility.GetDefaultConfigUtility());
+            ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
+            items.AddSerializeData("Test", utility.GetBytesFromObject("v1"));
+            items.Dirty = false;
+
+            Assert.False(items.Dirty);
+            // read operation should not change value of Dirty
+            var val = items["Test"];
+            Assert.False(items.Dirty);
+
+            items["Test"] = "v2";
+            Assert.True(items.Dirty);
+        }
+
+        [Fact]
+        public void Keys_AfterLazyDeserialization()
+        {
+            RedisUtility utility = new RedisUtility(Utility.GetDefaultConfigUtility());
+            ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
+            items.AddSerializeData("k1", utility.GetBytesFromObject("v1"));
+            items.AddSerializeData("k2", utility.GetBytesFromObject("v2"));
+
+            try
+            {
+                foreach (string key in items.Keys)
+                {
+                    // read operation should not change value items.Keys
+                    var val = items[key];
+                }
+            }
+            catch (System.InvalidOperationException)
+            {
+                Assert.False(true, "Reading value from collection should not change it");
+            }
+        }
+
+        [Fact]
+        public void GetEnumerator_AfterLazyDeserialization()
+        {
+            RedisUtility utility = new RedisUtility(Utility.GetDefaultConfigUtility());
+            ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
+            items.AddSerializeData("k1", utility.GetBytesFromObject("v1"));
+            items.AddSerializeData("k2", utility.GetBytesFromObject("v2"));
+
+            try
+            {
+                foreach (string key in items)
+                {
+                    // read operation should not change value items.Keys
+                    var val = items[key];
+                }
+            }
+            catch (System.InvalidOperationException)
+            {
+                Assert.False(true, "Reading value from collection should not change it");
+            }
+        }
+
+        [Fact]
+        public void Count_AfterLazyDeserialization()
+        {
+            RedisUtility utility = new RedisUtility(Utility.GetDefaultConfigUtility());
+            ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
+            items.AddSerializeData("k1", utility.GetBytesFromObject("v1"));
+            items.AddSerializeData("k2", utility.GetBytesFromObject("v2"));
+
+            Assert.Equal(2, items.Count);
+            items["k3"] = "v3";
+            Assert.Equal(3, items.Count);
+        }
     }
 }
