@@ -19,7 +19,7 @@ namespace Microsoft.Web.Redis
         // innerCollection will just contains keys now. value is always of type ValueWrapper.
         internal SessionStateItemCollection innerCollection;
         
-        // key is "session key in lowercase" and value is "actual session key in actual case"
+        // key is "session key in uppercase" and value is "actual session key in actual case"
         Dictionary<string, string> allKeys = new Dictionary<string, string>();
         HashSet<string> modifiedKeys = new HashSet<string>();
         HashSet<string> deletedKeys = new HashSet<string>();
@@ -33,7 +33,7 @@ namespace Microsoft.Web.Redis
             {
                 return actualNameStoredEarlier;
             }
-            allKeys.Add(name.ToUpperInvariant(), name);
+            allKeys.Add(name.ToUpperInvariant(), name);    
             return name;
         }
 
@@ -124,12 +124,12 @@ namespace Microsoft.Web.Redis
             get
             {
                 string name = innerCollection.Keys[index];
-                return GetOperation(name);
+                return GetData(name);
             }
             set
             {
                 string name = innerCollection.Keys[index];
-                SetOperation(name, value);
+                SetData(name, value);
             }
         }
 
@@ -138,16 +138,16 @@ namespace Microsoft.Web.Redis
             get
             {
                 name = GetSessionNormalizedKeyToUse(name);
-                return GetOperation(name);
+                return GetData(name);
             }
             set
             {
                 name = GetSessionNormalizedKeyToUse(name);
-                SetOperation(name, value);
+                SetData(name, value);
             }
         }
 
-        private object GetOperation(string normalizedName)
+        private object GetData(string normalizedName)
         {
             ValueWrapper value = (ValueWrapper) innerCollection[normalizedName];
             if (value != null)
@@ -162,16 +162,24 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
-        private void SetOperation(string normalizedName, object value)
+        private void SetData(string normalizedName, object value)
         {
             AddInModifiedKeys(normalizedName);
-            innerCollection[normalizedName] = new ValueWrapper() { ActualValue = value, Serializedvalue = null };
+            ValueWrapper v = (ValueWrapper) innerCollection[normalizedName];
+            if (v != null)
+            {
+                v.ActualValue = value;
+            }
+            else
+            {
+                innerCollection[normalizedName] = new ValueWrapper(value);
+            }
         }
 
         internal void AddSerializeData(string name, byte[] value)
         {
             name = GetSessionNormalizedKeyToUse(name);
-            innerCollection[name] = new ValueWrapper() { ActualValue = null, Serializedvalue = value };
+            innerCollection[name] = new ValueWrapper(value);
         }
 
         private bool IsMutable(object data)

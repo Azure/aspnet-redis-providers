@@ -10,6 +10,16 @@ namespace Microsoft.Web.Redis
         internal object ActualValue { get; set; }
         internal byte[] Serializedvalue { get; set; }
 
+        public ValueWrapper(byte[] serializedvalue)
+        {
+            Serializedvalue = serializedvalue;
+        }
+
+        public ValueWrapper(object actualValue)
+        {
+            ActualValue = actualValue;
+        }
+
         public object GetActualValue(RedisUtility utility)
         {
             if (ActualValue == null)
