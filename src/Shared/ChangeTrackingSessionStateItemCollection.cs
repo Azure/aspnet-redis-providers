@@ -16,23 +16,15 @@ namespace Microsoft.Web.Redis
        during any request cycle. We use this list to indentify if we want to change any session item or not.*/
     internal class ChangeTrackingSessionStateItemCollection : NameObjectCollectionBase, ISessionStateItemCollection, ICollection, IEnumerable
     {
-        // innerCollection will just contains keys now. value is alwasys empty string.
-        // actual value will be inside innerSerializeCollection and innerDeserializeCollection
+        // innerCollection will just contains keys now. value is alwasys of type ValueWrapper.
         internal SessionStateItemCollection innerCollection;
-        // This is data we got from redis without deserialization
-        // Key(string) is key
-        // byte[] is actual value but serialize
-        internal Dictionary<string, byte[]> innerSerializeCollection;
-        // This is data we that is desirialized from innerSerializeCollection
-        // Key(string) is key
-        // object is actual value
-        internal Dictionary<string, object> innerDeserializeCollection;
-
+        
         // key is "session key in lowercase" and value is "actual session key in actual case"
         Dictionary<string, string> allKeys = new Dictionary<string, string>();
         HashSet<string> modifiedKeys = new HashSet<string>();
         HashSet<string> deletedKeys = new HashSet<string>();
         RedisUtility _utility = null;
+        bool dirtyFlag = false;
 
         private string GetSessionNormalizedKeyToUse(string name)
         { 
@@ -47,7 +39,7 @@ namespace Microsoft.Web.Redis
 
         private void addInModifiedKeys(string key)
         {
-            Dirty = true;
+            dirtyFlag = true;
             if (deletedKeys.Contains(key))
             {
                 deletedKeys.Remove(key);
@@ -57,7 +49,7 @@ namespace Microsoft.Web.Redis
 
         private void addInDeletedKeys(string key)
         {
-            Dirty = true;
+            dirtyFlag = true;
             if (modifiedKeys.Contains(key))
             {
                 modifiedKeys.Remove(key);
@@ -79,8 +71,6 @@ namespace Microsoft.Web.Redis
         {
             _utility = utility;
             innerCollection = new SessionStateItemCollection();
-            innerSerializeCollection = new Dictionary<string, byte[]>();
-            innerDeserializeCollection = new Dictionary<string, object>();
         }
 
         public void Clear()
@@ -96,11 +86,11 @@ namespace Microsoft.Web.Redis
         {
             get
             {
-                return innerCollection.Dirty;
+                return dirtyFlag;
             }
             set
             {
-                innerCollection.Dirty = value;
+                dirtyFlag = value;
                 if (!value)
                 {
                     modifiedKeys.Clear();
@@ -128,16 +118,6 @@ namespace Microsoft.Web.Redis
 
         private void RemoveOperation(string normalizedName)
         {
-            if (innerSerializeCollection.ContainsKey(normalizedName))
-            {
-                innerSerializeCollection.Remove(normalizedName);
-            }
-
-            if (innerDeserializeCollection.ContainsKey(normalizedName))
-            {
-                innerDeserializeCollection.Remove(normalizedName);
-            }
-            
             if (innerCollection[normalizedName] != null)
             {
                 addInDeletedKeys(normalizedName);
@@ -175,37 +155,29 @@ namespace Microsoft.Web.Redis
 
         private object GetOperation(string normalizedName)
         {
-            DeserializeSpecificItem(normalizedName);
-            if (IsMutable(innerDeserializeCollection[normalizedName]))
+            ValueWrapper value = (ValueWrapper) innerCollection[normalizedName];
+            if (value != null)
             {
-                addInModifiedKeys(normalizedName);
+                object actualValue = value.GetActualValue(_utility);
+                if (IsMutable(actualValue))
+                {
+                    addInModifiedKeys(normalizedName);
+                }
+                return actualValue;
             }
-            return innerDeserializeCollection[normalizedName];
+            return null;
         }
 
         private void SetOperation(string normalizedName, object value)
         {
-            DeserializeSpecificItem(normalizedName);
             addInModifiedKeys(normalizedName);
-            innerDeserializeCollection[normalizedName] = value;
-            innerCollection[normalizedName] = "";
+            innerCollection[normalizedName] = new ValueWrapper() { ActualValue = value, Serializedvalue = null };
         }
 
         internal void AddSerializeData(string name, byte[] value)
         {
             name = GetSessionNormalizedKeyToUse(name);
-            innerCollection[name] = "";
-            innerSerializeCollection[name] = value;
-        }
-
-        private void DeserializeSpecificItem(string normalizedName)
-        {
-            // deserializa if accessing first time
-            if (innerSerializeCollection.ContainsKey(normalizedName))
-            {
-                innerDeserializeCollection[normalizedName] = _utility.GetObjectFromBytes(innerSerializeCollection[normalizedName]);
-                innerSerializeCollection.Remove(normalizedName);
-            }
+            innerCollection[name] = new ValueWrapper() { ActualValue = null, Serializedvalue = value };
         }
 
         private bool IsMutable(object data)

@@ -98,6 +98,9 @@
     <Compile Include="..\Shared\StackExchangeClientConnection.cs">
       <Link>StackExchangeClientConnection.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\ValueWrapper.cs">
+      <Link>ValueWrapper.cs</Link>
+    </Compile>
     <Compile Include="IOutputCacheConnection.cs" />
     <Compile Include="RedisOutputCacheConnectionWrapper.cs" />
     <Compile Include="RedisOutputCacheProvider.cs" />

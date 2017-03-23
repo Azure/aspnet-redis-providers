@@ -23,7 +23,6 @@ namespace Microsoft.Web.Redis.Tests
             Assert.Equal(1, items.Count);
             Assert.Equal(1, items.GetModifiedKeys().Count);
             Assert.Equal(1, items.innerCollection.Count);
-            Assert.Equal(0, items.innerSerializeCollection.Count);
         }
 
         [Fact]
