@@ -16,7 +16,7 @@ namespace Microsoft.Web.Redis
        during any request cycle. We use this list to indentify if we want to change any session item or not.*/
     internal class ChangeTrackingSessionStateItemCollection : NameObjectCollectionBase, ISessionStateItemCollection, ICollection, IEnumerable
     {
-        // innerCollection will just contains keys now. value is alwasys of type ValueWrapper.
+        // innerCollection will just contains keys now. value is always of type ValueWrapper.
         internal SessionStateItemCollection innerCollection;
         
         // key is "session key in lowercase" and value is "actual session key in actual case"
@@ -37,23 +37,17 @@ namespace Microsoft.Web.Redis
             return name;
         }
 
-        private void addInModifiedKeys(string key)
+        private void AddInModifiedKeys(string key)
         {
             dirtyFlag = true;
-            if (deletedKeys.Contains(key))
-            {
-                deletedKeys.Remove(key);
-            }
+            deletedKeys.Remove(key);
             modifiedKeys.Add(key);
         }
 
-        private void addInDeletedKeys(string key)
+        private void AddInDeletedKeys(string key)
         {
             dirtyFlag = true;
-            if (modifiedKeys.Contains(key))
-            {
-                modifiedKeys.Remove(key);
-            }
+            modifiedKeys.Remove(key);
             deletedKeys.Add(key);
         }
         
@@ -77,7 +71,7 @@ namespace Microsoft.Web.Redis
         {
             foreach (string key in innerCollection.Keys) 
             {
-                addInDeletedKeys(key);
+                AddInDeletedKeys(key);
             }
             innerCollection.Clear();
         }
@@ -120,7 +114,7 @@ namespace Microsoft.Web.Redis
         {
             if (innerCollection[normalizedName] != null)
             {
-                addInDeletedKeys(normalizedName);
+                AddInDeletedKeys(normalizedName);
             }
             innerCollection.Remove(normalizedName);
         }
@@ -161,7 +155,7 @@ namespace Microsoft.Web.Redis
                 object actualValue = value.GetActualValue(_utility);
                 if (IsMutable(actualValue))
                 {
-                    addInModifiedKeys(normalizedName);
+                    AddInModifiedKeys(normalizedName);
                 }
                 return actualValue;
             }
@@ -170,7 +164,7 @@ namespace Microsoft.Web.Redis
 
         private void SetOperation(string normalizedName, object value)
         {
-            addInModifiedKeys(normalizedName);
+            AddInModifiedKeys(normalizedName);
             innerCollection[normalizedName] = new ValueWrapper() { ActualValue = value, Serializedvalue = null };
         }
 
