@@ -29,11 +29,12 @@ namespace Microsoft.Web.Redis
         private string GetSessionNormalizedKeyToUse(string name)
         { 
             string actualNameStoredEarlier;
-            if (allKeys.TryGetValue(name.ToUpperInvariant(), out actualNameStoredEarlier))
+            string upperCaseValue = name.ToUpperInvariant();
+            if (allKeys.TryGetValue(upperCaseValue, out actualNameStoredEarlier))
             {
                 return actualNameStoredEarlier;
             }
-            allKeys.Add(name.ToUpperInvariant(), name);    
+            allKeys.Add(upperCaseValue, name);
             return name;
         }
 
@@ -169,17 +170,18 @@ namespace Microsoft.Web.Redis
             if (v != null)
             {
                 v.ActualValue = value;
+                v.Serializedvalue = null;
             }
             else
             {
-                innerCollection[normalizedName] = new ValueWrapper(value);
+                innerCollection[normalizedName] = ValueWrapper.GetValueWrapperFromActualValue(value);
             }
         }
 
         internal void AddSerializeData(string name, byte[] value)
         {
             name = GetSessionNormalizedKeyToUse(name);
-            innerCollection[name] = new ValueWrapper(value);
+            innerCollection[name] = ValueWrapper.GetValueWrapperFromSerializedvalue(value);
         }
 
         private bool IsMutable(object data)

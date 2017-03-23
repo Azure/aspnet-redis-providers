@@ -10,12 +10,22 @@ namespace Microsoft.Web.Redis
         internal object ActualValue { get; set; }
         internal byte[] Serializedvalue { get; set; }
 
-        public ValueWrapper(byte[] serializedvalue)
+        public static ValueWrapper GetValueWrapperFromSerializedvalue(byte[] serializedvalue)
+        {
+            return new ValueWrapper(serializedvalue);
+        }
+
+        private ValueWrapper(byte[] serializedvalue)
         {
             Serializedvalue = serializedvalue;
         }
 
-        public ValueWrapper(object actualValue)
+        public static ValueWrapper GetValueWrapperFromActualValue(object actualValue)
+        {
+            return new ValueWrapper(actualValue);
+        }
+
+        private ValueWrapper(object actualValue)
         {
             ActualValue = actualValue;
         }
