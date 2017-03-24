@@ -305,5 +305,16 @@ namespace Microsoft.Web.Redis.Tests
             items["k3"] = "v3";
             Assert.Equal(3, items.Count);
         }
+
+        [Fact]
+        public void NullActualValue()
+        {
+            RedisUtility utility = new RedisUtility(Utility.GetDefaultConfigUtility());
+            ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
+            items.SetData("k1", null);
+            
+            Assert.Equal(1, items.Count);
+            Assert.Null(items["k1"]);
+        }
     }
 }

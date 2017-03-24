@@ -150,10 +150,10 @@ namespace Microsoft.Web.Redis
 
         private object GetData(string normalizedName)
         {
-            ValueWrapper value = (ValueWrapper) innerCollection[normalizedName];
-            if (value != null)
+            ValueWrapper valueWrapper = (ValueWrapper) innerCollection[normalizedName];
+            if (valueWrapper != null)
             {
-                object actualValue = value.GetActualValue(_utility);
+                object actualValue = valueWrapper.GetActualValue(_utility);
                 // if actualValue is mutable then add it to modified list even during get operation
                 if (actualValue != null && !actualValue.GetType().IsValueType && actualValue.GetType() != typeof(string))
                 {
@@ -167,10 +167,10 @@ namespace Microsoft.Web.Redis
         private void SetData(string normalizedName, object value)
         {
             AddInModifiedKeys(normalizedName);
-            ValueWrapper v = (ValueWrapper) innerCollection[normalizedName];
-            if (v != null)
+            ValueWrapper valueWrapper = (ValueWrapper) innerCollection[normalizedName];
+            if (valueWrapper != null)
             {
-                v.SetActualValue(value);
+                valueWrapper.SetActualValue(value);
             }
             else
             {
