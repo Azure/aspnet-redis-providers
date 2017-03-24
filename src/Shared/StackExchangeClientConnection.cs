@@ -235,7 +235,7 @@ namespace Microsoft.Web.Redis
                         string key = (string) data[i];
                         if (key != null)
                         {
-                            sessionData.AddSerializeData(key, (byte[])data[i + 1]);
+                            sessionData.SetData(key, (byte[])data[i + 1]);
                         }
                     }
                 }

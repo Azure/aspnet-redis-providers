@@ -7,36 +7,45 @@ namespace Microsoft.Web.Redis
 {
     internal class ValueWrapper
     {
-        internal object ActualValue { get; set; }
-        internal byte[] Serializedvalue { get; set; }
+        object _actualValue;
+        byte[] _serializedvalue;
 
-        public static ValueWrapper GetValueWrapperFromSerializedvalue(byte[] serializedvalue)
+        public ValueWrapper(byte[] serializedvalue)
         {
-            return new ValueWrapper(serializedvalue);
+            _serializedvalue = serializedvalue;
         }
 
-        private ValueWrapper(byte[] serializedvalue)
+        public ValueWrapper(object actualValue)
         {
-            Serializedvalue = serializedvalue;
-        }
-
-        public static ValueWrapper GetValueWrapperFromActualValue(object actualValue)
-        {
-            return new ValueWrapper(actualValue);
-        }
-
-        private ValueWrapper(object actualValue)
-        {
-            ActualValue = actualValue;
+            _actualValue = actualValue;
         }
 
         public object GetActualValue(RedisUtility utility)
         {
-            if (ActualValue == null)
+            if (_actualValue == null)
             {
-                ActualValue = utility.GetObjectFromBytes(Serializedvalue);
+                _actualValue = utility.GetObjectFromBytes(_serializedvalue);
             }
-            return ActualValue;
+            return _actualValue;
+        }
+
+        public void SetActualValue(object actualValue)
+        {
+            _actualValue = actualValue;
+            // Null serialized value just for completeness
+            _serializedvalue = null;
+        }
+
+        // This menthod should be used in test projects only
+        internal object GetActualValue()
+        {
+            return _actualValue;
+        }
+
+        // This menthod should be used in test projects only
+        internal object GetSerializedvalue()
+        {
+            return _serializedvalue;
         }
     }
 }

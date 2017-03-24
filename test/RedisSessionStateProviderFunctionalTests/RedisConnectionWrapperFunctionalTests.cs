@@ -242,13 +242,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 Assert.Equal(lockTime.Ticks.ToString(), lockId.ToString());
 
                 ChangeTrackingSessionStateItemCollection dataFromGet = (ChangeTrackingSessionStateItemCollection)dataFromRedis;
-                Assert.Null(((ValueWrapper)dataFromGet.innerCollection["key"]).ActualValue);
-                Assert.NotNull(((ValueWrapper)dataFromGet.innerCollection["key"]).Serializedvalue);
+                Assert.Null(((ValueWrapper)dataFromGet.innerCollection["key"]).GetActualValue());
+                Assert.NotNull(((ValueWrapper)dataFromGet.innerCollection["key"]).GetSerializedvalue());
                 Assert.Equal(1, dataFromRedis.Count);
 
                 // this will desirialize value
                 Assert.Equal("value", dataFromRedis["key"]);
-                Assert.Equal("value", ((ValueWrapper)dataFromGet.innerCollection["key"]).ActualValue);
+                Assert.Equal("value", ((ValueWrapper)dataFromGet.innerCollection["key"]).GetActualValue());
 
                 // Get actual connection and get data lock from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);

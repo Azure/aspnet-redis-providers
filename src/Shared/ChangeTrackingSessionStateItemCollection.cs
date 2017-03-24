@@ -52,12 +52,12 @@ namespace Microsoft.Web.Redis
             deletedKeys.Add(key);
         }
         
-        public HashSet<string> GetModifiedKeys()
+        internal HashSet<string> GetModifiedKeys()
         {
             return modifiedKeys;
         }
         
-        public HashSet<string> GetDeletedKeys()
+        internal HashSet<string> GetDeletedKeys()
         {
             return deletedKeys;
         }
@@ -154,7 +154,8 @@ namespace Microsoft.Web.Redis
             if (value != null)
             {
                 object actualValue = value.GetActualValue(_utility);
-                if (IsMutable(actualValue))
+                // if actualValue is mutable then add it to modified list even during get operation
+                if (actualValue != null && !actualValue.GetType().IsValueType && actualValue.GetType() != typeof(string))
                 {
                     AddInModifiedKeys(normalizedName);
                 }
@@ -169,30 +170,20 @@ namespace Microsoft.Web.Redis
             ValueWrapper v = (ValueWrapper) innerCollection[normalizedName];
             if (v != null)
             {
-                v.ActualValue = value;
-                v.Serializedvalue = null;
+                v.SetActualValue(value);
             }
             else
             {
-                innerCollection[normalizedName] = ValueWrapper.GetValueWrapperFromActualValue(value);
+                innerCollection[normalizedName] = new ValueWrapper(value);
             }
         }
 
-        internal void AddSerializeData(string name, byte[] value)
+        internal void SetData(string name, byte[] value)
         {
             name = GetSessionNormalizedKeyToUse(name);
-            innerCollection[name] = ValueWrapper.GetValueWrapperFromSerializedvalue(value);
+            innerCollection[name] = new ValueWrapper(value);
         }
-
-        private bool IsMutable(object data)
-        {
-            if (data != null && !data.GetType().IsValueType && data.GetType() != typeof(string))
-            {
-                return true;
-            }
-            return false;
-        }
-
+        
         public override IEnumerator GetEnumerator()
         {
             return innerCollection.GetEnumerator();
