@@ -37,6 +37,8 @@ namespace Microsoft.Web.Redis.Tests
             configuration.RetryTimeout = TimeSpan.Zero;
             configuration.ThrowOnError = true;
             configuration.RedisSerializerType = null;
+            configuration.ClientCertPfxPath = null;
+            configuration.ClientCertPfxPassword = null;
             return configuration;
         }
 

@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 using System.Web.SessionState;
 using StackExchange.Redis;
 
@@ -56,6 +57,21 @@ namespace Microsoft.Web.Redis
                 if (configuration.OperationTimeoutInMilliSec != 0)
                 {
                     configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
+                }
+
+                if (!string.IsNullOrWhiteSpace(configuration.ClientCertPfxPath)
+                    && !string.IsNullOrWhiteSpace(configuration.ClientCertPfxPassword)
+                    && configuration.UseSsl)
+                {
+                    configOption.CertificateSelection += delegate
+                    {
+                        return new X509Certificate2(configuration.ClientCertPfxPath, configuration.ClientCertPfxPassword);
+                    };
+
+                    configOption.CertificateValidation += delegate
+                    {
+                        return true;
+                    };
                 }
             }
             if (LogUtility.logger == null)
