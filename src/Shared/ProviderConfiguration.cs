@@ -117,6 +117,8 @@ namespace Microsoft.Web.Redis
                 }
             }
 
+            ClientCertPfxPath = GetStringSettings(config, "clientCertPfxPath", null);
+            ClientCertPfxPassword = GetStringSettings(config, "clientCertPfxPassword", null);
             ConnectionTimeoutInMilliSec = GetIntSettings(config, "connectionTimeoutInMilliseconds", 0);
             OperationTimeoutInMilliSec = GetIntSettings(config, "operationTimeoutInMilliseconds", 0);
         }
