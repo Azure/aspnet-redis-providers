@@ -36,13 +36,13 @@ namespace Microsoft.Web.Redis
             _serializedvalue = null;
         }
 
-        // This menthod should be used in test projects only
+        // This method should be used in test projects only
         internal object GetActualValue()
         {
             return _actualValue;
         }
 
-        // This menthod should be used in test projects only
+        // This method should be used in test projects only
         internal object GetSerializedvalue()
         {
             return _serializedvalue;
