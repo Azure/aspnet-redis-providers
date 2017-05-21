@@ -29,6 +29,8 @@ namespace Microsoft.Web.Redis
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
         public string RedisSerializerType { get; set; }
+        public string ClientCertPfxPath { get; set; }
+        public string ClientCertPfxPassword { get; set; }
 
         /* Empty constructor required for testing */
         internal ProviderConfiguration()
@@ -50,8 +52,8 @@ namespace Microsoft.Web.Redis
             SessionStateSection sessionStateSection = (SessionStateSection)WebConfigurationManager.GetSection("system.web/sessionState");
             configuration.SessionTimeout = sessionStateSection.Timeout;
 
-            LogUtility.LogInfo("Host: {0}, Port: {1}, ThrowOnError: {2}, UseSsl: {3}, RetryTimeout: {4}, DatabaseId: {5}, ApplicationName: {6}, RequestTimeout: {7}, SessionTimeout: {8}",
-                                            configuration.Host, configuration.Port, configuration.ThrowOnError, configuration.UseSsl, configuration.RetryTimeout, configuration.DatabaseId, configuration.ApplicationName, configuration.RequestTimeout, configuration.SessionTimeout);
+            LogUtility.LogInfo("Host: {0}, Port: {1}, ThrowOnError: {2}, UseSsl: {3}, RetryTimeout: {4}, DatabaseId: {5}, ApplicationName: {6}, RequestTimeout: {7}, SessionTimeout: {8}, ClientCertPfxPath: {9}, ClientCertPfxPassword: {10}",
+                                            configuration.Host, configuration.Port, configuration.ThrowOnError, configuration.UseSsl, configuration.RetryTimeout, configuration.DatabaseId, configuration.ApplicationName, configuration.RequestTimeout, configuration.SessionTimeout, configuration.ClientCertPfxPath, configuration.ClientCertPfxPassword);
             return configuration;
         }
 
@@ -115,6 +117,8 @@ namespace Microsoft.Web.Redis
                 }
             }
 
+            ClientCertPfxPath = GetStringSettings(config, "clientCertPfxPath", null);
+            ClientCertPfxPassword = GetStringSettings(config, "clientCertPfxPassword", null);
             ConnectionTimeoutInMilliSec = GetIntSettings(config, "connectionTimeoutInMilliseconds", 0);
             OperationTimeoutInMilliSec = GetIntSettings(config, "operationTimeoutInMilliseconds", 0);
         }
