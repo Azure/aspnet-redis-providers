@@ -11,7 +11,7 @@ namespace Microsoft.Web.Redis
     {
         internal static RedisSharedConnection sharedConnection;
         static object lockForSharedConnection = new object();
-        internal static RedisUtility redisUtility;
+        internal static RedisUtility redisUtility;	
 
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
