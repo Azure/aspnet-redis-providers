@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,28 +38,37 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         public RedisServer()
         {
-            KillRedisServers();
-            _server = new Process();
-            _server.StartInfo.FileName = "..\\..\\..\\..\\..\\..\\packages\\redis-64.3.0.503\\tools\\redis-server.exe";
-            _server.StartInfo.Arguments = "--maxmemory 20000000";
-            _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            _server.Start();
-            WaitForRedisToStart();
+            // only start a redis cache is all instances could be killed
+            if (KillRedisServers())
+            {
+                _server = new Process();
+                _server.StartInfo.FileName = "..\\..\\..\\..\\..\\..\\packages\\redis-64.2.8.17\\redis-server.exe";
+                _server.StartInfo.Arguments = "--maxmemory 20mb";
+                _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                _server.Start();
+                WaitForRedisToStart();
+            }
         }
 
         // Make sure that no redis-server instance is running
-        private void KillRedisServers()
+        private bool KillRedisServers()
         {
             foreach (var proc in Process.GetProcessesByName("redis-server"))
             {
+                // redis running as a service, cannot be killed anyway, so lets use it instead
+                if (proc.SessionId != Process.GetCurrentProcess().SessionId)
+                    return false;
+
                 try
                 {
                     proc.Kill();
                 }
                 catch
                 {
+                    return false;
                 }
             }
+            return true;
         }
 
         public void Dispose()

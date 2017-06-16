@@ -18,6 +18,7 @@ namespace Microsoft.Web.Redis
         int GetSessionTimeout(object rowDataFromRedis);
         bool IsLocked(object rowDataFromRedis);
         ISessionStateItemCollection GetSessionData(object rowDataFromRedis);
+        bool Exists(string key);
         void Set(string key, byte[] data, DateTime utcExpiry);
         byte[] Get(string key);
         void Remove(string key);

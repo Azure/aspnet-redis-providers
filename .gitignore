@@ -8,6 +8,7 @@ csx
 ; Visual Studio user state
 *.user
 *.suo
+.vs
 
 ; VC++/C# debug info files
 *.idb

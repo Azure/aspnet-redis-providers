@@ -33,7 +33,7 @@ namespace Microsoft.Web.Redis
                 //case 2: we are allowed to create first connection
                 lock (lockObject)
                 {
-                    // make suer it is not created by other request in between
+                    // make sure it is not created by other request in between
                     if (connection == null)
                     {
                         connection = factory.Invoke();

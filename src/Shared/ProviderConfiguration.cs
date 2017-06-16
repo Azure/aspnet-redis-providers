@@ -72,6 +72,24 @@ namespace Microsoft.Web.Redis
             return configuration;
         }
 
+        internal static ProviderConfiguration ProviderConfigurationForObjectCache(NameValueCollection config, string cacheName)
+        {
+            ProviderConfiguration configuration = new ProviderConfiguration(config);
+
+            configuration.RetryTimeout = TimeSpan.Zero;
+            configuration.ThrowOnError = GetBoolSettings(config, "throwOnError", false);
+            
+            // Session state specific attribute which are not applicable to output cache
+            configuration.RequestTimeout = TimeSpan.Zero;
+            configuration.SessionTimeout = TimeSpan.Zero;
+
+            configuration.ApplicationName += "_ObjectCache_" + cacheName;
+
+            LogUtility.LogInfo("Host: {0}, Port: {1}, UseSsl: {2}, DatabaseId: {3}, ApplicationName: {4}, ThrowOnError: {5}",
+                                            configuration.Host, configuration.Port, configuration.UseSsl, configuration.DatabaseId, configuration.ApplicationName, configuration.ThrowOnError);
+            return configuration;
+        }
+
         private ProviderConfiguration(NameValueCollection config)
         {
             EnableLoggingIfParametersAvailable(config);

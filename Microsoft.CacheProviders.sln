@@ -25,6 +25,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider.Un
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider.FunctionalTests", "test\OutputCacheProviderFunctionalTests\RedisOutputCacheProvider.FunctionalTests.csproj", "{0F2B2EE8-83D9-4442-B71A-73BC2033D323}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ObjectCache", "ObjectCache", "{264192AF-0B17-4E07-B093-DC7B3E504628}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisObjectCache", "src\RedisObjectCache\RedisObjectCache.csproj", "{63C645E9-906A-4463-9BA7-8CB52206480C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisObjectCache.FunctionalTests", "test\RedisObjectCache.FunctionalTests\RedisObjectCache.FunctionalTests.csproj", "{5C77A3EA-BD24-4093-A763-9358E837173C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisObjectCache.UnitTests", "test\RedisObjectCache.UnitTests\RedisObjectCache.UnitTests.csproj", "{C4CF15B8-F965-4192-9008-7244CFAA9A03}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +63,18 @@ Global
 		{0F2B2EE8-83D9-4442-B71A-73BC2033D323}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F2B2EE8-83D9-4442-B71A-73BC2033D323}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F2B2EE8-83D9-4442-B71A-73BC2033D323}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63C645E9-906A-4463-9BA7-8CB52206480C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63C645E9-906A-4463-9BA7-8CB52206480C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63C645E9-906A-4463-9BA7-8CB52206480C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63C645E9-906A-4463-9BA7-8CB52206480C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C77A3EA-BD24-4093-A763-9358E837173C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C77A3EA-BD24-4093-A763-9358E837173C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C77A3EA-BD24-4093-A763-9358E837173C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C77A3EA-BD24-4093-A763-9358E837173C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4CF15B8-F965-4192-9008-7244CFAA9A03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4CF15B8-F965-4192-9008-7244CFAA9A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4CF15B8-F965-4192-9008-7244CFAA9A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4CF15B8-F965-4192-9008-7244CFAA9A03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +86,8 @@ Global
 		{A829BDCA-3B7D-4C22-AF85-C82012A8FE2F} = {A5E4A982-2782-43BF-871C-596106C96B14}
 		{9BC29B91-CCB5-499A-B68B-5AAC0492B7CB} = {A5E4A982-2782-43BF-871C-596106C96B14}
 		{0F2B2EE8-83D9-4442-B71A-73BC2033D323} = {A5E4A982-2782-43BF-871C-596106C96B14}
+		{63C645E9-906A-4463-9BA7-8CB52206480C} = {264192AF-0B17-4E07-B093-DC7B3E504628}
+		{5C77A3EA-BD24-4093-A763-9358E837173C} = {264192AF-0B17-4E07-B093-DC7B3E504628}
+		{C4CF15B8-F965-4192-9008-7244CFAA9A03} = {264192AF-0B17-4E07-B093-DC7B3E504628}
 	EndGlobalSection
 EndGlobal
