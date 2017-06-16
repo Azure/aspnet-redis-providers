@@ -243,11 +243,11 @@ namespace Microsoft.Web.Redis
             return sessionData;
         }
 
-	    public bool Exists(string key)
-	    {
-			RedisKey redisKey = key;
-			return connection.KeyExists(redisKey);
-		}
+        public bool Exists(string key)
+        {
+            RedisKey redisKey = key;
+            return connection.KeyExists(redisKey);
+        }
 
         public void Set(string key, byte[] data, DateTime utcExpiry)
         {

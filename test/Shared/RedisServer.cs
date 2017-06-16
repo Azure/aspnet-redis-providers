@@ -38,16 +38,16 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         public RedisServer()
         {
-			// only start a redis cache is all instances could be killed
-	        if (KillRedisServers())
-	        {
-		        _server = new Process();
-		        _server.StartInfo.FileName = "..\\..\\..\\..\\..\\..\\packages\\redis-64.2.8.17\\redis-server.exe";
-		        _server.StartInfo.Arguments = "--maxmemory 20mb";
-		        _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-		        _server.Start();
-		        WaitForRedisToStart();
-	        }
+            // only start a redis cache is all instances could be killed
+            if (KillRedisServers())
+            {
+                _server = new Process();
+                _server.StartInfo.FileName = "..\\..\\..\\..\\..\\..\\packages\\redis-64.2.8.17\\redis-server.exe";
+                _server.StartInfo.Arguments = "--maxmemory 20mb";
+                _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                _server.Start();
+                WaitForRedisToStart();
+            }
         }
 
         // Make sure that no redis-server instance is running
@@ -55,9 +55,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
         {
             foreach (var proc in Process.GetProcessesByName("redis-server"))
             {
-				// redis running as a service, cannot be killed anyway, so let use it instead
-	            if (proc.SessionId != Process.GetCurrentProcess().SessionId)
-		            return false;
+                // redis running as a service, cannot be killed anyway, so lets use it instead
+                if (proc.SessionId != Process.GetCurrentProcess().SessionId)
+                    return false;
 
                 try
                 {
@@ -65,10 +65,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 }
                 catch
                 {
-					return false;
+                    return false;
                 }
             }
-	        return true;
+            return true;
         }
 
         public void Dispose()
