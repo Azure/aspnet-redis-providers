@@ -75,7 +75,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper.sharedConnection = new RedisSharedConnection(null, null);
             RedisConnectionWrapper.sharedConnection.connection = mockRedisClient;
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), sessionId);
-            ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(RedisConnectionWrapper.redisUtility);
             data["key"] = "value";
             redisConn.Set(data, 90);
             A.CallTo(() => mockRedisClient.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 2), 
@@ -163,7 +163,7 @@ namespace Microsoft.Web.Redis.Tests
 
             object[] sessionData = { "Key", RedisUtility.GetBytesFromObject("value") };
             object[] returnFromRedis = { lockTime.Ticks.ToString(), sessionData, "15", false };
-            ChangeTrackingSessionStateItemCollection sessionDataReturn = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionDataReturn = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionDataReturn["key"] = "value";
 
             var mockRedisClient = A.Fake<IRedisClientConnection>();
@@ -200,7 +200,7 @@ namespace Microsoft.Web.Redis.Tests
 
             object[] sessionData = { "Key", RedisUtility.GetBytesFromObject("value") };
             object[] returnFromRedis = { "", sessionData, "15" };
-            ChangeTrackingSessionStateItemCollection sessionDataReturn = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection sessionDataReturn = Utility.GetChangeTrackingSessionStateItemCollection();
             sessionDataReturn["key"] = "value";
 
             var mockRedisClient = A.Fake<IRedisClientConnection>();
@@ -264,7 +264,7 @@ namespace Microsoft.Web.Redis.Tests
             string id = "session_id";
             int sessionTimeout = 900;
             object lockId = DateTime.Now.Ticks;
-            ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection data = Utility.GetChangeTrackingSessionStateItemCollection();
             
             var mockRedisClient = A.Fake<IRedisClientConnection>();
             RedisConnectionWrapper.redisUtility = new RedisUtility(Utility.GetDefaultConfigUtility());
@@ -290,7 +290,7 @@ namespace Microsoft.Web.Redis.Tests
             string id = "session_id";
             int sessionTimeout = 900;
             object lockId = DateTime.Now.Ticks;
-            ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection();
+            ChangeTrackingSessionStateItemCollection data = Utility.GetChangeTrackingSessionStateItemCollection();
             data["KeyDel"] = "valueDel";
             data["Key"] = "value";
             data.Remove("KeyDel");

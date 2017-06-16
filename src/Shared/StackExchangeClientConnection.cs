@@ -66,7 +66,8 @@ namespace Microsoft.Web.Redis
             {
                 redisMultiplexer = ConnectionMultiplexer.Connect(configOption, LogUtility.logger);
             }
-            this.connection = redisMultiplexer.GetDatabase(configuration.DatabaseId);
+
+            this.connection = redisMultiplexer.GetDatabase(configOption.DefaultDatabase ?? configuration.DatabaseId);
         }
 
         public IDatabase RealConnection
@@ -217,7 +218,7 @@ namespace Microsoft.Web.Redis
             RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;
             Debug.Assert(lockScriptReturnValueArray != null);
 
-            ISessionStateItemCollection sessionData = null;
+            ChangeTrackingSessionStateItemCollection sessionData = null;
             if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
             {
                 RedisResult[] data = (RedisResult[])lockScriptReturnValueArray[1];
@@ -226,16 +227,15 @@ namespace Microsoft.Web.Redis
                 // This list has to be even because it contains pair of <key, value> as {key, value, key, value}
                 if (data != null && data.Length != 0 && data.Length % 2 == 0)
                 {
-                    sessionData = new ChangeTrackingSessionStateItemCollection();
+                    sessionData = new ChangeTrackingSessionStateItemCollection(redisUtility);
                     // In every cycle of loop we are getting one pair of key value and putting it into session items
                     // thats why increment is by 2 because we want to move to next pair
                     for (int i = 0; (i + 1) < data.Length; i += 2)
                     {
                         string key = (string) data[i];
-                        object val = redisUtility.GetObjectFromBytes((byte[]) data[i + 1]);
                         if (key != null)
                         {
-                            sessionData[key] = val;
+                            sessionData.SetData(key, (byte[])data[i + 1]);
                         }
                     }
                 }
