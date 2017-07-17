@@ -84,7 +84,7 @@ namespace Microsoft.Web.Redis
 
         private string GetKeyForRedis(string key)
         {
-            return configuration.ApplicationName + "_" + key;
+            return string.Format(configuration.CustomKeyFormat, configuration.ApplicationName, key);
         }
     }
 }

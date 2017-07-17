@@ -42,6 +42,8 @@ namespace Microsoft.Web.Redis.Tests
             configuration.RetryTimeout = TimeSpan.Zero;
             configuration.ThrowOnError = true;
             configuration.RedisSerializerType = null;
+            configuration.CustomFormat = "{{{0}}}_{1}";
+            configuration.CustomKeyFormat = "{0}_{1}";
             return configuration;
         }
 
