@@ -5,12 +5,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D98FC20C-EC9C-4BEA-8A56-5D48D4AC0C61}</ProjectGuid>
+    <ProjectGuid>{F761EADC-7970-440D-AD84-3D34834B9821}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Web.Redis.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Web.RedisSessionStateProvider.Unit.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>Microsoft.Web.RedisSessionStateProvider.Unit.Tests_net452</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -44,8 +44,9 @@
       <HintPath>..\..\packages\FakeItEasy.2.1.0\lib\net40\FakeItEasy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StackExchange.Redis.StrongName, Version=1.2.1.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StackExchange.Redis.StrongName.1.2.1\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.2.6.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StackExchange.Redis.StrongName.1.2.6\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -79,16 +80,30 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\ChangeTrackingSessionStateItemCollectionTests.cs">
+      <Link>ChangeTrackingSessionStateItemCollectionTests.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\ProviderConfigurationTests.cs">
+      <Link>ProviderConfigurationTests.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisConnectionWrapperTests.cs">
+      <Link>RedisConnectionWrapperTests.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisSessionStateProviderTests.cs">
+      <Link>RedisSessionStateProviderTests.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisSharedConnectionTests.cs">
+      <Link>RedisSharedConnectionTests.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisUtilityTests.cs">
+      <Link>RedisUtilityTests.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\TestSerializer.cs">
       <Link>TestSerializer.cs</Link>
     </Compile>
-    <Compile Include="ChangeTrackingSessionStateItemCollectionTests.cs" />
-    <Compile Include="ProviderConfigurationTests.cs" />
-    <Compile Include="RedisSharedConnectionTests.cs" />
-    <Compile Include="RedisConnectionWrapperTests.cs" />
-    <Compile Include="RedisUtilityTests.cs" />
-    <Compile Include="RedisSessionStateProviderTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Shared\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -98,12 +113,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RedisSessionStateProvider\RedisSessionStateProvider.csproj">
-      <Project>{d439d811-3a81-45d9-b5ed-2286ee3011b9}</Project>
-      <Name>RedisSessionStateProvider</Name>
+    <ProjectReference Include="..\..\src\RedisSessionStateProvider_net452\RedisSessionStateProvider_net452.csproj">
+      <Project>{f61a839e-8347-4b35-ac18-d4b380030af9}</Project>
+      <Name>RedisSessionStateProvider_net452</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\..\build\UnitTests.PostProcessing.targets" />
+  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">
+    <DefineConstants>$(DefineConstants);DOTNET_452</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
@@ -116,7 +134,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>

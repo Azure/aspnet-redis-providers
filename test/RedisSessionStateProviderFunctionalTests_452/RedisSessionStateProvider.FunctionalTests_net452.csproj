@@ -1,20 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" />
-  <Import Project="..\..\Build\Tests.Common.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\..\build\Tests.Common.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0F2B2EE8-83D9-4442-B71A-73BC2033D323}</ProjectGuid>
+    <ProjectGuid>{BB4B5FD0-1FF8-4A33-BC99-F0A3265636DC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Web.Redis.FunctionalTests</RootNamespace>
-    <AssemblyName>Microsoft.Web.RedisOutputCacheProvider.Functional.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>Microsoft.Web.RedisSessionStateProvider.Functional.Tests_net452</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,8 +39,8 @@
       <HintPath>..\..\packages\FakeItEasy.2.1.0\lib\net40\FakeItEasy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StackExchange.Redis.StrongName, Version=1.2.1.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StackExchange.Redis.StrongName.1.2.1\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.2.6.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StackExchange.Redis.StrongName.1.2.6\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -71,11 +72,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\RedisSessionStateProviderFunctionalTests\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderFunctionalTests\RedisConnectionWrapperFunctionalTests.cs">
+      <Link>RedisConnectionWrapperFunctionalTests.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderFunctionalTests\RedisSessionStateProviderFunctionalTests.cs">
+      <Link>RedisSessionStateProviderFunctionalTests.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProviderFunctionalTests\StackExchangeClientConnectionFunctionalTests.cs">
+      <Link>StackExchangeClientConnectionFunctionalTests.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\RedisServer.cs">
       <Link>RedisServer.cs</Link>
     </Compile>
-    <Compile Include="RedisOutputCacheFunctionalTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Shared\TestSerializer.cs">
+      <Link>TestSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -85,12 +100,15 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OutputCacheProvider\RedisOutputCacheProvider.csproj">
-      <Project>{a829bdca-3b7d-4c22-af85-c82012a8fe2f}</Project>
-      <Name>RedisOutputCacheProvider</Name>
+    <ProjectReference Include="..\..\src\RedisSessionStateProvider_net452\RedisSessionStateProvider_net452.csproj">
+      <Project>{f61a839e-8347-4b35-ac18-d4b380030af9}</Project>
+      <Name>RedisSessionStateProvider_net452</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\..\build\FunctionalTests.PostProcessing.targets" />
+  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">
+    <DefineConstants>$(DefineConstants);DOTNET_452</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
@@ -102,7 +120,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>

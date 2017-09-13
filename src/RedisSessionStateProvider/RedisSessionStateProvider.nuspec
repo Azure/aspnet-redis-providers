@@ -13,19 +13,22 @@
         <copyright>Microsoft © 2014</copyright>
         <tags>session sessionstateprovider azure microsoft windowsazureofficial redis</tags>
         <dependencies>
-          <dependency id="StackExchange.Redis.StrongName" version="1.2.1" />
+		<group targetFramework="net462">
+        		<dependency id="StackExchange.Redis.StrongName" version="1.2.6" />
+			<dependency id="Microsoft.AspNet.SessionState.SessionStateModule" version="1.1.0" />
+      		</group>
+      		<group targetFramework="net452">
+		        <dependency id="StackExchange.Redis.StrongName" version="1.2.6" />
+	      </group>
         </dependencies>
-        <frameworkAssemblies>
-          <frameworkAssembly assemblyName="System" targetFramework="net40" />
-          <frameworkAssembly assemblyName="System.Configuration" targetFramework="net40" />
-          <frameworkAssembly assemblyName="System.Web" targetFramework="net40" />
-          <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework="net40" />
-        </frameworkAssemblies>
     </metadata>
   <files>
-    <file src="web.config.transform" target="content\net40\web.config.transform" />
-    <file src="..\..\bin\Release\Signed\v4.0\Microsoft.Web.RedisSessionStateProvider.dll" target="lib\net40\Microsoft.Web.RedisSessionStateProvider.dll" />
-    <file src="..\..\bin\Release\Microsoft.Web.RedisSessionStateProvider\v4.0\Microsoft.Web.RedisSessionStateProvider.pdb" target="lib\net40\Microsoft.Web.RedisSessionStateProvider.pdb" />
+    <file src="web.config.transform" target="content\net452\web.config.transform" />
+    <file src="..\..\bin\Release\Signed\v4.5.2\Microsoft.Web.RedisSessionStateProvider.dll" target="lib\net452\Microsoft.Web.RedisSessionStateProvider.dll" />
+    <file src="..\..\bin\Release\Microsoft.Web.RedisSessionStateProvider\v4.5.2\Microsoft.Web.RedisSessionStateProvider.pdb" target="lib\net452\Microsoft.Web.RedisSessionStateProvider.pdb" />
+    <file src="web.config.transform" target="content\net462\web.config.transform" />
+    <file src="..\..\bin\Release\Signed\v4.6.2\Microsoft.Web.RedisSessionStateProvider.dll" target="lib\net462\Microsoft.Web.RedisSessionStateProvider.dll" />
+    <file src="..\..\bin\Release\Microsoft.Web.RedisSessionStateProvider\v4.6.2\Microsoft.Web.RedisSessionStateProvider.pdb" target="lib\net462\Microsoft.Web.RedisSessionStateProvider.pdb" />
     <file src="Readme.txt" target="Readme.txt" /> 
   </files>
 </package>

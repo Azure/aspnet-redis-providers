@@ -4,11 +4,16 @@
 //
 
 using System;
+using System.Threading.Tasks;
 using System.Web.Caching;
 
 namespace Microsoft.Web.Redis
 {
+#if DOTNET_452
     public class RedisOutputCacheProvider : OutputCacheProvider
+#else
+    public class RedisOutputCacheProvider : OutputCacheProviderAsync
+#endif
     {
         internal static ProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
@@ -60,6 +65,14 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
+#if DOTNET_452
+#else
+        public override async Task<object> GetAsync(string key)
+        {
+            return await Task.FromResult(Get(key));
+        }
+#endif
+
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
             try
@@ -74,6 +87,15 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
+#if DOTNET_452
+#else
+        public override async Task<object> AddAsync(string key, object entry, DateTime utcExpiry)
+        {
+            return await Task.FromResult(Add(key, entry, utcExpiry));
+        }
+#endif
+
+
         public override void Set(string key, object entry, DateTime utcExpiry)
         {
             try
@@ -87,6 +109,16 @@ namespace Microsoft.Web.Redis
             }
         }
 
+#if DOTNET_452
+#else
+        public override async Task SetAsync(string key, object entry, DateTime utcExpiry)
+        {
+            Set(key, entry, utcExpiry);
+            await Task.FromResult(0);
+        }
+#endif
+
+
         public override void Remove(string key)
         {
             try
@@ -99,7 +131,17 @@ namespace Microsoft.Web.Redis
                 LogUtility.LogError("Error in Remove: " + e.Message);
             }
         }
-        
+
+#if DOTNET_452
+#else
+        public override async Task RemoveAsync(string key)
+        {
+            Remove(key);
+            await Task.FromResult(0);
+        }
+#endif
+
+
         private void GetAccessToCacheStore()
         {
             if (cache == null)
