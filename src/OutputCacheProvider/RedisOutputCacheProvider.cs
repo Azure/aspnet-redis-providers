@@ -9,10 +9,10 @@ using System.Web.Caching;
 
 namespace Microsoft.Web.Redis
 {
-#if DOTNET_452
-    public class RedisOutputCacheProvider : OutputCacheProvider
-#else
+#if DOTNET_462
     public class RedisOutputCacheProvider : OutputCacheProviderAsync
+#else
+    public class RedisOutputCacheProvider : OutputCacheProvider
 #endif
     {
         internal static ProviderConfiguration configuration;
@@ -65,8 +65,7 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
-#if DOTNET_452
-#else
+#if DOTNET_462
         public override async Task<object> GetAsync(string key)
         {
             return await Task.FromResult(Get(key));
@@ -87,8 +86,7 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
-#if DOTNET_452
-#else
+#if DOTNET_462
         public override async Task<object> AddAsync(string key, object entry, DateTime utcExpiry)
         {
             return await Task.FromResult(Add(key, entry, utcExpiry));
@@ -109,8 +107,7 @@ namespace Microsoft.Web.Redis
             }
         }
 
-#if DOTNET_452
-#else
+#if DOTNET_462
         public override async Task SetAsync(string key, object entry, DateTime utcExpiry)
         {
             Set(key, entry, utcExpiry);
@@ -132,8 +129,7 @@ namespace Microsoft.Web.Redis
             }
         }
 
-#if DOTNET_452
-#else
+#if DOTNET_462
         public override async Task RemoveAsync(string key)
         {
             Remove(key);

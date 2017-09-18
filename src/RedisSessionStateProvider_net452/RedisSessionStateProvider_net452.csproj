@@ -120,9 +120,6 @@
     <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">
-    <DefineConstants>$(DefineConstants);DOTNET_452</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>

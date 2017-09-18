@@ -97,6 +97,9 @@
     </Compile>
   </ItemGroup>
   <Import Project="..\..\build\UnitTests.PostProcessing.targets" />
+  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.6.2'">
+    <DefineConstants>$(DefineConstants);DOTNET_462</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>

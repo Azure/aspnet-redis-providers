@@ -95,9 +95,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\..\build\FunctionalTests.PostProcessing.targets" />
-  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.5.2'">
-    <DefineConstants>$(DefineConstants);DOTNET_452</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
