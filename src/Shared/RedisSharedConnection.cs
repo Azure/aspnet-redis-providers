@@ -37,7 +37,6 @@ namespace Microsoft.Web.Redis
                     if (connection == null)
                     {
                         connection = factory.Invoke();
-                        connection.Open();
                     }
                 }
                 return connection;

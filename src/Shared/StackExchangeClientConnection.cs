@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Web.SessionState;
 using StackExchange.Redis;
 
@@ -74,9 +75,6 @@ namespace Microsoft.Web.Redis
         {
             get { return connection; }
         }
-
-        public void Open()
-        { }
 
         public void Close()
         {
@@ -200,11 +198,6 @@ namespace Microsoft.Web.Redis
         }
 
         public string GetLockId(object rowDataFromRedis)
-        {
-            return StackExchangeClientConnection.GetLockIdStatic(rowDataFromRedis);
-        }
-
-        internal static string GetLockIdStatic(object rowDataFromRedis)
         {
             RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
             RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;
