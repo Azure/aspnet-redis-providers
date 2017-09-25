@@ -34,7 +34,7 @@ namespace Microsoft.Web.Redis
         {
             TimeSpan timeSpan = new TimeSpan(0, 0, timeInSeconds);
             RedisKey redisKey = key;
-            return (bool)RetryLogic(() => _sharedConnection.Connection.KeyExpire(redisKey,timeSpan));
+            return (bool)RetryLogic(() => RealConnection.KeyExpire(redisKey,timeSpan));
         }
 
         public object Eval(string script, string[] keyArgs, object[] valueArgs)
@@ -64,23 +64,23 @@ namespace Microsoft.Web.Redis
                 }
                 i++;
             }
-            return RetryLogic(() => _sharedConnection.Connection.ScriptEvaluate(script, redisKeyArgs, redisValueArgs));
+            return RetryLogic(() => RealConnection.ScriptEvaluate(script, redisKeyArgs, redisValueArgs));
         }
 
-        private object RetryForScriptNotFoundOrForceReconnect(Func<object> redisOperation)
+        private object OperationExecutor(Func<object> redisOperation)
         {
             try
             {
                 return redisOperation.Invoke();
             }
+            catch (RedisConnectionException)
+            {
+                _sharedConnection.ForceReconnect();
+                return redisOperation.Invoke();
+            }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(RedisConnectionException))
-                {
-                    _sharedConnection.ForceReconnect();
-                    return redisOperation.Invoke();
-                }
-                else if (e.Message.Contains("NOSCRIPT"))
+                if (e.Message.Contains("NOSCRIPT"))
                 {
                     // Second call should pass if it was script not found issue
                     return redisOperation.Invoke();
@@ -100,7 +100,7 @@ namespace Microsoft.Web.Redis
             {
                 try
                 {
-                    return RetryForScriptNotFoundOrForceReconnect(redisOperation);
+                    return OperationExecutor(redisOperation);
                 }
                 catch (Exception)
                 {
@@ -200,20 +200,20 @@ namespace Microsoft.Web.Redis
             RedisKey redisKey = key;
             RedisValue redisValue = data;
             TimeSpan timeSpanForExpiry = utcExpiry - DateTime.UtcNow;
-            RetryForScriptNotFoundOrForceReconnect(() => _sharedConnection.Connection.StringSet(redisKey, redisValue, timeSpanForExpiry));
+            OperationExecutor(() => RealConnection.StringSet(redisKey, redisValue, timeSpanForExpiry));
         }
 
         public byte[] Get(string key)
         {
             RedisKey redisKey = key;
-            RedisValue redisValue = (RedisValue) RetryForScriptNotFoundOrForceReconnect(() => _sharedConnection.Connection.StringGet(redisKey));
+            RedisValue redisValue = (RedisValue) OperationExecutor(() => RealConnection.StringGet(redisKey));
             return (byte[]) redisValue;
         }
 
         public void Remove(string key)
         {
             RedisKey redisKey = key;
-            RetryForScriptNotFoundOrForceReconnect(() => _sharedConnection.Connection.KeyDelete(redisKey));
+            OperationExecutor(() => RealConnection.KeyDelete(redisKey));
         }
 
         public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis) 
