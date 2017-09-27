@@ -75,10 +75,12 @@ namespace Microsoft.Web.Redis
             }
             catch (ObjectDisposedException)
             {
+                // Try once as this can be caused by force reconnect by closing multiplexer
                 return redisOperation.Invoke();
             }
             catch (RedisConnectionException)
             {
+                // Try once after reconnect
                 _sharedConnection.ForceReconnect();
                 return redisOperation.Invoke();
             }
@@ -106,11 +108,12 @@ namespace Microsoft.Web.Redis
                 {
                     return OperationExecutor(redisOperation);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     TimeSpan passedTime = DateTime.Now - startTime;
                     if (_configuration.RetryTimeout < passedTime)
                     {
+                        LogUtility.LogError($"Exception: {e.Message}");
                         throw;
                     }
                     else
