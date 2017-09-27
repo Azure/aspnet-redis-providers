@@ -39,6 +39,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         public RedisServer()
         {
+            Restart();
+        }
+
+        public void Restart()
+        {
             KillRedisServers();
             _server = new Process();
             _server.StartInfo.FileName = "..\\..\\..\\..\\..\\..\\packages\\redis-64.3.0.503\\tools\\redis-server.exe";

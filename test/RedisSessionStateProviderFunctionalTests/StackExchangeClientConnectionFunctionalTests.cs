@@ -15,11 +15,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 ProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
                 configuration.DatabaseId = databaseId;
 
-                StackExchangeClientConnection connection = new StackExchangeClientConnection(configuration);
+                StackExchangeClientConnection connection = GetStackExchangeClientConnection(configuration);
 
                 Assert.Equal(databaseId, connection.RealConnection.Database);
-
-                connection.Close();
             }
         }
 
@@ -32,11 +30,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 ProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
                 configuration.ConnectionString = string.Format("localhost, defaultDatabase={0}", databaseId);
 
-                StackExchangeClientConnection connection = new StackExchangeClientConnection(configuration);
+                StackExchangeClientConnection connection = GetStackExchangeClientConnection(configuration);
 
                 Assert.Equal(databaseId, connection.RealConnection.Database);
-
-                connection.Close();
             }
         }
 
@@ -50,12 +46,17 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 configuration.DatabaseId = databaseId;
                 configuration.ConnectionString = string.Format("localhost");
 
-                StackExchangeClientConnection connection = new StackExchangeClientConnection(configuration);
+                StackExchangeClientConnection connection = GetStackExchangeClientConnection(configuration);
 
                 Assert.Equal(databaseId, connection.RealConnection.Database);
-
-                connection.Close();
             }
+        }
+
+        private StackExchangeClientConnection GetStackExchangeClientConnection(ProviderConfiguration configuration)
+        {
+            var sharedConnection = new RedisSharedConnection(configuration);
+            var redisUtility = new RedisUtility(configuration);
+            return new StackExchangeClientConnection(configuration, redisUtility, sharedConnection);
         }
     }
 }
