@@ -12,13 +12,14 @@ namespace Microsoft.Web.Redis
     {
         private ProviderConfiguration _configuration;
         private ConfigurationOptions _configOption;
-        private ConnectionMultiplexer _redisMultiplexer;
+        private Lazy<ConnectionMultiplexer> _redisMultiplexer;
 
         internal static DateTimeOffset lastReconnectTime = DateTimeOffset.MinValue;
-        internal static DateTimeOffset lastErrorTime = DateTimeOffset.MinValue;
+        internal static DateTimeOffset firstErrorTime = DateTimeOffset.MinValue;
+        internal static DateTimeOffset previousErrorTime = DateTimeOffset.MinValue;
         static object reconnectLock = new object();
         internal static TimeSpan ReconnectFrequency = TimeSpan.FromSeconds(60);
-        internal static TimeSpan ReconnectErrorFrequency = TimeSpan.FromSeconds(31);
+        internal static TimeSpan ReconnectErrorFrequency = TimeSpan.FromSeconds(30);
 
         // Used for mocking in testing
         internal RedisSharedConnection()
@@ -67,32 +68,45 @@ namespace Microsoft.Web.Redis
 
         public IDatabase Connection
         {
-            get { return _redisMultiplexer.GetDatabase(_configOption.DefaultDatabase ?? _configuration.DatabaseId); }
+            get { return _redisMultiplexer.Value.GetDatabase(_configOption.DefaultDatabase ?? _configuration.DatabaseId); }
         }
 
         public void ForceReconnect()
         {
-            DateTimeOffset currentErrorTime = DateTimeOffset.UtcNow;
-            TimeSpan errorTimeDiff = currentErrorTime - lastErrorTime;
-            lastErrorTime = currentErrorTime;
-            if (errorTimeDiff < ReconnectErrorFrequency)
+            var previousReconnect = lastReconnectTime;
+            var elapsedTime = DateTimeOffset.UtcNow - previousReconnect;
+
+            // If mulitple threads call ForceReconnect at the same time, we only want to honor one of them. 
+            if (elapsedTime > ReconnectFrequency)
             {
-                var previousReconnect = lastReconnectTime;
-                var elapsedTime = DateTimeOffset.UtcNow - previousReconnect;
-                
-                // If mulitple threads call ForceReconnect at the same time, we only want to honor one of them. 
-                if (elapsedTime > ReconnectFrequency)
+                lock (reconnectLock)
                 {
-                    lock (reconnectLock)
+                    var utcNow = DateTimeOffset.UtcNow;
+                    elapsedTime = utcNow - lastReconnectTime;
+                    if (elapsedTime < ReconnectFrequency)
                     {
-                        elapsedTime = DateTimeOffset.UtcNow - lastReconnectTime;
-                        if (elapsedTime < ReconnectFrequency)
-                        {
-                            return; // Some other thread made it through the check and the lock, so nothing to do. 
-                        }
+                        return; // Some other thread made it through the check and the lock, so nothing to do. 
+                    }
+
+                    if (firstErrorTime == DateTimeOffset.MinValue)
+                    {
+                        // We got error first time after last reconnect
+                        firstErrorTime = utcNow;
+                        previousErrorTime = utcNow;
+                        return;
+                    }
+
+                    var firstErrorDiff = utcNow - firstErrorTime;
+                    var previousErrorDiff = utcNow - previousErrorTime;
+                    previousErrorTime = utcNow;
+
+                    if ((firstErrorDiff >= ReconnectErrorFrequency) && (previousErrorDiff <= ReconnectErrorFrequency))
+                    {
+                        firstErrorTime = DateTimeOffset.MinValue;
+                        previousErrorTime = DateTimeOffset.MinValue;
 
                         var oldMultiplexer = _redisMultiplexer;
-                        CloseMultiplexer(oldMultiplexer);
+                        CloseMultiplexer(oldMultiplexer.Value);
                         CreateMultiplexer();
                     }
                 }
@@ -103,11 +117,11 @@ namespace Microsoft.Web.Redis
         {
             if (LogUtility.logger == null)
             {
-                _redisMultiplexer = ConnectionMultiplexer.Connect(_configOption);
+                _redisMultiplexer = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_configOption));
             }
             else
             {
-                _redisMultiplexer = ConnectionMultiplexer.Connect(_configOption, LogUtility.logger);
+                _redisMultiplexer = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_configOption, LogUtility.logger));
             }
             lastReconnectTime = DateTimeOffset.UtcNow;
         }

@@ -73,6 +73,10 @@ namespace Microsoft.Web.Redis
             {
                 return redisOperation.Invoke();
             }
+            catch (ObjectDisposedException)
+            {
+                return redisOperation.Invoke();
+            }
             catch (RedisConnectionException)
             {
                 _sharedConnection.ForceReconnect();
