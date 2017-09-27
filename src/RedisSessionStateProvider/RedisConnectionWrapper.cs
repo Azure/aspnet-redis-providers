@@ -25,21 +25,20 @@ namespace Microsoft.Web.Redis
         {
             this.configuration = configuration;
             Keys = new KeyGenerator(id, configuration.ApplicationName);
-            
-            // Pool is created by server when it starts. don't want to lock everytime when check pool == null.
-            // so that is why pool == null exists twice.
+
+            // only single object of RedisSharedConnection will be created and then reused
             if (sharedConnection == null)
             {
                 lock (lockForSharedConnection)
                 {
                     if (sharedConnection == null)
                     {
-                        sharedConnection = new RedisSharedConnection(configuration,() => new StackExchangeClientConnection(configuration));
+                        sharedConnection = new RedisSharedConnection(configuration);
                         redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
-            redisConnection = sharedConnection.TryGetConnection();
+            redisConnection = new StackExchangeClientConnection(configuration, redisUtility, sharedConnection);
         }
 
         public TimeSpan GetLockAge(object lockId)

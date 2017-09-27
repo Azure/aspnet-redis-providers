@@ -10,7 +10,6 @@ namespace Microsoft.Web.Redis
 {
     internal interface IRedisClientConnection
     {
-        void Close();
         bool Expiry(string key, int timeInSeconds);
         object Eval(string script, string[] keyArgs, object[] valueArgs);
         string GetLockId(object rowDataFromRedis);

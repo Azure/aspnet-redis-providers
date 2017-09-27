@@ -28,10 +28,6 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         private void DisposeRedisConnectionWrapper()
         {
-            if (RedisConnectionWrapper.sharedConnection != null)
-            {
-                RedisConnectionWrapper.sharedConnection.connection.Close();
-            }
             RedisConnectionWrapper.sharedConnection = null;
         }
 
@@ -324,7 +320,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         private IDatabase GetRealRedisConnection()
         {
-            return (IDatabase)((StackExchangeClientConnection)RedisConnectionWrapper.sharedConnection.connection).RealConnection;
+            return RedisConnectionWrapper.sharedConnection.Connection;
         }
     }
 }

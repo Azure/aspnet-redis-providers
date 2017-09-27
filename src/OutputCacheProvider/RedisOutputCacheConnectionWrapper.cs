@@ -19,21 +19,20 @@ namespace Microsoft.Web.Redis
         public RedisOutputCacheConnectionWrapper(ProviderConfiguration configuration)
         {
             this.configuration = configuration;
-            
-            // Shared connection is created by server when it starts. don't want to lock everytime when check == null.
-            // so that is why pool == null exists twice.
+
+            // only single object of RedisSharedConnection will be created and then reused
             if (sharedConnection == null)
             {
                 lock (lockForSharedConnection)
                 {
                     if (sharedConnection == null)
                     {
-                        sharedConnection = new RedisSharedConnection(configuration,() => new StackExchangeClientConnection(configuration));
+                        sharedConnection = new RedisSharedConnection(configuration);
                         redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
-            redisConnection = sharedConnection.TryGetConnection();
+            redisConnection = new StackExchangeClientConnection(configuration, redisUtility, sharedConnection);
         }
 
 /*-------Start of Add operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
