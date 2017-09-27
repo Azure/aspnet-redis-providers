@@ -15,8 +15,10 @@ namespace Microsoft.Web.Redis
         private ConnectionMultiplexer _redisMultiplexer;
 
         internal static DateTimeOffset lastReconnectTime = DateTimeOffset.MinValue;
+        internal static DateTimeOffset lastErrorTime = DateTimeOffset.MinValue;
         static object reconnectLock = new object();
         internal static TimeSpan ReconnectFrequency = TimeSpan.FromSeconds(60);
+        internal static TimeSpan ReconnectErrorFrequency = TimeSpan.FromSeconds(31);
 
         // Used for mocking in testing
         internal RedisSharedConnection()
@@ -70,21 +72,29 @@ namespace Microsoft.Web.Redis
 
         public void ForceReconnect()
         {
-            var previousReconnect = lastReconnectTime;
-            var elapsedTime = DateTimeOffset.UtcNow - previousReconnect;
-            
-            // If mulitple threads call ForceReconnect at the same time, we only want to honor one of them. 
-            if (elapsedTime > ReconnectFrequency)
+            DateTimeOffset currentErrorTime = DateTimeOffset.UtcNow;
+            TimeSpan errorTimeDiff = currentErrorTime - lastErrorTime;
+            lastErrorTime = currentErrorTime;
+            if (errorTimeDiff < ReconnectErrorFrequency)
             {
-                lock (reconnectLock)
+                var previousReconnect = lastReconnectTime;
+                var elapsedTime = DateTimeOffset.UtcNow - previousReconnect;
+                
+                // If mulitple threads call ForceReconnect at the same time, we only want to honor one of them. 
+                if (elapsedTime > ReconnectFrequency)
                 {
-                    elapsedTime = DateTimeOffset.UtcNow - lastReconnectTime;
-                    if (elapsedTime < ReconnectFrequency)
-                        return; // Some other thread made it through the check and the lock, so nothing to do. 
+                    lock (reconnectLock)
+                    {
+                        elapsedTime = DateTimeOffset.UtcNow - lastReconnectTime;
+                        if (elapsedTime < ReconnectFrequency)
+                        {
+                            return; // Some other thread made it through the check and the lock, so nothing to do. 
+                        }
 
-                    var oldMultiplexer = _redisMultiplexer;
-                    CloseMultiplexer(oldMultiplexer);
-                    CreateMultiplexer();
+                        var oldMultiplexer = _redisMultiplexer;
+                        CloseMultiplexer(oldMultiplexer);
+                        CreateMultiplexer();
+                    }
                 }
             }
         }
