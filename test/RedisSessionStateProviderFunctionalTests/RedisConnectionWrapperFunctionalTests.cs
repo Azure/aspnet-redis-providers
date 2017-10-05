@@ -779,7 +779,6 @@ namespace Microsoft.Web.Redis.FunctionalTests
             using (RedisServer redisServer = new RedisServer())
             {
                 RedisSharedConnection.ReconnectFrequency = TimeSpan.FromMilliseconds(5);
-                RedisSharedConnection.ReconnectErrorThreshold = TimeSpan.FromSeconds(1);
                 RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 DateTimeOffset first_lastReconnectTime = RedisSharedConnection.lastReconnectTime;
@@ -788,31 +787,14 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 data["key"] = "value";
                 redisConn.Set(data, 900);
                 Assert.Equal(first_lastReconnectTime, RedisSharedConnection.lastReconnectTime);
-                Assert.Equal(DateTimeOffset.MinValue, RedisSharedConnection.firstErrorTime);
-                Assert.Equal(DateTimeOffset.MinValue, RedisSharedConnection.previousErrorTime);
-
-                //First time RedisConnectionException this will set first and previous error
                 System.Threading.Thread.Sleep(6);
-                redisServer.KillRedisServers();
-                try { redisConn.UpdateExpiryTime(900); } catch { }
 
-                Assert.NotEqual(DateTimeOffset.MinValue, RedisSharedConnection.firstErrorTime);
-                Assert.NotEqual(DateTimeOffset.MinValue, RedisSharedConnection.previousErrorTime);
-                Assert.Equal(first_lastReconnectTime, RedisSharedConnection.lastReconnectTime);
+                //This should cause RedisConnectionException
+                redisServer.Restart();
+                redisConn.UpdateExpiryTime(900);
 
-                //This will make sure that elapsedSinceFirstError >= ReconnectErrorThreshold. But this is only second error,
-                // so second condition won't be true so reconnect won't happen
-                System.Threading.Thread.Sleep(1010);
-                try { redisConn.UpdateExpiryTime(900); } catch { }
-
-                Assert.NotEqual(RedisSharedConnection.firstErrorTime.Ticks, RedisSharedConnection.previousErrorTime.Ticks);
-                Assert.Equal(first_lastReconnectTime, RedisSharedConnection.lastReconnectTime);
-                
-                //This will make sure that elapsedSinceMostRecentError <= ReconnectErrorThreshold. Reconnect happens now
-                try { redisConn.UpdateExpiryTime(900); } catch { }
                 // This proves that force reconnect happened
                 Assert.NotEqual(first_lastReconnectTime, RedisSharedConnection.lastReconnectTime);
-
                 DisposeRedisConnectionWrapper(redisConn);
             }
         }

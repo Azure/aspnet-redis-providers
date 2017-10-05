@@ -39,12 +39,12 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         public RedisServer()
         {
-            KillRedisServers();
-            Start();
+            Restart();
         }
 
-        public void Start()
+        public void Restart()
         {
+            KillRedisServers();
             _server = new Process();
             _server.StartInfo.FileName = "..\\..\\..\\..\\..\\..\\packages\\redis-64.3.0.503\\tools\\redis-server.exe";
             _server.StartInfo.Arguments = "--maxmemory 20000000";
@@ -54,7 +54,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         }
 
         // Make sure that no redis-server instance is running
-        public void KillRedisServers()
+        private void KillRedisServers()
         {
             foreach (var proc in Process.GetProcessesByName("redis-server"))
             {
