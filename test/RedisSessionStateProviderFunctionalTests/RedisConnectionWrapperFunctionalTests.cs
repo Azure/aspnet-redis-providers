@@ -847,33 +847,6 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
-        public void TestingForceReconnect()
-        {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
-            using (RedisServer redisServer = new RedisServer())
-            {
-                RedisSharedConnection.ReconnectFrequency = TimeSpan.FromMilliseconds(5);
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
-
-                DateTimeOffset first_lastReconnectTime = RedisSharedConnection.lastReconnectTime;
-                // Inserting data into redis server
-                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(new RedisUtility(pc));
-                data["key"] = "value";
-                redisConn.Set(data, 900);
-                Assert.Equal(first_lastReconnectTime, RedisSharedConnection.lastReconnectTime);
-                System.Threading.Thread.Sleep(6);
-
-                //This should cause RedisConnectionException
-                redisServer.Restart();
-                redisConn.UpdateExpiryTime(900);
-
-                // This proves that force reconnect happened
-                Assert.NotEqual(first_lastReconnectTime, RedisSharedConnection.lastReconnectTime);
-                DisposeRedisConnectionWrapper(redisConn);
-            }
-        }
-
         private IDatabase GetRealRedisConnection(RedisConnectionWrapper redisConn)
         {
             return (IDatabase)((StackExchangeClientConnection)redisConn.redisConnection).RealConnection;
