@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Collections.Concurrent;
 using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis
@@ -18,9 +19,9 @@ namespace Microsoft.Web.Redis
     {
         // innerCollection will just contains keys now. value is always of type ValueWrapper.
         internal SessionStateItemCollection innerCollection;
-        
+
         // key is "session key in uppercase" and value is "actual session key in actual case"
-        Dictionary<string, string> allKeys = new Dictionary<string, string>();
+        ConcurrentDictionary<string, string> allKeys = new ConcurrentDictionary<string, string>();
         HashSet<string> modifiedKeys = new HashSet<string>();
         HashSet<string> deletedKeys = new HashSet<string>();
         RedisUtility _utility = null;
@@ -34,7 +35,7 @@ namespace Microsoft.Web.Redis
             {
                 return actualNameStoredEarlier;
             }
-            allKeys.Add(upperCaseValue, name);
+            allKeys.TryAdd(upperCaseValue, name);
             return name;
         }
 
