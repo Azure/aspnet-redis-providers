@@ -190,7 +190,7 @@ namespace Microsoft.Web.Redis
                         string key = (string) data[i];
                         if (key != null)
                         {
-                            sessionData.SetData(key, (byte[])data[i + 1]);
+                            sessionData.SetDataWithoutUpdatingModifiedKeys(key, (byte[])data[i + 1]);
                         }
                     }
                 }
