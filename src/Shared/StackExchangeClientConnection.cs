@@ -91,6 +91,12 @@ namespace Microsoft.Web.Redis
                     // Second call should pass if it was script not found issue
                     return redisOperation.Invoke();
                 }
+                if (e.Message.Contains("READONLY"))
+                {
+                    // Try once after reconnect
+                    _sharedConnection.ForceReconnect();
+                    return redisOperation.Invoke();
+                }
                 throw;
             }
         }
