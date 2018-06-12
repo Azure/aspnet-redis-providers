@@ -6,7 +6,6 @@
         <title>RedisOutputCacheProvider</title>
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
-        <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <licenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</licenseUrl>
         <projectUrl>https://github.com/Azure/aspnet-redis-providers/wiki</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
