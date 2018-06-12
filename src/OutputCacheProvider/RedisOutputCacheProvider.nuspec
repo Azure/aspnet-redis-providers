@@ -6,11 +6,12 @@
         <title>RedisOutputCacheProvider</title>
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
-        <licenseUrl>http://www.microsoft.com/web/webpi/eula/aspnetcomponent_rtw_enu.htm</licenseUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <licenseUrl>https://aka.ms/redis/aspnetproviders/license</licenseUrl>
         <projectUrl>https://github.com/Azure/aspnet-redis-providers/wiki</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>Custom output cache provider for redis cache.</description>
-        <copyright>Microsoft © 2014</copyright>
+        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
         <tags>outputcache outputcacheprovider azure microsoft windowsazureofficial redis</tags>
         <dependencies>
           <group targetFramework="net462">
