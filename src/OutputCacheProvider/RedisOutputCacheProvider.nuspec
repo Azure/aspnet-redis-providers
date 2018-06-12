@@ -7,7 +7,7 @@
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
-        <licenseUrl>https://aka.ms/redis/aspnetproviders/license</licenseUrl>
+        <licenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</licenseUrl>
         <projectUrl>https://github.com/Azure/aspnet-redis-providers/wiki</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>Custom output cache provider for redis cache.</description>
