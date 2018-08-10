@@ -73,6 +73,12 @@
     <Compile Include="..\Shared\ChangeTrackingSessionStateItemCollection.cs">
       <Link>ChangeTrackingSessionStateItemCollection.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\ConnectionMultiplexerFactory.cs">
+      <Link>ConnectionMultiplexerFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\IConnectionMultiplexerFactory.cs">
+      <Link>IConnectionMultiplexerFactory.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\IRedisClientConnection.cs">
       <Link>IRedisClientConnection.cs</Link>
     </Compile>

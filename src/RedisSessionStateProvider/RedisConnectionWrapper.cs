@@ -11,19 +11,16 @@ namespace Microsoft.Web.Redis
 {
     internal class RedisConnectionWrapper : ICacheConnection
     {
-        internal static RedisSharedConnection sharedConnection;
-        static object lockForSharedConnection = new object();
+        internal static RedisSharedConnection sharedConnection; // todo remove field
+        static readonly object lockForSharedConnection = new object();
         internal static RedisUtility redisUtility;
 
         public KeyGenerator Keys { set; get; }
         
         internal IRedisClientConnection redisConnection;
-        ProviderConfiguration configuration;
-        
 
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
-            this.configuration = configuration;
             Keys = new KeyGenerator(id, configuration.ApplicationName);
 
             // only single object of RedisSharedConnection will be created and then reused
@@ -62,7 +59,8 @@ namespace Microsoft.Web.Redis
         // ARGV[1] = session-timeout 
         // this order should not change LUA script depends on it
         // if data doesn't exists then do nothing
-        static readonly string updateExpiryTimeScript = (@" 
+        // TODO TrimScript
+        static readonly string updateExpiryTimeScript = (@"
                 local dataExists = redis.call('EXISTS', KEYS[1])
                 if dataExists == 0 then
                     return 1;

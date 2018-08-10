@@ -95,6 +95,9 @@
     <Compile Include="..\RedisSessionStateProviderUnitTest\RedisSessionStateProviderTests.cs">
       <Link>RedisSessionStateProviderTests.cs</Link>
     </Compile>
+    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisSharedConnectionTests.cs">
+      <Link>RedisSharedConnectionTests.cs</Link>
+    </Compile>
     <Compile Include="..\RedisSessionStateProviderUnitTest\RedisUtilityTests.cs">
       <Link>RedisUtilityTests.cs</Link>
     </Compile>

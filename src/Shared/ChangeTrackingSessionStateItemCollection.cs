@@ -192,7 +192,7 @@ namespace Microsoft.Web.Redis
             {
                 return valueWrapper.GetActualValue(_utility);
             }
-            return null;;
+            return null;
         }
 
         public override IEnumerator GetEnumerator()

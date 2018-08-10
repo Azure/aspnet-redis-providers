@@ -1,6 +1,8 @@
 bin
 obj
 csx
+.vs
+_ReSharper.Caches
 
 *.exe
 *.dll
