@@ -16,7 +16,7 @@ namespace Microsoft.Web.Redis
         /// Additionally, the factory itself is responsible for providing a clean, fresh instance of IConnectionMultiplexer (it can be the same instance).
         /// </summary>
         /// <param name="connectionMultiplexer">Instance that failed with <see cref="RedisConnectionException"/></param>
-        /// <returns></returns>
+        /// <returns>New or refreshed instance</returns>
         IConnectionMultiplexer RestartMultiplexer(IConnectionMultiplexer connectionMultiplexer);
     }
 }
