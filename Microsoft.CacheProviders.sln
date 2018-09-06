@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B2881413-1FC7-45A8-A297-125E586947B7}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,27 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B28814
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SessionStateProvider_net462", "SessionStateProvider_net462", "{E2756413-F53F-406C-BF26-87B30C765598}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SessionStateProvider_net452", "SessionStateProvider_net452", "{4F5E988E-F01F-42BB-8CBD-A00F7EA5C26D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisSessionStateProvider.UnitTest_452", "test\RedisSessionStateProviderUnitTest_452\RedisSessionStateProvider.UnitTest_452.csproj", "{F761EADC-7970-440D-AD84-3D34834B9821}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisSessionStateProvider.UnitTest_net462", "test\RedisSessionStateProviderUnitTest_462\RedisSessionStateProvider.UnitTest_net462.csproj", "{D56EDBFC-ADF2-42E2-B729-83C44BEB3D76}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisSessionStateProvider.FunctionalTests_net452", "test\RedisSessionStateProviderFunctionalTests_452\RedisSessionStateProvider.FunctionalTests_net452.csproj", "{BB4B5FD0-1FF8-4A33-BC99-F0A3265636DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisSessionStateProvider.FunctionalTests_net462", "test\RedisSessionStateProviderFunctionalTests_462\RedisSessionStateProvider.FunctionalTests_net462.csproj", "{F9328434-2C55-4752-A1F6-E8373876A28B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OutputCacheProvider_452", "OutputCacheProvider_452", "{C2617B74-B93C-4CE3-9698-854545832704}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OutputCacheProvider_462", "OutputCacheProvider_462", "{9B71BFC6-68C2-46AE-8542-03D3C476E1CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider_net452", "src\OutputCacheProvider_net452\RedisOutputCacheProvider_net452.csproj", "{34C40BE1-8570-47F1-99C3-61B25B1BE689}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider_net462", "src\OutputCacheProvider_net462\RedisOutputCacheProvider_net462.csproj", "{7091C1EC-7777-4CDD-8559-4914A9CC825C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider.UnitTests_net452", "test\OutputCacheProviderUnitTests_452\RedisOutputCacheProvider.UnitTests_net452.csproj", "{9BC29B91-CCB5-499A-B68B-5AAC0492B7CB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider.FunctionalTests_net452", "test\OutputCacheProviderFunctionalTests_452\RedisOutputCacheProvider.FunctionalTests_net452.csproj", "{0F2B2EE8-83D9-4442-B71A-73BC2033D323}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider.UnitTests_net462", "test\OutputCacheProviderUnitTests_462\RedisOutputCacheProvider.UnitTests_net462.csproj", "{FDEE6CF3-0680-4062-A171-46F02F1AE667}"
 EndProject
@@ -39,46 +25,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCacheProvider.Fu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisSessionStateProvider_net462", "src\RedisSessionStateProvider_net462\RedisSessionStateProvider_net462.csproj", "{F156BC3A-863B-4EFA-925A-8851464F0102}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisSessionStateProvider_net452", "src\RedisSessionStateProvider_net452\RedisSessionStateProvider_net452.csproj", "{F61A839E-8347-4B35-AC18-D4B380030AF9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F761EADC-7970-440D-AD84-3D34834B9821}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F761EADC-7970-440D-AD84-3D34834B9821}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F761EADC-7970-440D-AD84-3D34834B9821}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F761EADC-7970-440D-AD84-3D34834B9821}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D56EDBFC-ADF2-42E2-B729-83C44BEB3D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D56EDBFC-ADF2-42E2-B729-83C44BEB3D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D56EDBFC-ADF2-42E2-B729-83C44BEB3D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D56EDBFC-ADF2-42E2-B729-83C44BEB3D76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB4B5FD0-1FF8-4A33-BC99-F0A3265636DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB4B5FD0-1FF8-4A33-BC99-F0A3265636DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB4B5FD0-1FF8-4A33-BC99-F0A3265636DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB4B5FD0-1FF8-4A33-BC99-F0A3265636DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9328434-2C55-4752-A1F6-E8373876A28B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9328434-2C55-4752-A1F6-E8373876A28B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9328434-2C55-4752-A1F6-E8373876A28B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9328434-2C55-4752-A1F6-E8373876A28B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{34C40BE1-8570-47F1-99C3-61B25B1BE689}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34C40BE1-8570-47F1-99C3-61B25B1BE689}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34C40BE1-8570-47F1-99C3-61B25B1BE689}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34C40BE1-8570-47F1-99C3-61B25B1BE689}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7091C1EC-7777-4CDD-8559-4914A9CC825C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7091C1EC-7777-4CDD-8559-4914A9CC825C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7091C1EC-7777-4CDD-8559-4914A9CC825C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7091C1EC-7777-4CDD-8559-4914A9CC825C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9BC29B91-CCB5-499A-B68B-5AAC0492B7CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BC29B91-CCB5-499A-B68B-5AAC0492B7CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9BC29B91-CCB5-499A-B68B-5AAC0492B7CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9BC29B91-CCB5-499A-B68B-5AAC0492B7CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F2B2EE8-83D9-4442-B71A-73BC2033D323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F2B2EE8-83D9-4442-B71A-73BC2033D323}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F2B2EE8-83D9-4442-B71A-73BC2033D323}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F2B2EE8-83D9-4442-B71A-73BC2033D323}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FDEE6CF3-0680-4062-A171-46F02F1AE667}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FDEE6CF3-0680-4062-A171-46F02F1AE667}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDEE6CF3-0680-4062-A171-46F02F1AE667}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -91,26 +55,19 @@ Global
 		{F156BC3A-863B-4EFA-925A-8851464F0102}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F156BC3A-863B-4EFA-925A-8851464F0102}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F156BC3A-863B-4EFA-925A-8851464F0102}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F61A839E-8347-4B35-AC18-D4B380030AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F61A839E-8347-4B35-AC18-D4B380030AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F61A839E-8347-4B35-AC18-D4B380030AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F61A839E-8347-4B35-AC18-D4B380030AF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F761EADC-7970-440D-AD84-3D34834B9821} = {4F5E988E-F01F-42BB-8CBD-A00F7EA5C26D}
 		{D56EDBFC-ADF2-42E2-B729-83C44BEB3D76} = {E2756413-F53F-406C-BF26-87B30C765598}
-		{BB4B5FD0-1FF8-4A33-BC99-F0A3265636DC} = {4F5E988E-F01F-42BB-8CBD-A00F7EA5C26D}
 		{F9328434-2C55-4752-A1F6-E8373876A28B} = {E2756413-F53F-406C-BF26-87B30C765598}
-		{34C40BE1-8570-47F1-99C3-61B25B1BE689} = {C2617B74-B93C-4CE3-9698-854545832704}
 		{7091C1EC-7777-4CDD-8559-4914A9CC825C} = {9B71BFC6-68C2-46AE-8542-03D3C476E1CD}
-		{9BC29B91-CCB5-499A-B68B-5AAC0492B7CB} = {C2617B74-B93C-4CE3-9698-854545832704}
-		{0F2B2EE8-83D9-4442-B71A-73BC2033D323} = {C2617B74-B93C-4CE3-9698-854545832704}
 		{FDEE6CF3-0680-4062-A171-46F02F1AE667} = {9B71BFC6-68C2-46AE-8542-03D3C476E1CD}
 		{20F392C3-CB0D-4327-8F17-5BE12DEFC7D4} = {9B71BFC6-68C2-46AE-8542-03D3C476E1CD}
 		{F156BC3A-863B-4EFA-925A-8851464F0102} = {E2756413-F53F-406C-BF26-87B30C765598}
-		{F61A839E-8347-4B35-AC18-D4B380030AF9} = {4F5E988E-F01F-42BB-8CBD-A00F7EA5C26D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C81AE01-2255-4A87-91FA-816ED6075573}
 	EndGlobalSection
 EndGlobal
