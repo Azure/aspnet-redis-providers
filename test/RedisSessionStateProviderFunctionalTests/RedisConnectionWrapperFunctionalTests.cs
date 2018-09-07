@@ -3,15 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
-using FakeItEasy;
+using System;
+using System.Web.SessionState;
 using Microsoft.Web.Redis.Tests;
 using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.SessionState;
 using Xunit;
 
 namespace Microsoft.Web.Redis.FunctionalTests

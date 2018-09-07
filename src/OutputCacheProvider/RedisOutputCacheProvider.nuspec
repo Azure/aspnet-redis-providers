@@ -14,18 +14,12 @@
         <tags>outputcache outputcacheprovider azure microsoft windowsazureofficial redis</tags>
         <dependencies>
           <group targetFramework="net462">
-            <dependency id="StackExchange.Redis.StrongName" version="1.2.6" />
+            <dependency id="StackExchange.Redis" version="2.0.495" />
             <dependency id="Microsoft.AspNet.OutputCache.OutputCacheModuleAsync" version="1.0.1" />
-          </group>
-          <group targetFramework="net452">
-            <dependency id="StackExchange.Redis.StrongName" version="1.2.6" />
           </group>
         </dependencies>
     </metadata>
   <files>
-    <file src="web.config.transform" target="content\net452\web.config.transform" />
-    <file src="..\..\bin\Release\Signed\v4.5.2\Microsoft.Web.RedisOutputCacheProvider.dll" target="lib\net452\Microsoft.Web.RedisOutputCacheProvider.dll" />
-    <file src="..\..\bin\Release\Microsoft.Web.RedisOutputCacheProvider\v4.5.2\Microsoft.Web.RedisOutputCacheProvider.pdb" target="lib\net452\Microsoft.Web.RedisOutputCacheProvider.pdb" />
     <file src="web.config.transform" target="content\net462\web.config.transform" />
     <file src="..\..\bin\Release\Signed\v4.6.2\Microsoft.Web.RedisOutputCacheProvider.dll" target="lib\net462\Microsoft.Web.RedisOutputCacheProvider.dll" />
     <file src="..\..\bin\Release\Microsoft.Web.RedisOutputCacheProvider\v4.6.2\Microsoft.Web.RedisOutputCacheProvider.pdb" target="lib\net462\Microsoft.Web.RedisOutputCacheProvider.pdb" />
