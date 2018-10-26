@@ -43,3 +43,6 @@ Build/BinScopeOutDir/
 Build/BinScopeTargetDir/
 Scripts/
 
+/_ReSharper.Caches/*
+/.idea/*
+/.vs/*

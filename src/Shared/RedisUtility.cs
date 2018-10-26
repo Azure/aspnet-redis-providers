@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis
 {
@@ -69,6 +70,17 @@ namespace Microsoft.Web.Redis
             {
                 list.Add(key);
                 list.Add(GetBytesFromObject(sessionItems.GetDataWithoutUpdatingModifiedKeys(key)));
+            }
+            return list;
+        }
+
+        public List<object> GetAllItemsAsList(ISessionStateItemCollection sessionItems)
+        {
+            List<object> list = new List<object>(sessionItems.Keys.Count * 2);
+            foreach (string key in sessionItems.Keys)
+            {
+                list.Add(key);
+                list.Add(GetBytesFromObject(sessionItems[key]));
             }
             return list;
         }

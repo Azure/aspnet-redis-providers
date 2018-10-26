@@ -111,8 +111,15 @@ namespace Microsoft.Web.Redis
             valueArgs = null;
             if (data != null && data.Count > 0)
             {
-                ChangeTrackingSessionStateItemCollection sessionItems = (ChangeTrackingSessionStateItemCollection)data;
-                List<object> list = redisUtility.GetNewItemsAsList(sessionItems);
+                List<object> list;
+                if (data is ChangeTrackingSessionStateItemCollection sessionItems)
+                {
+                   list = redisUtility.GetNewItemsAsList(sessionItems);                   
+                }
+                else
+                {
+                    list = redisUtility.GetAllItemsAsList(data);
+                }
                 if (list.Count > 0)
                 {
                     keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
