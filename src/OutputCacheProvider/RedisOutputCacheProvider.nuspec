@@ -14,7 +14,7 @@
         <tags>outputcache outputcacheprovider azure microsoft windowsazureofficial redis</tags>
         <dependencies>
           <group targetFramework="net462">
-            <dependency id="StackExchange.Redis" version="2.0.495" />
+            <dependency id="StackExchange.Redis" version="2.0.519" />
             <dependency id="Microsoft.AspNet.OutputCache.OutputCacheModuleAsync" version="1.0.1" />
           </group>
         </dependencies>
