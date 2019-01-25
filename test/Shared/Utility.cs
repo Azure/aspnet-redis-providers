@@ -33,6 +33,7 @@ namespace Microsoft.Web.Redis.Tests
             configuration.RequestTimeout = new TimeSpan(0, 1, 30); //1.5 min
             configuration.Host = "127.0.0.1";
             configuration.Port = 0;
+            configuration.ConnectionPoolSize = 1;
             configuration.AccessKey = null;
             configuration.UseSsl = false;
             configuration.DatabaseId = 0;

@@ -4,6 +4,7 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using StackExchange.Redis;
 
 namespace Microsoft.Web.Redis
@@ -12,7 +13,7 @@ namespace Microsoft.Web.Redis
     {
         private ProviderConfiguration _configuration;
         private ConfigurationOptions _configOption;
-        private Lazy<ConnectionMultiplexer> _redisMultiplexer;
+        private ConcurrentQueue<Lazy<ConnectionMultiplexer>> _redisMultiplexer;
 
         internal static DateTimeOffset lastReconnectTime = DateTimeOffset.MinValue;
         internal static DateTimeOffset firstErrorTime = DateTimeOffset.MinValue;
@@ -20,6 +21,7 @@ namespace Microsoft.Web.Redis
         static object reconnectLock = new object();
         internal static TimeSpan ReconnectFrequency = TimeSpan.FromSeconds(60);
         internal static TimeSpan ReconnectErrorThreshold = TimeSpan.FromSeconds(30);
+        private int _poolSize;
 
         // Used for mocking in testing
         internal RedisSharedConnection()
@@ -28,7 +30,8 @@ namespace Microsoft.Web.Redis
         public RedisSharedConnection(ProviderConfiguration configuration)
         {
             _configuration = configuration;
-            
+            _redisMultiplexer = new ConcurrentQueue<Lazy<ConnectionMultiplexer>>();
+            _poolSize = configuration.ConnectionPoolSize;
             // If connection string is given then use it otherwise use individual options
             if (!string.IsNullOrEmpty(configuration.ConnectionString))
             {
@@ -68,7 +71,14 @@ namespace Microsoft.Web.Redis
 
         public IDatabase Connection
         {
-            get { return _redisMultiplexer.Value.GetDatabase(_configOption.DefaultDatabase ?? _configuration.DatabaseId); }
+            get
+            {
+                //return _redisMultiplexer.Value.GetDatabase(_configOption.DefaultDatabase ?? _configuration.DatabaseId);
+                Lazy<ConnectionMultiplexer> multiPlexorLazy = null;
+                while (!_redisMultiplexer.TryDequeue(out multiPlexorLazy)) continue;
+                _redisMultiplexer.Enqueue(multiPlexorLazy);
+                return multiPlexorLazy.Value.GetDatabase(_configOption.DefaultDatabase ?? _configuration.DatabaseId);
+            }
         }
 
         public void ForceReconnect()
@@ -110,8 +120,7 @@ namespace Microsoft.Web.Redis
                         firstErrorTime = DateTimeOffset.MinValue;
                         previousErrorTime = DateTimeOffset.MinValue;
 
-                        var oldMultiplexer = _redisMultiplexer;
-                        CloseMultiplexer(oldMultiplexer);
+                        CloseMultiplexer();
                         CreateMultiplexer();
                     }
                 }
@@ -122,26 +131,37 @@ namespace Microsoft.Web.Redis
         {
             if (LogUtility.logger == null)
             {
-                _redisMultiplexer = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_configOption));
+                for (int i = 0; i < _poolSize; i++)
+                {
+                    _redisMultiplexer.Enqueue(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_configOption)));
+                }
             }
             else
             {
-                _redisMultiplexer = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_configOption, LogUtility.logger));
+                for (int i = 0; i < _poolSize; i++)
+                {
+                    _redisMultiplexer.Enqueue(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_configOption,LogUtility.logger)));
+                }
             }
             lastReconnectTime = DateTimeOffset.UtcNow;
         }
 
-        private void CloseMultiplexer(Lazy<ConnectionMultiplexer> oldMultiplexer)
+
+        private void CloseMultiplexer()
         {
-            if (oldMultiplexer.Value != null)
+            Lazy<ConnectionMultiplexer> oldMultiplexer = null;
+            while (!_redisMultiplexer.TryDequeue(out oldMultiplexer))
             {
-                try
+                if (oldMultiplexer.Value != null)
                 {
-                    oldMultiplexer.Value.Close();
-                }
-                catch (Exception)
-                {
-                    // Example error condition: if accessing old.Value causes a connection attempt and that fails. 
+                    try
+                    {
+                        oldMultiplexer.Value.Close();
+                    }
+                    catch (Exception)
+                    {
+                        // Example error condition: if accessing old.Value causes a connection attempt and that fails. 
+                    }
                 }
             }
         }
