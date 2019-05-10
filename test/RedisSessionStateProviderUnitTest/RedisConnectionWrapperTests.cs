@@ -240,7 +240,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
-            redisConn.TryRemoveAndReleaseLockIfLockIdMatch(lockId);
+            redisConn.TryRemoveAndReleaseLock(lockId);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                  A<object[]>.That.Matches(o => o.Length == 1))).MustHaveHappened();
         }
@@ -257,8 +257,8 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
+            redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout);
 
-            redisConn.TryUpdateAndReleaseLockIfLockIdMatch(lockId, data, sessionTimeout);
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3), A<object[]>.That.Matches(
                o => o.Length == 8 &&
@@ -286,8 +286,8 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
+            redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout);
 
-            redisConn.TryUpdateAndReleaseLockIfLockIdMatch(lockId, data, sessionTimeout);
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3), A<object[]>.That.Matches(
                o => o.Length == 11 &&

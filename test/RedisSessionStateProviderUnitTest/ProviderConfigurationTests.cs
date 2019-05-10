@@ -238,6 +238,25 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsMethodName, "GetSettings");
             Assert.Equal("localhost:6380", ProviderConfiguration.GetConnectionString(config));
         }
+
+        [Fact]
+        public void GetConnectionMultiplexerFactoryType_Valid()
+        {
+            // arrange
+            const string connectionMultiplexerFactoryType = "test type";
+            var config = new NameValueCollection
+            {
+                ["connectionMultiplexerFactoryType"] = connectionMultiplexerFactoryType
+            };
+
+
+            // act
+            var configuration = ProviderConfiguration.ProviderConfigurationForSessionState(config);
+
+            // assert
+            Assert.Equal(connectionMultiplexerFactoryType, configuration.ConnectionMultiplexerFactoryType);
+            
+        }
     }
 
     public class Logger

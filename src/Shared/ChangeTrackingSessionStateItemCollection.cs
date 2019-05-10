@@ -178,12 +178,23 @@ namespace Microsoft.Web.Redis
             }
         }
 
-        internal void SetData(string name, byte[] value)
+        internal void SetDataWithoutUpdatingModifiedKeys(string name, byte[] value)
         {
             name = GetSessionNormalizedKeyToUse(name);
             innerCollection[name] = new ValueWrapper(value);
         }
-        
+
+        internal object GetDataWithoutUpdatingModifiedKeys(string name)
+        {
+            name = GetSessionNormalizedKeyToUse(name);
+            ValueWrapper valueWrapper = (ValueWrapper)innerCollection[name];
+            if (valueWrapper != null)
+            {
+                return valueWrapper.GetActualValue(_utility);
+            }
+            return null;
+        }
+
         public override IEnumerator GetEnumerator()
         {
             return innerCollection.GetEnumerator();
