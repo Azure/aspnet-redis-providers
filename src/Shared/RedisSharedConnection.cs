@@ -64,21 +64,30 @@ namespace Microsoft.Web.Redis
                     _configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
                 }
 
-                if (!string.IsNullOrWhiteSpace(configuration.ClientCertPfxPath)
-                    && !string.IsNullOrWhiteSpace(configuration.ClientCertPfxPassword)
-                    && configuration.UseSsl)
+                if (configuration.UseSsl 
+                    && !string.IsNullOrWhiteSpace(configuration.ClientCertPfxPassword))
                 {
-                    _configOption.CertificateSelection += delegate
-                    {
-                        return new X509Certificate2(configuration.ClientCertPfxPath, configuration.ClientCertPfxPassword);
-                    };
+                    X509Certificate2 certificate = null;
 
-                    _configOption.CertificateValidation += delegate
+                    if (!string.IsNullOrWhiteSpace(configuration.ClientCertPfxPath))
                     {
-                        return true;
-                    };
+                        certificate = new X509Certificate2(
+                            configuration.ClientCertPfxPath, configuration.ClientCertPfxPassword);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(configuration.ClientCertPfxValue))
+                    {
+                        var certificateBytes = Convert.FromBase64String(configuration.ClientCertPfxValue);
+                        certificate = new X509Certificate2(
+                            certificateBytes, configuration.ClientCertPfxPassword);
+                    }
+
+                    if (certificate != null)
+                    {
+                        _configOption.CertificateSelection += delegate { return certificate; };
+                        _configOption.CertificateValidation += delegate { return true; };
+                    }
                 }
-            }
+              }
             CreateMultiplexer();
         }
 

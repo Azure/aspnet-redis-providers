@@ -30,6 +30,7 @@ namespace Microsoft.Web.Redis
         public string ConnectionString { get; set; }
         public string RedisSerializerType { get; set; }
         public string ClientCertPfxPath { get; set; }
+        public string ClientCertPfxValue { get; set; }
         public string ClientCertPfxPassword { get; set; }
 
         /* Empty constructor required for testing */
@@ -52,8 +53,8 @@ namespace Microsoft.Web.Redis
             SessionStateSection sessionStateSection = (SessionStateSection)WebConfigurationManager.GetSection("system.web/sessionState");
             configuration.SessionTimeout = sessionStateSection.Timeout;
 
-            LogUtility.LogInfo("Host: {0}, Port: {1}, ThrowOnError: {2}, UseSsl: {3}, RetryTimeout: {4}, DatabaseId: {5}, ApplicationName: {6}, RequestTimeout: {7}, SessionTimeout: {8}, ClientCertPfxPath: {9}, ClientCertPfxPassword: {10}",
-                                            configuration.Host, configuration.Port, configuration.ThrowOnError, configuration.UseSsl, configuration.RetryTimeout, configuration.DatabaseId, configuration.ApplicationName, configuration.RequestTimeout, configuration.SessionTimeout, configuration.ClientCertPfxPath, configuration.ClientCertPfxPassword);
+            LogUtility.LogInfo("Host: {0}, Port: {1}, ThrowOnError: {2}, UseSsl: {3}, RetryTimeout: {4}, DatabaseId: {5}, ApplicationName: {6}, RequestTimeout: {7}, SessionTimeout: {8}, ClientCertPfxPath: {9}, ClientCertPfxValue: {10}, ClientCertPfxPassword: {11}",
+                                            configuration.Host, configuration.Port, configuration.ThrowOnError, configuration.UseSsl, configuration.RetryTimeout, configuration.DatabaseId, configuration.ApplicationName, configuration.RequestTimeout, configuration.SessionTimeout, configuration.ClientCertPfxPath, configuration.ClientCertPfxValue, configuration.ClientCertPfxPassword);
             return configuration;
         }
 
@@ -118,6 +119,7 @@ namespace Microsoft.Web.Redis
             }
 
             ClientCertPfxPath = GetStringSettings(config, "clientCertPfxPath", null);
+            ClientCertPfxValue = GetStringSettings(config, "clientCertPfxValue", null);
             ClientCertPfxPassword = GetStringSettings(config, "clientCertPfxPassword", null);
             ConnectionTimeoutInMilliSec = GetIntSettings(config, "connectionTimeoutInMilliseconds", 0);
             OperationTimeoutInMilliSec = GetIntSettings(config, "operationTimeoutInMilliseconds", 0);

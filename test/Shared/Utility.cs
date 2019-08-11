@@ -43,6 +43,7 @@ namespace Microsoft.Web.Redis.Tests
             configuration.ThrowOnError = true;
             configuration.RedisSerializerType = null;
             configuration.ClientCertPfxPath = null;
+            configuration.ClientCertPfxValue = null;
             configuration.ClientCertPfxPassword = null;
             return configuration;
         }
