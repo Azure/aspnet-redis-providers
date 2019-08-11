@@ -4,6 +4,7 @@
 //
 
 using System;
+using System.Security.Cryptography.X509Certificates;
 using StackExchange.Redis;
 
 namespace Microsoft.Web.Redis
@@ -61,6 +62,21 @@ namespace Microsoft.Web.Redis
                 if (configuration.OperationTimeoutInMilliSec != 0)
                 {
                     _configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
+                }
+
+                if (!string.IsNullOrWhiteSpace(configuration.ClientCertPfxPath)
+                    && !string.IsNullOrWhiteSpace(configuration.ClientCertPfxPassword)
+                    && configuration.UseSsl)
+                {
+                    _configOption.CertificateSelection += delegate
+                    {
+                        return new X509Certificate2(configuration.ClientCertPfxPath, configuration.ClientCertPfxPassword);
+                    };
+
+                    _configOption.CertificateValidation += delegate
+                    {
+                        return true;
+                    };
                 }
             }
             CreateMultiplexer();
