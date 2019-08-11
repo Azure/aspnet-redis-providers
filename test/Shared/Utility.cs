@@ -21,6 +21,11 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider.configuration = GetDefaultConfigUtility(); 
         }
 
+        internal static ChangeTrackingSessionStateItemCollection GetChangeTrackingSessionStateItemCollection()
+        {
+            return new ChangeTrackingSessionStateItemCollection(new RedisUtility(GetDefaultConfigUtility()));
+        }
+
         internal static ProviderConfiguration GetDefaultConfigUtility()
         {
             ProviderConfiguration configuration = new ProviderConfiguration();
