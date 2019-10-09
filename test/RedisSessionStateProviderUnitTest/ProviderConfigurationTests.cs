@@ -238,6 +238,22 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsMethodName, "GetSettings");
             Assert.Equal("localhost:6380", ProviderConfiguration.GetConnectionString(config));
         }
+
+        [Fact]
+        public void UseConnectionStringByNameWithEnvironmentVariables()
+        {
+            const string environmentVariableName = "__ASPNET_REDIS_CONNECTION_STRING__";
+            const string expectedConnectionString = "localhost:6380,localhost:6381";
+
+            Environment.SetEnvironmentVariable(environmentVariableName, expectedConnectionString);
+
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionString", "RedisSession2");
+            Assert.Equal(expectedConnectionString,
+                ProviderConfiguration.ProviderConfigurationForSessionState(config).ConnectionString);
+
+            Environment.SetEnvironmentVariable(environmentVariableName, null);
+        }
     }
 
     public class Logger

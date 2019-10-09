@@ -153,6 +153,7 @@ namespace Microsoft.Web.Redis
             string appSettingsValue = GetFromAppSetting(literalValue);
             if (!string.IsNullOrEmpty(appSettingsValue))
             {
+                appSettingsValue = Environment.ExpandEnvironmentVariables(appSettingsValue);
                 return appSettingsValue;
             }
 
@@ -160,7 +161,10 @@ namespace Microsoft.Web.Redis
                 && ConfigurationManager.ConnectionStrings[literalValue] != null
                 && !string.IsNullOrWhiteSpace(ConfigurationManager.ConnectionStrings[literalValue].ConnectionString))
             {
-                return ConfigurationManager.ConnectionStrings[literalValue].ConnectionString;
+                var connectionString = ConfigurationManager.ConnectionStrings[literalValue].ConnectionString;
+                connectionString = Environment.ExpandEnvironmentVariables(connectionString);
+
+                return connectionString;
             }
             return literalValue;
         }
