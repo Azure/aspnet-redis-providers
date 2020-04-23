@@ -28,7 +28,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-                Assert.Equal(null, provider.Get("key1"));
+                Assert.Null(provider.Get("key1"));
             }
         }
         
@@ -119,7 +119,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 provider.Remove("key6");
                 object data = provider.Get("key6");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Set("key7", "data7", utxExpiry);
                 provider.Remove("key7");
                 object data = provider.Get("key7");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 
@@ -156,7 +156,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 object data = provider.Get("key8");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 
@@ -177,7 +177,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 data = provider.Get("key9");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 

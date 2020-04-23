@@ -6,6 +6,7 @@
 using FakeItEasy;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), "");
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
-            Assert.NotNull(redisConn.GetLockAge(DateTime.Now.Ticks));
+            (new PositiveTimeSpanValidator()).Validate(redisConn.GetLockAge(DateTime.Now.Ticks));
         }
 
         [Fact]
@@ -205,7 +206,7 @@ namespace Microsoft.Web.Redis.Tests
 
             int sessionTimeout;
             Assert.True(redisConn.TryCheckWriteLockAndGetData(out lockId, out data, out sessionTimeout));
-            Assert.Equal(null, lockId);
+            Assert.Null(lockId);
             Assert.Equal(1, data.Count);
             Assert.Equal(15, sessionTimeout);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),

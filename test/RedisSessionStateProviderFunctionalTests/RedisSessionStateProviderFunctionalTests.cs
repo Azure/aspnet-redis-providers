@@ -51,7 +51,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // session update
                 await ssp.SetAndReleaseItemExclusiveAsync(null, sessionId, data.Item, data.LockId, false, CancellationToken.None);
-                Assert.Equal(1, actualConnection.HashGetAll(ssp.cache.Keys.DataKey).Length);
+                Assert.Single(actualConnection.HashGetAll(ssp.cache.Keys.DataKey));
 
                 // reset sessions timoue
                 await ssp.ResetItemTimeoutAsync(null, sessionId, CancellationToken.None);
@@ -119,7 +119,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // session update
                 await ssp.SetAndReleaseItemExclusiveAsync(null, sessionId, data.Item, data.LockId, false, CancellationToken.None);
-                Assert.Equal(1, actualConnection.HashGetAll(ssp.cache.Keys.DataKey).Length);
+                Assert.Single(actualConnection.HashGetAll(ssp.cache.Keys.DataKey));
                 Assert.Equal("300", actualConnection.HashGet(ssp.cache.Keys.InternalKey, "SessionTimeout").ToString());
 
                 // reset sessions timoue

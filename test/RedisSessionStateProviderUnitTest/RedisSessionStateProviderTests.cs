@@ -45,7 +45,7 @@ namespace Microsoft.Web.Redis.Tests
             Utility.SetConfigUtilityToDefault();
             SessionStateStoreData sssd = new SessionStateStoreData(Utility.GetChangeTrackingSessionStateItemCollection(), null, 900);
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
-            Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStore.CreateNewStoreData(null, 900),sssd));
+            Assert.True(Utility.CompareSessionStateStoreData(sessionStateStore.CreateNewStoreData(null, 900),sssd));
         }
 
         [Fact]
@@ -91,8 +91,8 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => mockCache.TryCheckWriteLockAndGetData(out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
             A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(mockLockId, A<int>.Ignored)).MustHaveHappened(); 
             
-            Assert.Equal(null, sessionStateStoreData);
-            Assert.Equal(false, locked);
+            Assert.Null(sessionStateStoreData);
+            Assert.False(locked);
             Assert.Equal(TimeSpan.Zero, lockAge);
             Assert.Equal(0, lockId);
         }
@@ -127,8 +127,8 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => mockCache.TryCheckWriteLockAndGetData(out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
             A.CallTo(() => mockCache.GetLockAge(A<object>.Ignored)).MustHaveHappened();
             
-            Assert.Equal(null, sessionStateStoreData);
-            Assert.Equal(true, locked);
+            Assert.Null(sessionStateStoreData);
+            Assert.True(locked);
         }
 
         [Fact]
@@ -168,10 +168,10 @@ namespace Microsoft.Web.Redis.Tests
             actions = data.Actions;
 
             A.CallTo(() => mockCache.TryCheckWriteLockAndGetData(out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
-            Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
-            Assert.Equal(false, locked);
+            Assert.True(Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
+            Assert.False(locked);
             Assert.Equal(TimeSpan.Zero, lockAge);
-            Assert.Equal(actions, SessionStateActions.None);
+            Assert.Equal(SessionStateActions.None, actions);
         }
 
         [Fact]
@@ -206,8 +206,8 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => mockCache.TryTakeWriteLockAndGetData(A<DateTime>.Ignored, 90, out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
             A.CallTo(() => mockCache.GetLockAge(A<object>.Ignored)).MustHaveHappened();
 
-            Assert.Equal(null, sessionStateStoreData);
-            Assert.Equal(true, locked);
+            Assert.Null(sessionStateStoreData);
+            Assert.True(locked);
         }
 
         [Fact]
@@ -247,10 +247,10 @@ namespace Microsoft.Web.Redis.Tests
 
             A.CallTo(() => mockCache.TryTakeWriteLockAndGetData(A<DateTime>.Ignored, 90, out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
 
-            Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
-            Assert.Equal(false, locked);
+            Assert.True(Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
+            Assert.False(locked);
             Assert.Equal(TimeSpan.Zero, lockAge);
-            Assert.Equal(actions, SessionStateActions.None);
+            Assert.Equal(SessionStateActions.None, actions);
         }
 
         [Fact]
