@@ -4,11 +4,13 @@
 //
 
 using System;
+using System.Threading.Tasks;
 using System.Web.Caching;
 
 namespace Microsoft.Web.Redis
 {
-    public class RedisOutputCacheProvider : OutputCacheProvider
+
+    public class RedisOutputCacheProvider : OutputCacheProviderAsync
     {
         internal static ProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
@@ -60,6 +62,11 @@ namespace Microsoft.Web.Redis
             return null;
         }
 
+        public override async Task<object> GetAsync(string key)
+        {
+            return await Task.FromResult(Get(key));
+        }
+
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
             try
@@ -72,6 +79,11 @@ namespace Microsoft.Web.Redis
                 LogUtility.LogError("Error in Add: " + e.Message);
             }
             return null;
+        }
+
+        public override async Task<object> AddAsync(string key, object entry, DateTime utcExpiry)
+        {
+            return await Task.FromResult(Add(key, entry, utcExpiry));
         }
 
         public override void Set(string key, object entry, DateTime utcExpiry)
@@ -87,6 +99,12 @@ namespace Microsoft.Web.Redis
             }
         }
 
+        public override async Task SetAsync(string key, object entry, DateTime utcExpiry)
+        {
+            Set(key, entry, utcExpiry);
+            await Task.FromResult(0);
+        }
+
         public override void Remove(string key)
         {
             try
@@ -99,7 +117,13 @@ namespace Microsoft.Web.Redis
                 LogUtility.LogError("Error in Remove: " + e.Message);
             }
         }
-        
+
+        public override async Task RemoveAsync(string key)
+        {
+            Remove(key);
+            await Task.FromResult(0);
+        }
+
         private void GetAccessToCacheStore()
         {
             if (cache == null)

@@ -278,23 +278,27 @@ namespace Microsoft.Web.Redis
 
         // KEYS = { write-lock-id, data-id, internal-id}
         // ARGV = { write-lock-value }
-        static readonly string removeIfLockMatchScript = (@" 
-                local lockValue = redis.call('GET',KEYS[1])
-                if lockValue ==  ARGV[1] then
-                    redis.call('DEL',KEYS[2])
-                    redis.call('DEL',KEYS[3])
-                    redis.call('DEL',KEYS[1])
-                end return 1
+        static readonly string removeSessionScript = (@" 
+                if ARGV[1] ~= '' then
+                    local lockValue = redis.call('GET',KEYS[1])
+                    if lockValue ~=  ARGV[1] then
+                        return 1
+                    end
+                end
+                redis.call('DEL',KEYS[2])
+                redis.call('DEL',KEYS[3])
+                redis.call('DEL',KEYS[1])
                 ");
         
-        public void TryRemoveAndReleaseLockIfLockIdMatch(object lockId)
+        public void TryRemoveAndReleaseLock(object lockId)
         {
             string[] keyArgs = { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
+            lockId = (lockId == null) ? "" : lockId;
             object[] valueArgs = { lockId.ToString() };
-            redisConnection.Eval(removeIfLockMatchScript, keyArgs, valueArgs);
+            redisConnection.Eval(removeSessionScript, keyArgs, valueArgs);
         }
 
-/*-------Start of TryUpdateIfLockIdMatch operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-------Start of TryUpdate operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // KEYS[1] = write-lock-id, KEYS[2] = data-id, KEYS[3] = internal-id
         // ARGV[1] = write-lock-value, ARGV[2] = session time out, 
@@ -302,18 +306,21 @@ namespace Microsoft.Web.Redis
         // ARGV[6] = number of items updated, ARGV[7] = number of items updated start index in ARGV, ARGV[8] = number of items updated end index in ARGV,
         // ARGV[9...] = actual data
         // this order should not change LUA script depends on it
-        static readonly string removeAndUpdateIfLockMatchScript = (@"
-                local writeLockValueFromCache = redis.call('GET',KEYS[1])
-                if writeLockValueFromCache == ARGV[1] then
-                    if tonumber(ARGV[3]) ~= 0 then redis.call('HDEL', KEYS[2], unpack(ARGV, ARGV[4], ARGV[5])) end
-                    if tonumber(ARGV[6]) ~= 0 then redis.call('HMSET', KEYS[2], unpack(ARGV, ARGV[7], ARGV[8])) end
-                    redis.call('EXPIRE',KEYS[2],ARGV[2])
-                    redis.call('HMSET', KEYS[3], 'SessionTimeout', ARGV[2])
-                    redis.call('EXPIRE',KEYS[3],ARGV[2]) 
-                    redis.call('DEL',KEYS[1])
-                end return 1");
+        static readonly string removeAndUpdateSessionDataScript = (@"
+                if ARGV[1] ~= '' then
+                    local writeLockValueFromCache = redis.call('GET',KEYS[1])
+                    if writeLockValueFromCache ~= ARGV[1] then
+                        return 1
+                    end
+                end
+                if tonumber(ARGV[3]) ~= 0 then redis.call('HDEL', KEYS[2], unpack(ARGV, ARGV[4], ARGV[5])) end
+                if tonumber(ARGV[6]) ~= 0 then redis.call('HMSET', KEYS[2], unpack(ARGV, ARGV[7], ARGV[8])) end
+                redis.call('EXPIRE',KEYS[2],ARGV[2])
+                redis.call('HMSET', KEYS[3], 'SessionTimeout', ARGV[2])
+                redis.call('EXPIRE',KEYS[3],ARGV[2]) 
+                redis.call('DEL',KEYS[1])");
 
-        private bool TryUpdateIfLockIdMatchPrepare(object lockId, ISessionStateItemCollection data, int sessionTimeout, out string[] keyArgs, out object[] valueArgs)
+        private bool TryUpdateAndReleaseLockPrepare(object lockId, ISessionStateItemCollection data, int sessionTimeout, out string[] keyArgs, out object[] valueArgs)
         {
             keyArgs = null;
             valueArgs = null;
@@ -326,7 +333,7 @@ namespace Microsoft.Web.Redis
 
                 keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
                 valueArgs = new object[list.Count + 8]; // this +8 is for first wight values in ARGV that we will add now
-                valueArgs[0] = lockId;
+                valueArgs[0] = (lockId == null) ? "" : lockId;
                 valueArgs[1] = sessionTimeout;
                 valueArgs[2] = noOfItemsRemoved;
                 valueArgs[3] = 9; // In Lua index starts from 1 so first item deleted will be 9th.
@@ -345,13 +352,13 @@ namespace Microsoft.Web.Redis
             return false;
         }
 
-        public void TryUpdateAndReleaseLockIfLockIdMatch(object lockId, ISessionStateItemCollection data, int sessionTimeout)
+        public void TryUpdateAndReleaseLock(object lockId, ISessionStateItemCollection data, int sessionTimeout)
         {
             string[] keyArgs;
             object[] valueArgs;
-            if (TryUpdateIfLockIdMatchPrepare(lockId, data, sessionTimeout, out keyArgs, out valueArgs))
+            if (TryUpdateAndReleaseLockPrepare(lockId, data, sessionTimeout, out keyArgs, out valueArgs))
             {
-                redisConnection.Eval(removeAndUpdateIfLockMatchScript, keyArgs, valueArgs);
+                redisConnection.Eval(removeAndUpdateSessionDataScript, keyArgs, valueArgs);
             }
         }
         
