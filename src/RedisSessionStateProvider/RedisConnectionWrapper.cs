@@ -177,11 +177,10 @@ namespace Microsoft.Web.Redis
         public bool TryTakeWriteLockAndGetData(DateTime lockTime, int lockTimeout, out object lockId, out ISessionStateItemCollection data, out int sessionTimeout)
         {
             string expectedLockId = lockTime.Ticks.ToString();
-            object rowDataFromRedis = null;
             string[] keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
             object[] valueArgs = new object[] { expectedLockId, lockTimeout };
 
-            rowDataFromRedis = redisConnection.Eval(writeLockAndGetDataScript, keyArgs, valueArgs);
+            object rowDataFromRedis = redisConnection.Eval(writeLockAndGetDataScript, keyArgs, valueArgs);
 
             bool ret = false;
             data = null;
@@ -225,11 +224,10 @@ namespace Microsoft.Web.Redis
         
         public bool TryCheckWriteLockAndGetData(out object lockId, out ISessionStateItemCollection data, out int sessionTimeout)
         {
-            object rowDataFromRedis = null;
             string[] keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
             object[] valueArgs = new object[] { };
 
-            rowDataFromRedis = redisConnection.Eval(readLockAndGetDataScript, keyArgs, valueArgs);
+            object rowDataFromRedis = redisConnection.Eval(readLockAndGetDataScript, keyArgs, valueArgs);
 
             bool ret = false;
             data = null;
@@ -293,7 +291,7 @@ namespace Microsoft.Web.Redis
         public void TryRemoveAndReleaseLock(object lockId)
         {
             string[] keyArgs = { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
-            lockId = (lockId == null) ? "" : lockId;
+            lockId = lockId ?? "";
             object[] valueArgs = { lockId.ToString() };
             redisConnection.Eval(removeSessionScript, keyArgs, valueArgs);
         }
@@ -333,7 +331,7 @@ namespace Microsoft.Web.Redis
 
                 keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
                 valueArgs = new object[list.Count + 8]; // this +8 is for first wight values in ARGV that we will add now
-                valueArgs[0] = (lockId == null) ? "" : lockId;
+                valueArgs[0] = lockId ?? "";
                 valueArgs[1] = sessionTimeout;
                 valueArgs[2] = noOfItemsRemoved;
                 valueArgs[3] = 9; // In Lua index starts from 1 so first item deleted will be 9th.
