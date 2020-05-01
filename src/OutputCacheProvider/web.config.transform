@@ -12,7 +12,7 @@
             host = "127.0.0.1" [String]
             port = "" [number]
             accessKey = "" [String]
-            ssl = "false" [true|false]
+            ssl = "true" [true|false]
             databaseId = "0" [number]
             applicationName = "" [String]
             connectionTimeoutInMilliseconds = "5000" [number]
