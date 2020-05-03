@@ -10,7 +10,7 @@ namespace Microsoft.Web.Redis
 {
     internal class KeyGenerator
     {
-        private static SHA256 HashAlgorithm = SHA256.Create();
+        private static HashAlgorithm Algorithm = SHA256.Create();
         private string id;
         public string DataKey { get; private set; }
         public string LockKey { get; private set; }
@@ -39,7 +39,7 @@ namespace Microsoft.Web.Redis
 
         private string StringHash(string key)
         {
-            return Encoding.ASCII.GetString(HashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(key)));
+            return Encoding.ASCII.GetString(Algorithm.ComputeHash(Encoding.ASCII.GetBytes(key)));
         }
 
     }
