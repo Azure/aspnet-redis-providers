@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
+using System;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Microsoft.Web.Redis
@@ -43,5 +45,16 @@ namespace Microsoft.Web.Redis
                 return retObject;
             }
         }
+    }
+
+    [Serializable]
+    internal class RedisNull : ISerializable
+    {
+        public RedisNull()
+        {}
+        protected RedisNull(SerializationInfo info, StreamingContext context)
+        {}
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {}
     }
 }

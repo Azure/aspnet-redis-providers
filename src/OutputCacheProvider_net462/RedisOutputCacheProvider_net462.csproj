@@ -121,9 +121,6 @@
     <Compile Include="..\Shared\ProviderConfiguration.cs">
       <Link>ProviderConfiguration.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\RedisNull.cs">
-      <Link>RedisNull.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\RedisSharedConnection.cs">
       <Link>RedisSharedConnection.cs</Link>
     </Compile>
