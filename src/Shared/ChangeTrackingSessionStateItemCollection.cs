@@ -16,7 +16,6 @@ namespace Microsoft.Web.Redis
        during any request cycle. We use this list to indentify if we want to change any session item or not.*/
     internal class ChangeTrackingSessionStateItemCollection : NameObjectCollectionBase, ISessionStateItemCollection, ICollection, IEnumerable
     {
-        // innerCollection will just contains keys now. value is always of type ValueWrapper.
         internal SessionStateItemCollection innerCollection;
         
         // key is "session key in uppercase" and value is "actual session key in actual case"
@@ -150,49 +149,30 @@ namespace Microsoft.Web.Redis
 
         private object GetData(string normalizedName)
         {
-            ValueWrapper valueWrapper = (ValueWrapper) innerCollection[normalizedName];
-            if (valueWrapper != null)
+            object value = innerCollection[normalizedName];
+            if (value != null && !value.GetType().IsValueType && value.GetType() != typeof(string))
             {
-                object actualValue = valueWrapper.GetActualValue(_utility);
-                // if actualValue is mutable then add it to modified list even during get operation
-                if (actualValue != null && !actualValue.GetType().IsValueType && actualValue.GetType() != typeof(string))
-                {
-                    AddInModifiedKeys(normalizedName);
-                }
-                return actualValue;
+                AddInModifiedKeys(normalizedName);
             }
-            return null;
+            return value;
         }
 
         private void SetData(string normalizedName, object value)
         {
             AddInModifiedKeys(normalizedName);
-            ValueWrapper valueWrapper = (ValueWrapper) innerCollection[normalizedName];
-            if (valueWrapper != null)
-            {
-                valueWrapper.SetActualValue(value);
-            }
-            else
-            {
-                innerCollection[normalizedName] = new ValueWrapper(value);
-            }
+            innerCollection[normalizedName] = value;
         }
 
         internal void SetDataWithoutUpdatingModifiedKeys(string name, byte[] value)
         {
             name = GetSessionNormalizedKeyToUse(name);
-            innerCollection[name] = new ValueWrapper(value);
+            innerCollection[name] = _utility.GetObjectFromBytes(value);
         }
 
         internal object GetDataWithoutUpdatingModifiedKeys(string name)
         {
             name = GetSessionNormalizedKeyToUse(name);
-            ValueWrapper valueWrapper = (ValueWrapper)innerCollection[name];
-            if (valueWrapper != null)
-            {
-                return valueWrapper.GetActualValue(_utility);
-            }
-            return null;;
+            return innerCollection[name];
         }
 
         public override IEnumerator GetEnumerator()

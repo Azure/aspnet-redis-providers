@@ -128,9 +128,6 @@
     <Compile Include="..\Shared\StackExchangeClientConnection.cs">
       <Link>StackExchangeClientConnection.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\ValueWrapper.cs">
-      <Link>ValueWrapper.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

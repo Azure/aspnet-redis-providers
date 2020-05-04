@@ -129,9 +129,6 @@
     <Compile Include="..\Shared\StackExchangeClientConnection.cs">
       <Link>StackExchangeClientConnection.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\ValueWrapper.cs">
-      <Link>ValueWrapper.cs</Link>
-    </Compile>
     <Compile Include="..\RedisSessionStateProvider\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
