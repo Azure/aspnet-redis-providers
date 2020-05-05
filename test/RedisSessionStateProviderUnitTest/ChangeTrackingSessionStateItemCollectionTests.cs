@@ -20,9 +20,9 @@ namespace Microsoft.Web.Redis.Tests
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items["key"] = "value";
             items[0] = "value2";
-            Assert.Equal(1, items.Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
-            Assert.Equal(1, items.innerCollection.Count);
+            Assert.Single(items);
+            Assert.Single(items.GetModifiedKeys());
+            Assert.Single(items.innerCollection);
         }
 
         [Fact]
@@ -30,13 +30,13 @@ namespace Microsoft.Web.Redis.Tests
         {
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items["key"] = "value";
-            Assert.Equal(1, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
+            Assert.Single(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Single(items.GetModifiedKeys());
             items.Remove("key");
-            Assert.Equal(0, items.Count);
-            Assert.Equal(1, items.GetDeletedKeys().Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items);
+            Assert.Single(items.GetDeletedKeys());
+            Assert.Empty(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -44,13 +44,13 @@ namespace Microsoft.Web.Redis.Tests
         {
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items["key"] = "value";
-            Assert.Equal(1, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
+            Assert.Single(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Single(items.GetModifiedKeys());
             items.Remove("key1");
-            Assert.Equal(1, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
+            Assert.Single(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Single(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -58,13 +58,13 @@ namespace Microsoft.Web.Redis.Tests
         {
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items["key"] = "value";
-            Assert.Equal(1, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
+            Assert.Single(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Single(items.GetModifiedKeys());
             items.RemoveAt(0);
-            Assert.Equal(0, items.Count);
-            Assert.Equal(1, items.GetDeletedKeys().Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items);
+            Assert.Single(items.GetDeletedKeys());
+            Assert.Empty(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -72,9 +72,9 @@ namespace Microsoft.Web.Redis.Tests
         {
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items["key"] = "value";
-            Assert.Equal(1, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
+            Assert.Single(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Single(items.GetModifiedKeys());
             Assert.Throws<ArgumentOutOfRangeException>(() => items.RemoveAt(1));
         }
 
@@ -82,13 +82,13 @@ namespace Microsoft.Web.Redis.Tests
         public void Clear_EmptyCollection()
         {
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
-            Assert.Equal(0, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Empty(items.GetModifiedKeys());
             items.Clear();
-            Assert.Equal(0, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Empty(items.GetModifiedKeys());
         }
         
         [Fact]
@@ -99,12 +99,12 @@ namespace Microsoft.Web.Redis.Tests
             items["key2"] = "value2";
             items["key3"] = "value3";
             Assert.Equal(3, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
+            Assert.Empty(items.GetDeletedKeys());
             Assert.Equal(3, items.GetModifiedKeys().Count);
             items.Clear();
-            Assert.Equal(0, items.Count);
+            Assert.Empty(items);
             Assert.Equal(3, items.GetDeletedKeys().Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -115,11 +115,11 @@ namespace Microsoft.Web.Redis.Tests
             items["key2"] = "value2";
             items["key3"] = "value3";
             Assert.Equal(3, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
+            Assert.Empty(items.GetDeletedKeys());
             Assert.Equal(3, items.GetModifiedKeys().Count);
             items.Dirty = true;
             Assert.Equal(3, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
+            Assert.Empty(items.GetDeletedKeys());
             Assert.Equal(3, items.GetModifiedKeys().Count);
         }
 
@@ -131,12 +131,12 @@ namespace Microsoft.Web.Redis.Tests
             items["key2"] = "value2";
             items["key3"] = "value3";
             Assert.Equal(3, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
+            Assert.Empty(items.GetDeletedKeys());
             Assert.Equal(3, items.GetModifiedKeys().Count);
             items.Dirty = false;
             Assert.Equal(3, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Empty(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -146,20 +146,20 @@ namespace Microsoft.Web.Redis.Tests
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items["key1"] = "value1";
             Assert.Equal("value1", items[0]);
-            Assert.Equal(true, items.Dirty);
+            Assert.True(items.Dirty);
             items.Dirty = false;
 
             // remove key
             items.Remove("key1");
-            Assert.Equal(0, items.Count);
-            Assert.Equal(1, items.GetDeletedKeys().Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items);
+            Assert.Single(items.GetDeletedKeys());
+            Assert.Empty(items.GetModifiedKeys());
             
             // in same transaction insert same key than it should be update
             items["key1"] = "value1";
-            Assert.Equal(1, items.Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
+            Assert.Single(items);
+            Assert.Empty(items.GetDeletedKeys());
+            Assert.Single(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -169,15 +169,15 @@ namespace Microsoft.Web.Redis.Tests
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items["key1"] = new StringBuilder("value1");
             items.Dirty = false;
-            Assert.Equal(1, items.Count);
-            Assert.Equal(false, items.Dirty);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
+            Assert.Single(items);
+            Assert.False(items.Dirty);
+            Assert.Empty(items.GetModifiedKeys());
+            Assert.Empty(items.GetDeletedKeys());
             
             // update value 
             StringBuilder sb = (StringBuilder)items["key1"];
-            Assert.Equal(1, items.Count);
-            Assert.Equal(1, items.GetModifiedKeys().Count);
+            Assert.Single(items);
+            Assert.Single(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -189,15 +189,15 @@ namespace Microsoft.Web.Redis.Tests
             items["key2"] = 10;
             items.Dirty = false;
             Assert.Equal(2, items.Count);
-            Assert.Equal(false, items.Dirty);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
-            Assert.Equal(0, items.GetDeletedKeys().Count);
+            Assert.False(items.Dirty);
+            Assert.Empty(items.GetModifiedKeys());
+            Assert.Empty(items.GetDeletedKeys());
 
             // update value 
             string key1 = (string) items["key1"];
             int key2 = (int)items["key2"];
             Assert.Equal(2, items.Count);
-            Assert.Equal(0, items.GetModifiedKeys().Count);
+            Assert.Empty(items.GetModifiedKeys());
         }
 
         [Fact]
@@ -313,7 +313,7 @@ namespace Microsoft.Web.Redis.Tests
             ChangeTrackingSessionStateItemCollection items = Utility.GetChangeTrackingSessionStateItemCollection();
             items.SetDataWithoutUpdatingModifiedKeys("k1", null);
             
-            Assert.Equal(1, items.Count);
+            Assert.Single(items);
             Assert.Null(items["k1"]);
         }
     }

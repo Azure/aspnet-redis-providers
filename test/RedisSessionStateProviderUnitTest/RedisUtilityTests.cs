@@ -41,7 +41,7 @@ namespace Microsoft.Web.Redis.Tests
             sessionItems["key"] = "val";
             sessionItems.Remove("key");
             Assert.Equal(1, RedisUtility.AppendRemoveItemsInList(sessionItems, list));
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Microsoft.Web.Redis.Tests
         {
             ChangeTrackingSessionStateItemCollection sessionItems = Utility.GetChangeTrackingSessionStateItemCollection();
             List<object> list = RedisUtility.GetNewItemsAsList(sessionItems);
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact]
@@ -108,13 +108,13 @@ namespace Microsoft.Web.Redis.Tests
         public void GetBytesFromObject_WithValidObject()
         {
             Object obj = "hi";
-            Assert.NotEqual(null, RedisUtility.GetBytesFromObject(obj));
+            Assert.NotNull(RedisUtility.GetBytesFromObject(obj));
         }
 
         [Fact]
         public void GetObjectFromBytes_WithNullObject()
         {
-            Assert.Equal(null, RedisUtility.GetObjectFromBytes(null));
+            Assert.Null(RedisUtility.GetObjectFromBytes(null));
         }
 
         [Fact]
