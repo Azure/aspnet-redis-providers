@@ -15,7 +15,7 @@ namespace Microsoft.Web.Redis
         static object lockForSharedConnection = new object();
         internal static RedisUtility redisUtility;
 
-        public KeyGenerator Keys { set; get; }
+        public IKeyGenerator Keys { set; get; }
         
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
@@ -24,7 +24,8 @@ namespace Microsoft.Web.Redis
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
             this.configuration = configuration;
-            Keys = new KeyGenerator(id, configuration.ApplicationName);
+            Keys = InitializeKeyGenerator();
+            Keys.GenerateKeys(id, configuration.ApplicationName);
 
             // only single object of RedisSharedConnection will be created and then reused
             if (sharedConnection == null)
@@ -39,6 +40,20 @@ namespace Microsoft.Web.Redis
                 }
             }
             redisConnection = new StackExchangeClientConnection(configuration, redisUtility, sharedConnection);
+        }
+
+        private IKeyGenerator InitializeKeyGenerator()
+        {
+            string keyGeneratorTypeName = configuration.RedisKeyGeneratorType;
+            if (!string.IsNullOrWhiteSpace(keyGeneratorTypeName))
+            {
+                var keyGeneratorType = Type.GetType(keyGeneratorTypeName, true);
+                if (keyGeneratorType != null)
+                {
+                    return (IKeyGenerator) Activator.CreateInstance(keyGeneratorType);
+                }
+            }
+            return new SimpleKeyGenerator();
         }
 
         public TimeSpan GetLockAge(object lockId)

@@ -79,6 +79,47 @@ namespace Microsoft.Web.Redis.FunctionalTests
         }
 
         [Fact]
+        public void Set_ValidData_WithCustomKeyGenerator()
+        {
+
+            // this also tests host:port config part
+            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            pc.RedisKeyGeneratorType = typeof(TestKeyGenerator).AssemblyQualifiedName;
+            pc.ApplicationName = "APPTEST";
+            pc.Port = 6379;
+            RedisUtility testKeyGeneratorRedisUtility = new RedisUtility(pc);
+
+            using (RedisServer redisServer = new RedisServer())
+            {
+                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
+
+                // Inserting data into redis server
+                ChangeTrackingSessionStateItemCollection data = new ChangeTrackingSessionStateItemCollection(testKeyGeneratorRedisUtility);
+                data["key"] = "value";
+                data["key1"] = "value1";
+                redisConn.Set(data, 900);
+
+                // Get actual connection and get data blob from redis
+                IDatabase actualConnection = GetRealRedisConnection(redisConn);
+                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
+
+                // Check that data should be the same as what was inserted
+                Assert.Equal(2, sessionDataFromRedis.Length);
+                ChangeTrackingSessionStateItemCollection dataFromRedis = new ChangeTrackingSessionStateItemCollection(testKeyGeneratorRedisUtility);
+                foreach (HashEntry entry in sessionDataFromRedis)
+                {
+                    dataFromRedis[entry.Name] = testKeyGeneratorRedisUtility.GetObjectFromBytes(entry.Value).ToString();
+                }
+                Assert.Equal("value", dataFromRedis["key"]);
+                Assert.Equal("value1", dataFromRedis["key1"]);
+
+                // remove data from redis
+                actualConnection.KeyDelete(redisConn.Keys.DataKey);
+                DisposeRedisConnectionWrapper(redisConn);
+            }
+        }
+
+        [Fact]
         public void Set_ValidData()
         {
             // this also tests host:port config part

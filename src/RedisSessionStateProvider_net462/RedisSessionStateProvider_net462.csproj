@@ -139,6 +139,9 @@
     <Compile Include="..\RedisSessionStateProvider\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\RedisSessionStateProvider\IKeyGenerator.cs">
+      <Link>IKeyGenerator.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

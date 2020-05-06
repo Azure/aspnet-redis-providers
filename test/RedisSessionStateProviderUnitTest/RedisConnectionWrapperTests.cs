@@ -300,5 +300,32 @@ namespace Microsoft.Web.Redis.Tests
                 ))).MustHaveHappened();
         }
 
+        [Fact]
+        public void CustomKeyGenerator_ByAssemblyQualifiedName()
+        {
+            var keyGeneratorTypeName = typeof(TestKeyGenerator).AssemblyQualifiedName;
+            var connectionWrapper = new RedisConnectionWrapper(new ProviderConfiguration() { RedisKeyGeneratorType = keyGeneratorTypeName }, "id");
+            Assert.IsType<TestKeyGenerator>(connectionWrapper.Keys);
+        }
+
+        [Fact]
+        public void CustomKeyGenerator_NotExistingType()
+        {
+            var keyGeneratorTypeName = "This.Type.Does.Not.Exist";
+            Assert.Throws<TypeLoadException>(() =>
+            {
+                new RedisConnectionWrapper(new ProviderConfiguration() { RedisKeyGeneratorType = keyGeneratorTypeName }, "id");
+            });
+        }
+
+        [Fact]
+        public void CustomKeyGenerator_ExistingTypeNotImplementingIKeyGenerator()
+        {
+            var keyGeneratorTypeName = this.GetType().AssemblyQualifiedName;
+            Assert.Throws<InvalidCastException>(() =>
+            {
+                new RedisConnectionWrapper(new ProviderConfiguration() { RedisKeyGeneratorType = keyGeneratorTypeName }, "id");
+            });
+        }
     }
 }

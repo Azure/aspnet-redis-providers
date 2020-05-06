@@ -137,6 +137,9 @@
     <Compile Include="..\Shared\TestSerializer.cs">
       <Link>TestSerializer.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\TestKeyGenerator.cs">
+      <Link>TestKeyGenerator.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Utility.cs" />
   </ItemGroup>
   <ItemGroup>

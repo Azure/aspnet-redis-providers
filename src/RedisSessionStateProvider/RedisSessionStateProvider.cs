@@ -61,7 +61,7 @@ namespace Microsoft.Web.Redis
             }
             else
             {
-                cache.Keys.RegenerateKeyStringIfIdModified(id, configuration.ApplicationName);
+                cache.Keys.GenerateKeys(id, configuration.ApplicationName);
             }
         }
 
