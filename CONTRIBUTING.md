@@ -14,7 +14,7 @@ Just follow the existing patterns already present in the code.
 
 ## Development Workflow
 
-We actively develop in the master branch. This means that all pull requests by contributors need to be developed and submitted to the master branch.
+We actively develop in the main branch. This means that all pull requests by contributors need to be developed and submitted to the main branch.
 
 When we release a new NuGet package, we create a tag for it.
 
