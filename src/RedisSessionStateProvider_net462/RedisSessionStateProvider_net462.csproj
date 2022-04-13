@@ -8,7 +8,6 @@
     <AssemblyOriginatorKeyFile Condition=" '$(EnableCodeSigning)' == 'true' ">dummy.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Net" />
     <Reference Include="System.Web" />
   </ItemGroup>
@@ -91,6 +90,7 @@
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.6.2'">
     <DefineConstants>$(DefineConstants);DOTNET_462</DefineConstants>
