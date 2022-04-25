@@ -50,6 +50,5 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
   </PropertyGroup>
 </Project>

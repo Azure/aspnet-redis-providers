@@ -67,14 +67,6 @@
   <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.6.2'">
     <DefineConstants>$(DefineConstants);DOTNET_462</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
-    <NoWarn>
-    </NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>$(OutputPath)$(TargetFrameworkVersion)\</OutputPath>
-  </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
