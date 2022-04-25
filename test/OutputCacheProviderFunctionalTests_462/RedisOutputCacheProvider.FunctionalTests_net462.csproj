@@ -52,7 +52,7 @@
     <DefineConstants>$(DefineConstants);DOTNET_462</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net462;net472</TargetFrameworks>net462</TargetFramework>
+    <TargetFrameworks>net462;net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 </Project>
