@@ -44,9 +44,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v4.6.2'">
-    <DefineConstants>$(DefineConstants);DOTNET_462</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworks>net462;net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
