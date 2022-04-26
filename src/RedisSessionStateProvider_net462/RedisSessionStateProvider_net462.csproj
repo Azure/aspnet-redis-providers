@@ -12,6 +12,63 @@
     <Reference Include="System.Net" />
     <Reference Include="System.Web" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\RedisSessionStateProvider\ICacheConnection.cs">
+      <Link>ICacheConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\KeyGenerator.cs">
+      <Link>KeyGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\RedisConnectionWrapper.cs">
+      <Link>RedisConnectionWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\RedisProviderResource.Designer.cs">
+      <Link>RedisProviderResource.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RedisProviderResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\RedisSessionStateProvider.cs">
+      <Link>RedisSessionStateProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BinarySerializer.cs">
+      <Link>BinarySerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ChangeTrackingSessionStateItemCollection.cs">
+      <Link>ChangeTrackingSessionStateItemCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\IRedisClientConnection.cs">
+      <Link>IRedisClientConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ISerializer.cs">
+      <Link>ISerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\LogUtility.cs">
+      <Link>LogUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ProviderConfiguration.cs">
+      <Link>ProviderConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisNull.cs">
+      <Link>RedisNull.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisSharedConnection.cs">
+      <Link>RedisSharedConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisUtility.cs">
+      <Link>RedisUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\StackExchangeClientConnection.cs">
+      <Link>StackExchangeClientConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ValueWrapper.cs">
+      <Link>ValueWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\RedisSessionStateProvider\RedisProviderResource.resx">
       <Link>RedisProviderResource.resx</Link>

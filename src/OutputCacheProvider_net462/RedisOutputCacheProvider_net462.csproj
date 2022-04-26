@@ -13,6 +13,59 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\OutputCacheProvider\IOutputCacheConnection.cs">
+      <Link>IOutputCacheConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\OutputCacheProvider\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\OutputCacheProvider\RedisOutputCacheConnectionWrapper.cs">
+      <Link>RedisOutputCacheConnectionWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\OutputCacheProvider\RedisOutputCacheProvider.cs">
+      <Link>RedisOutputCacheProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\OutputCacheProvider\RedisProviderResource.Designer.cs">
+      <Link>RedisProviderResource.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RedisProviderResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\Shared\BinarySerializer.cs">
+      <Link>BinarySerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ChangeTrackingSessionStateItemCollection.cs">
+      <Link>ChangeTrackingSessionStateItemCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\IRedisClientConnection.cs">
+      <Link>IRedisClientConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ISerializer.cs">
+      <Link>ISerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\LogUtility.cs">
+      <Link>LogUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ProviderConfiguration.cs">
+      <Link>ProviderConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisNull.cs">
+      <Link>RedisNull.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisSharedConnection.cs">
+      <Link>RedisSharedConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisUtility.cs">
+      <Link>RedisUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\StackExchangeClientConnection.cs">
+      <Link>StackExchangeClientConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ValueWrapper.cs">
+      <Link>ValueWrapper.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="..\OutputCacheProvider\RedisProviderResource.resx">
       <Link>RedisProviderResource.resx</Link>
       <Generator>ResXFileCodeGenerator</Generator>
