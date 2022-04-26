@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFrameworks>net462;net472</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>Microsoft.Web.Redis.Tests</RootNamespace>
     <AssemblyName>Microsoft.Web.RedisSessionStateProvider.Unit.Tests</AssemblyName>
@@ -50,7 +51,4 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <PropertyGroup>
-    <TargetFrameworks>net462;net472</TargetFrameworks>
-  </PropertyGroup>
 </Project>

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net462;net472</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputType>Library</OutputType>
     <RootNamespace>Microsoft.Web.Redis</RootNamespace>
     <AssemblyName>Microsoft.Web.RedisOutputCacheProvider</AssemblyName>
@@ -79,8 +80,4 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <PropertyGroup>
-    <TargetFrameworks>net462;net472</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
 </Project>
