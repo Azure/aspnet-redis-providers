@@ -52,6 +52,5 @@
   </ItemGroup>
   <PropertyGroup>
     <TargetFrameworks>net462;net472</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 </Project>
