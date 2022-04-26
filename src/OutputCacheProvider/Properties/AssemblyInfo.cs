@@ -20,8 +20,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("Serviceable", "True")]
 
 #if !CODESIGNING
-[assembly: InternalsVisibleTo("Microsoft.Web.RedisOutputCacheProvider.Unit.Tests_net462")]
-[assembly: InternalsVisibleTo("Microsoft.Web.RedisOutputCacheProvider.Functional.Tests_net462")]
+[assembly: InternalsVisibleTo("Microsoft.Web.RedisOutputCacheProvider.Unit.Tests")]
+[assembly: InternalsVisibleTo("Microsoft.Web.RedisOutputCacheProvider.Functional.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 #endif
 
