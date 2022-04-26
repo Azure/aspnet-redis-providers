@@ -17,7 +17,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OutputCacheProvider_net462\RedisOutputCacheProvider_net462.csproj" />
+    <ProjectReference Include="..\..\src\OutputCacheProvider_net462\RedisOutputCacheProvider.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.1" />

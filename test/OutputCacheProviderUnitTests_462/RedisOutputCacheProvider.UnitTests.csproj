@@ -1,44 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.Web.Redis.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Web.RedisSessionStateProvider.Unit.Tests_net462</AssemblyName>
+    <RootNamespace>Microsoft.Web.Redis.UnitTests</RootNamespace>
+    <AssemblyName>Microsoft.Web.RedisOutputCacheProvider.Unit.Tests_net462</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Net" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\ChangeTrackingSessionStateItemCollectionTests.cs">
-      <Link>ChangeTrackingSessionStateItemCollectionTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\ProviderConfigurationTests.cs">
-      <Link>ProviderConfigurationTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisConnectionWrapperTests.cs">
-      <Link>RedisConnectionWrapperTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisSessionStateProviderTests.cs">
-      <Link>RedisSessionStateProviderTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisUtilityTests.cs">
-      <Link>RedisUtilityTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\TestSerializer.cs">
-      <Link>TestSerializer.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\Utility.cs" />
+    <ProjectReference Include="..\..\src\OutputCacheProvider_net462\RedisOutputCacheProvider.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RedisSessionStateProvider_net462\RedisSessionStateProvider_net462.csproj" />
+    <Compile Include="..\OutputCacheProviderUnitTests\RedisOutputCacheUnitTests.cs">
+      <Link>RedisOutputCacheUnitTests.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.1" />
     <PackageReference Include="FakeItEasy" Version="7.3.1" />
-    <PackageReference Include="Microsoft.AspNet.SessionState.SessionStateModule" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNet.OutputCache.OutputCacheModuleAsync" Version="1.0.2" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.5.61" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="6.0.1" />
     <PackageReference Include="System.IO.Pipelines" Version="6.0.2" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
