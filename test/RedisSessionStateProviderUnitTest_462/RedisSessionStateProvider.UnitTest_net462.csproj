@@ -12,9 +12,6 @@
     <Compile Include="..\RedisSessionStateProviderUnitTest\ChangeTrackingSessionStateItemCollectionTests.cs">
       <Link>ChangeTrackingSessionStateItemCollectionTests.cs</Link>
     </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\Properties\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\RedisSessionStateProviderUnitTest\ProviderConfigurationTests.cs">
       <Link>ProviderConfigurationTests.cs</Link>
     </Compile>

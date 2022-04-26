@@ -15,9 +15,6 @@
     <ProjectReference Include="..\..\src\OutputCacheProvider_net462\RedisOutputCacheProvider_net462.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\OutputCacheProviderUnitTests\Properties\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\OutputCacheProviderUnitTests\RedisOutputCacheUnitTests.cs">
       <Link>RedisOutputCacheUnitTests.cs</Link>
     </Compile>

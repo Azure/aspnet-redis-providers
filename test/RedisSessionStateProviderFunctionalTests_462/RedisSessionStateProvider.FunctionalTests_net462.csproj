@@ -9,9 +9,6 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\RedisSessionStateProviderFunctionalTests\Properties\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\RedisSessionStateProviderFunctionalTests\RedisConnectionWrapperFunctionalTests.cs">
       <Link>RedisConnectionWrapperFunctionalTests.cs</Link>
     </Compile>

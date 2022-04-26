@@ -9,9 +9,6 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\OutputCacheProviderFunctionalTests\Properties\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\OutputCacheProviderFunctionalTests\RedisOutputCacheFunctionalTests.cs">
       <Link>RedisOutputCacheFunctionalTests.cs</Link>
     </Compile>
