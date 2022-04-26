@@ -10,12 +10,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\OutputCacheProviderFunctionalTests\RedisOutputCacheFunctionalTests.cs">
-      <Link>RedisOutputCacheFunctionalTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\RedisServer.cs">
-      <Link>RedisServer.cs</Link>
-    </Compile>
+    <Compile Include="..\Shared\RedisServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\OutputCacheProvider\RedisOutputCacheProvider.csproj" />

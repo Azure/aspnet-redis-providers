@@ -10,25 +10,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\ChangeTrackingSessionStateItemCollectionTests.cs">
-      <Link>ChangeTrackingSessionStateItemCollectionTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\ProviderConfigurationTests.cs">
-      <Link>ProviderConfigurationTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisConnectionWrapperTests.cs">
-      <Link>RedisConnectionWrapperTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisSessionStateProviderTests.cs">
-      <Link>RedisSessionStateProviderTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderUnitTest\RedisUtilityTests.cs">
-      <Link>RedisUtilityTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\TestSerializer.cs">
-      <Link>TestSerializer.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\Utility.cs" />
+    <Compile Include="..\Shared\*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\RedisSessionStateProvider\RedisSessionStateProvider.csproj" />

@@ -10,22 +10,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\RedisSessionStateProviderFunctionalTests\RedisConnectionWrapperFunctionalTests.cs">
-      <Link>RedisConnectionWrapperFunctionalTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderFunctionalTests\RedisSessionStateProviderFunctionalTests.cs">
-      <Link>RedisSessionStateProviderFunctionalTests.cs</Link>
-    </Compile>
-    <Compile Include="..\RedisSessionStateProviderFunctionalTests\StackExchangeClientConnectionFunctionalTests.cs">
-      <Link>StackExchangeClientConnectionFunctionalTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\RedisServer.cs">
-      <Link>RedisServer.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\TestSerializer.cs">
-      <Link>TestSerializer.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\Utility.cs" />
+    <Compile Include="..\Shared\*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\RedisSessionStateProvider\RedisSessionStateProvider.csproj" />
