@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Microsoft.Web.Redis</RootNamespace>
+    <AssemblyName>Microsoft.Web.RedisSessionStateProvider</AssemblyName>
+    <SignAssembly Condition=" '$(EnableCodeSigning)' == 'true' ">true</SignAssembly>
+    <DelaySign Condition=" '$(EnableCodeSigning)' == 'true' ">true</DelaySign>
+    <AssemblyOriginatorKeyFile Condition=" '$(EnableCodeSigning)' == 'true' ">dummy.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\RedisSessionStateProvider\ICacheConnection.cs">
+      <Link>ICacheConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\KeyGenerator.cs">
+      <Link>KeyGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\RedisConnectionWrapper.cs">
+      <Link>RedisConnectionWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\RedisProviderResource.Designer.cs">
+      <Link>RedisProviderResource.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RedisProviderResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\RedisSessionStateProvider.cs">
+      <Link>RedisSessionStateProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BinarySerializer.cs">
+      <Link>BinarySerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ChangeTrackingSessionStateItemCollection.cs">
+      <Link>ChangeTrackingSessionStateItemCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\IRedisClientConnection.cs">
+      <Link>IRedisClientConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ISerializer.cs">
+      <Link>ISerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\LogUtility.cs">
+      <Link>LogUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ProviderConfiguration.cs">
+      <Link>ProviderConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisNull.cs">
+      <Link>RedisNull.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisSharedConnection.cs">
+      <Link>RedisSharedConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\RedisUtility.cs">
+      <Link>RedisUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\StackExchangeClientConnection.cs">
+      <Link>StackExchangeClientConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ValueWrapper.cs">
+      <Link>ValueWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\RedisSessionStateProvider\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.SessionState.SessionStateModule" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.5.61" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="6.0.1" />
+    <PackageReference Include="System.IO.Pipelines" Version="6.0.2" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.310801">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>
