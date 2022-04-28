@@ -10,12 +10,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace RedisOutputCachingMiddleware
 {
-    public class RedisOutputCachingMiddleware
+    public class OutputCachingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IMemoryCache _memoryCache;
 
-        public RedisOutputCachingMiddleware(RequestDelegate next,
+        public OutputCachingMiddleware(RequestDelegate next,
                                             IMemoryCache memoryCache)
         {
             _next = next;
@@ -24,10 +24,8 @@ namespace RedisOutputCachingMiddleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (CanCacheRedisRequest(context))
-                await HandleRedisRequest(context);
-            else
-                await _next(context);
+            await context.Response.WriteAsync("Hello World!");
+            await _next(context);
         }
 
         private static bool CanCacheRedisRequest(HttpContext context)

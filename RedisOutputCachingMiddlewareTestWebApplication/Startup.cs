@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RedisOutputCachingMiddleware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,8 @@ namespace RedisOutputCachingMiddlewareTestWebApplication
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<OutputCachingMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
