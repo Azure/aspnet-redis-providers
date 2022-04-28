@@ -24,19 +24,20 @@ namespace RedisOutputCachingMiddleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            await context.Response.WriteAsync("Hello World!");
-            await _next(context);
+            if (CanCacheRedisRequest(context))
+                await HandleRedisRequest(context);
+            else
+                await _next(context);
         }
 
         private static bool CanCacheRedisRequest(HttpContext context)
         {
-            //TODO
             return true;
         }
 
         private async Task HandleRedisRequest(HttpContext context)
         {
-            //TODO
+            await context.Response.WriteAsync("Hello World!");
         }
     }
 }
