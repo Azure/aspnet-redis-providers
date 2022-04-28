@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net462;net472</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.Web.Redis.Tests</RootNamespace>
+    <RootNamespace>Microsoft.Web.RedisSessionStateProvider.Unit.Tests</RootNamespace>
     <AssemblyName>Microsoft.Web.RedisSessionStateProvider.Unit.Tests</AssemblyName>
   </PropertyGroup>
   <ItemGroup>

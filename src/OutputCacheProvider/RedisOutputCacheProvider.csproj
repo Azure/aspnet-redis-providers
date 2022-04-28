@@ -3,7 +3,7 @@
     <TargetFrameworks>net462;net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.Web.Redis</RootNamespace>
+    <RootNamespace>Microsoft.Web.RedisOutputCacheProvider</RootNamespace>
     <AssemblyName>Microsoft.Web.RedisOutputCacheProvider</AssemblyName>
     <SignAssembly Condition=" '$(EnableCodeSigning)' == 'true' ">true</SignAssembly>
     <DelaySign Condition=" '$(EnableCodeSigning)' == 'true' ">true</DelaySign>

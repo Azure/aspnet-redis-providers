@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net462;net472</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <RootNamespace>Microsoft.Web.Redis.UnitTests</RootNamespace>
+    <RootNamespace>Microsoft.Web.RedisOutputCacheProvider.Unit.Tests</RootNamespace>
     <AssemblyName>Microsoft.Web.RedisOutputCacheProvider.Unit.Tests</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
