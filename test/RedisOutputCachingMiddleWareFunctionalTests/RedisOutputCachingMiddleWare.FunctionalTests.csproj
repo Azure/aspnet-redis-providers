@@ -7,9 +7,20 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\RedisOutputCachingMiddleware\RedisOutputCachingMiddleware.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Shared\RedisServer.cs" />
+		<Compile Include="..\..\src\Shared\LogUtility.cs" />
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
+	<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.4" />
+	<PackageReference Include="StackExchange.Redis" Version="2.5.61" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

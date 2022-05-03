@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisSessionStateProvider",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisOutputCachingMiddleware", "src\RedisOutputCachingMiddleware\RedisOutputCachingMiddleware.csproj", "{5B3CCB9D-E97B-4265-BC04-E7C278618F09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCachingMiddleWare.FunctionalTests", "test\RedisOutputCachingMiddleWare.FunctionalTests\RedisOutputCachingMiddleWare.FunctionalTests.csproj", "{3520E2A4-7FEB-41CC-ADE9-94615BC433EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisOutputCachingMiddleWare.FunctionalTests", "test\RedisOutputCachingMiddleWareFunctionalTests\RedisOutputCachingMiddleWare.FunctionalTests.csproj", "{3520E2A4-7FEB-41CC-ADE9-94615BC433EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisOutputCachingMiddleware.UnitTests", "test\RedisOutputCachingMiddlewareUnitTests\RedisOutputCachingMiddleware.UnitTests.csproj", "{6601190A-9A91-4F29-99EB-D02841C9C7EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{3520E2A4-7FEB-41CC-ADE9-94615BC433EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3520E2A4-7FEB-41CC-ADE9-94615BC433EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3520E2A4-7FEB-41CC-ADE9-94615BC433EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6601190A-9A91-4F29-99EB-D02841C9C7EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6601190A-9A91-4F29-99EB-D02841C9C7EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6601190A-9A91-4F29-99EB-D02841C9C7EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6601190A-9A91-4F29-99EB-D02841C9C7EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 		{F156BC3A-863B-4EFA-925A-8851464F0102} = {E2756413-F53F-406C-BF26-87B30C765598}
 		{5B3CCB9D-E97B-4265-BC04-E7C278618F09} = {9B71BFC6-68C2-46AE-8542-03D3C476E1CD}
 		{3520E2A4-7FEB-41CC-ADE9-94615BC433EB} = {9B71BFC6-68C2-46AE-8542-03D3C476E1CD}
+		{6601190A-9A91-4F29-99EB-D02841C9C7EF} = {9B71BFC6-68C2-46AE-8542-03D3C476E1CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C81AE01-2255-4A87-91FA-816ED6075573}

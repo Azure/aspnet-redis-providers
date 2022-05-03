@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualBasic;
+using Microsoft.Web.Redis;
 using StackExchange.Redis;
 
 namespace RedisOutputCachingMiddleware
@@ -14,11 +15,14 @@ namespace RedisOutputCachingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IDatabase _cache;
+        private readonly int _ttl;
 
-        public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString)
+        // optional eviction time, default to 1 day if not defined 
+        public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString, int ttl = 86400)
         {
             _next = next;
             _cache = ConnectAsync(redisConnectionString).Result;
+            _ttl = ttl;
         }
 
         public static async Task<IDatabase> ConnectAsync(string redisConnectionString)
@@ -30,6 +34,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
+                LogUtility.LogError("Cannot connect to Redis at " + redisConnectionString + " : " + ex.Message);
                 return null;
             }
 
@@ -37,8 +42,7 @@ namespace RedisOutputCachingMiddleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // use the path and query as a key
-            // TODO url, header, request body
+            // use the url, header, and request body as a key 
             RedisKey key = context.Request.GetEncodedPathAndQuery() + context.Request.Headers + context.Request.Body;
             RedisValue value = await GetCache(key);
 
@@ -49,7 +53,6 @@ namespace RedisOutputCachingMiddleware
             }
 
             HttpResponse response = context.Response;
-            // TODO check if response created
             Stream originalStream = response.Body;
 
             try
@@ -88,6 +91,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
+                LogUtility.LogError("Error in Get: " + ex.Message);
                 return RedisValue.Null;
             }
 
@@ -97,11 +101,11 @@ namespace RedisOutputCachingMiddleware
         {
             try
             {
-                await _cache.StringSetAsync(key, value);
+                await _cache.StringSetAsync(key, value, TimeSpan.FromSeconds(_ttl));
             }
             catch (Exception ex)
             {
-
+                LogUtility.LogError("Error in Set: " + ex.Message);
             }
         }
 
