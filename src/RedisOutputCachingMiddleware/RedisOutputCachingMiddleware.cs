@@ -15,13 +15,23 @@ namespace RedisOutputCachingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IDatabase _cache;
-        private readonly int _ttl;
+        private int _ttl;
 
         // optional eviction time, default to 1 day if not defined 
         public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString, int ttl = 86400)
         {
             _next = next;
             _cache = ConnectAsync(redisConnectionString).Result;
+            _ttl = ttl;
+        }
+
+        public int GetTtl()
+        {
+            return _ttl;
+        }
+
+        public void SetTtl(int ttl)
+        {
             _ttl = ttl;
         }
 
@@ -43,7 +53,10 @@ namespace RedisOutputCachingMiddleware
         public async Task InvokeAsync(HttpContext context)
         {
             // use the url, header, and request body as a key 
-            RedisKey key = context.Request.GetEncodedPathAndQuery() + context.Request.Headers + context.Request.Body;
+            string pathAndQuery = context.Request.GetEncodedPathAndQuery();
+            string headers = context.Request.Headers.ToString();
+            string body = context.Request.Body.ToString();
+            RedisKey key = pathAndQuery + headers + body;
             RedisValue value = await GetCache(key);
 
             if (!value.IsNullOrEmpty)

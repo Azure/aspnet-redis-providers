@@ -10,8 +10,6 @@ using System;
 using Microsoft.AspNetCore.Http;
 using System.Threading;
 using Microsoft.Web.Redis.FunctionalTests;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace RedisOutputCachingMiddleWare.FunctionalTests
 {
