@@ -23,5 +23,5 @@ Right click on solution in "Solution Explorer" and click on "Build Solution" in 
 
 ## Questions?
 
-* [Azure Cache Forum](https://social.msdn.microsoft.com/Forums/en-US/home?forum=azurecache)
+* [Microsoft Q&A](https://docs.microsoft.com/en-us/answers/products/)
 * [StackOverflow for Azure Redis Cache](http://stackoverflow.com/questions/tagged/azure-redis-cache)
