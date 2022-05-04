@@ -4,16 +4,8 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Web.Redis;
-using System.Web;
 using FakeItEasy;
-using System.Configuration;
-using System.Web.Configuration;
 using System.Collections.Specialized;
 
 namespace Microsoft.Web.Redis.UnitTests

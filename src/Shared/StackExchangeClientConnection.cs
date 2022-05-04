@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Web.SessionState;
 using StackExchange.Redis;
 

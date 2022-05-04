@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.VisualBasic;
 using Microsoft.Web.Redis;
 using StackExchange.Redis;
 
@@ -15,39 +13,22 @@ namespace RedisOutputCachingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IDatabase _cache;
-        private int _ttl;
-
         // optional expiration time, default to 1 day if not defined 
-        public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString, int ttl = TimeSpan.FromDays(1).TotalSeconds)
+        private int _ttl = (int)TimeSpan.FromDays(1).TotalSeconds;
+        
+        public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString, [Optional] int ttl)
         {
             _next = next;
-            _cache = ConnectAsync(redisConnectionString).Result;
-            _ttl = ttl;
-        }
-
-        public int GetTtl()
-        {
-            return _ttl;
-        }
-
-        public void SetTtl(int ttl)
-        {
-            _ttl = ttl;
-        }
-
-        public static async Task<IDatabase> ConnectAsync(string redisConnectionString)
-        {
             try
             {
-                var connection = await ConnectionMultiplexer.ConnectAsync(redisConnectionString);
-                return connection.GetDatabase();
+                _cache = ConnectionMultiplexer.Connect(redisConnectionString).GetDatabase();
             }
             catch (Exception ex)
             {
-                LogUtility.LogError("Cannot connect to Redis at " + redisConnectionString + " : " + ex.Message);
-                return null;
+                LogUtility.LogError("Cannot connect to Redis: " + ex.Message);
             }
-
+            
+            _ttl = ttl;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -56,8 +37,8 @@ namespace RedisOutputCachingMiddleware
             string pathAndQuery = context.Request.GetEncodedPathAndQuery();
             string headers = context.Request.Headers.ToString();
             string body = context.Request.Body.ToString();
-            RedisKey key = pathAndQuery + headers + body;
-            RedisValue value = await GetCache(key);
+            RedisKey key = $"{pathAndQuery}{headers}{body}";
+            RedisValue value = await GetCacheAsync(key);
 
             if (!value.IsNullOrEmpty)
             {
@@ -80,7 +61,7 @@ namespace RedisOutputCachingMiddleware
                     byte[] bytes = ms.ToArray();
                     // cache the output
                     RedisValue redisValue = bytes;
-                    await SetCache(key, redisValue);
+                    await SetCacheAsync(key, redisValue);
 
                     if (ms.Length > 0)
                     {
@@ -96,11 +77,11 @@ namespace RedisOutputCachingMiddleware
             }
         }
 
-        private async Task<RedisValue> GetCache(RedisKey key)
+        private async Task<RedisValue> GetCacheAsync(RedisKey key)
         {
             try
             {
-                return await _cache.StringGetAsync(key);
+                return await _cache?.StringGetAsync(key);
             }
             catch (Exception ex)
             {
@@ -110,11 +91,11 @@ namespace RedisOutputCachingMiddleware
 
         }
 
-        private async Task SetCache(RedisKey key, RedisValue value)
+        private async Task SetCacheAsync(RedisKey key, RedisValue value)
         {
             try
             {
-                await _cache.StringSetAsync(key, value, TimeSpan.FromSeconds(_ttl));
+                await _cache?.StringSetAsync(key, value, TimeSpan.FromSeconds(_ttl));
             }
             catch (Exception ex)
             {
