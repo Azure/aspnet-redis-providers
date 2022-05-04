@@ -17,8 +17,8 @@ namespace RedisOutputCachingMiddleware
         private readonly IDatabase _cache;
         private int _ttl;
 
-        // optional eviction time, default to 1 day if not defined 
-        public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString, int ttl = 86400)
+        // optional expiration time, default to 1 day if not defined 
+        public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString, int ttl = TimeSpan.FromDays(1).TotalSeconds)
         {
             _next = next;
             _cache = ConnectAsync(redisConnectionString).Result;
