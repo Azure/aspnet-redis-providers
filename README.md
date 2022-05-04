@@ -8,7 +8,7 @@ This repository contains code for Session State and Output Cache providers for R
 
 ## Documentation
 
-See [Azure Redis Session State Provider Documentation](https://azure.microsoft.com/documentation/articles/cache-aspnet-session-state-provider/) and [Azure Redis Output Cache Provider Documentation](https://azure.microsoft.com/documentation/articles/cache-aspnet-output-cache-provider/)
+See [Azure Redis Session State Provider Documentation](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-aspnet-session-state-provider) and [Azure Redis Output Cache Provider Documentation](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-aspnet-output-cache-provider)
 
 ## License
 
