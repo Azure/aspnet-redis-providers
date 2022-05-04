@@ -57,7 +57,7 @@ namespace Microsoft.Web.Redis
             }
             catch(Exception e)
             {
-                LogUtility.LogError("Error in Get: " + e.Message);
+                LogUtility.LogError($"Error in Get: {e.Message}");
             }
             return null;
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Web.Redis
             }
             catch (Exception e)
             {
-                LogUtility.LogError("Error in Add: " + e.Message);
+                LogUtility.LogError($"Error in Add: {e.Message}");
             }
             return null;
         }
@@ -95,7 +95,7 @@ namespace Microsoft.Web.Redis
             }
             catch (Exception e)
             {
-                LogUtility.LogError("Error in Set: " + e.Message);
+                LogUtility.LogError($"Error in Set: {e.Message}");
             }
         }
 
@@ -114,7 +114,7 @@ namespace Microsoft.Web.Redis
             }
             catch (Exception e)
             {
-                LogUtility.LogError("Error in Remove: " + e.Message);
+                LogUtility.LogError($"Error in Remove: {e.Message}");
             }
         }
 

@@ -25,7 +25,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
-                LogUtility.LogError("Cannot connect to Redis: " + ex.Message);
+                LogUtility.LogError($"Cannot connect to Redis: {ex.Message}");
             }
             
             _ttl = ttl;
@@ -85,7 +85,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
-                LogUtility.LogError("Error in Get: " + ex.Message);
+                LogUtility.LogError($"Error in Get: {ex.Message}");
                 return RedisValue.Null;
             }
 
@@ -99,7 +99,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
-                LogUtility.LogError("Error in Set: " + ex.Message);
+                LogUtility.LogError($"Error in Set: {ex.Message}");
             }
         }
 

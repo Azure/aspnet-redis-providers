@@ -47,7 +47,7 @@ namespace Microsoft.Web.Redis
                 }
                 else
                 {
-                    _configOption.EndPoints.Add(configuration.Host + ":" + configuration.Port);
+                    _configOption.EndPoints.Add($"{configuration.Host}:{configuration.Port}");
                 }
                 _configOption.Password = configuration.AccessKey;
                 _configOption.Ssl = configuration.UseSsl;
