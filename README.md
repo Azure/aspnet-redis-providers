@@ -4,7 +4,7 @@ ASP.NET Redis Providers
 =======================
 This repository contains code for Session State and Output Cache providers for Redis.
 1) Azure Redis Session State Provider can be use to store your session state in a Redis Cache rather than in-memory or in a SQL Server database.
-2) Azure Redis Output Cache Provider is an out-of-process storage mechanism for output cache data. This data is specifically for full HTTP responses (page output caching). 
+2) Azure Redis Output Cache Provider is an out-of-process storage mechanism for output cache data. This data is specifically for full HTTP responses (page output caching). The repository also contains an extensible [middleware](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware) project described in the [docs](docs/middleware.md). 
 
 ## Documentation
 
