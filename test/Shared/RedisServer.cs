@@ -14,7 +14,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
     {
         Process _server;
 
-        private void WaitForRedisToStart()
+        private static void WaitForRedisToStart()
         {
             // if redis is not up in 2 seconds time than return failure
             for (int i = 0; i < 200; i++)
@@ -22,7 +22,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 Thread.Sleep(10);
                 try
                 {
-                    Socket socket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
+                    Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     socket.Connect("localhost", 6379);
                     socket.Close();
                     LogUtility.LogInfo("Successful started redis server after Time: {0} ms", (i+1) * 10);
@@ -35,6 +35,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         public RedisServer()
         {
+            _server = new Process();
             Restart();
         }
 
@@ -51,7 +52,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         }
 
         // Make sure that no redis-server instance is running
-        private void KillRedisServers()
+        private static void KillRedisServers()
         {
             foreach (var proc in Process.GetProcessesByName("redis-server"))
             {
