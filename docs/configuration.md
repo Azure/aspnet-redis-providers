@@ -1,3 +1,5 @@
+# Configuration
+
 ## How to use configuration parameters of Session State Provider and Output Cache Provider
 
 There are certain settings that are specific to session state provider (like applicationName, throwOnError, retryTimeoutInMilliseconds, databaseId, settingsClassName, settingsMethodName, loggingClassName, loggingMethodName). 
@@ -8,13 +10,15 @@ Only way to provide parameters (applicationName, throwOnError, retryTimeoutInMil
 
 All parameters values will be used as key to find actual value from appSettings. If it is not found inside appSettings than literal value provided inside appSettings will be used as it is. Add actual value as appSettings like below.
 
+```xml
     <appSettings>
         <add key="SomeHostKey" value="actual host value" />
         <add key="SomeAccessKey" value="actual access key" />
     </appSettings>
+```
 
 In web.config use above key as parameter value instead of actual value. For example, 
-    
+```xml
     <sessionState mode="Custom" customProvider="MySessionStateStore">
         <providers>
             <add type = "Microsoft.Web.Redis.RedisSessionStateProvider"
@@ -23,7 +27,8 @@ In web.config use above key as parameter value instead of actual value. For exam
                  accessKey = "SomeAccessKey"
                  ssl = "true"/>
         </providers>
-    </sessionState>`
+    </sessionState>
+```
 
 ## Redis Provider Configuration Settings
 
@@ -55,13 +60,14 @@ This value will be used to set 'SyncTimeout' when creating StackExchange.Redis.C
 'connectionString' literal value will be used as key to fetch actual string from AppSettings if it exists. If not found inside AppSettings than literal value will be used as key to fetch actual string from web.config ConnectionString section if it exists. If it does not exists in AppSettings or web.config ConnectionString section than literal value will be used as it is as a "ConnectionString" when creating StackExchange.Redis.ConnectionMultiplexer.
 
 Example 1:
-    
+```xml 
     <connectionStrings>
         <add name="MyRedisConnectionString" connectionString="mycache.redis.cache.windows.net:6380,password=actual access key,ssl=True,abortConnect=False" />
     </connectionStrings>
+```
 
 In web.config use above key as parameter value instead of actual value.  
-    
+```xml
     <sessionState mode="Custom" customProvider="MySessionStateStore">
         <providers>
             <add type = "Microsoft.Web.Redis.RedisSessionStateProvider"
@@ -69,15 +75,17 @@ In web.config use above key as parameter value instead of actual value.
                  connectionString = "MyRedisConnectionString"/>
         </providers>
     </sessionState>
+```
 
 Example 2:
-    
+```xml
     <appSettings>
         <add key="MyRedisConnectionString" value="mycache.redis.cache.windows.net:6380,password=actual access key,ssl=True,abortConnect=False" />
     </appSettings>
+```
 
 In web.config use above key as parameter value instead of actual value.  
-
+```xml
     <sessionState mode="Custom" customProvider="MySessionStateStore">
         <providers>
             <add type = "Microsoft.Web.Redis.RedisSessionStateProvider"
@@ -85,9 +93,10 @@ In web.config use above key as parameter value instead of actual value.
                  connectionString = "MyRedisConnectionString"/>
         </providers>
     </sessionState>
+```
 
 Example 3:
-    
+```xml
     <sessionState mode="Custom" customProvider="MySessionStateStore">
         <providers>
             <add type = "Microsoft.Web.Redis.RedisSessionStateProvider"
@@ -95,6 +104,7 @@ Example 3:
                  connectionString = "mycache.redis.cache.windows.net:6380,password=actual access key,ssl=True,abortConnect=False"/>
         </providers>
     </sessionState>
+```
 
 
 #### settingsClassName [String]
@@ -142,7 +152,7 @@ By default, the serialization to store the values on Redis, is done in a binary 
 But if you need a different serialization mechanism, you can use the 'redisSerializerType' parameter to specify the [assembly qualified type name](https://msdn.microsoft.com/en-us/library/system.type.assemblyqualifiedname(v=vs.110).aspx#Anchor_1) of a class that implements Microsoft.Web.Redis.ISerializer and has the custom logic to serialize/deserialize the values.
 
 For example, a Json serializer using [JSON.NET](http://www.newtonsoft.com/json):
-
+```csharp
 	namespace MyCompany.Redis
 	{
 		public class JsonSerializer : ISerializer
@@ -164,9 +174,10 @@ For example, a Json serializer using [JSON.NET](http://www.newtonsoft.com/json):
 			}
 		}
 	}
+```
 
 Assuming this class is defined in an assembly with name "MyCompanyDll", you can set the parameter 'redisSerializerType':
-
+```xml
     <sessionState mode="Custom" customProvider="MySessionStateStore">
         <providers>
             <add type = "Microsoft.Web.Redis.RedisSessionStateProvider"
@@ -175,6 +186,7 @@ Assuming this class is defined in an assembly with name "MyCompanyDll", you can 
                  ... />
         </providers>
     </sessionState>
+```
 
 
 ## Related ASP.NET Settings
@@ -191,10 +203,12 @@ This value is used as session timeout and we use it to put expiry time on sessio
 `Note:` Lock-free session state provider is only supported by Microsoft.Web.RedisSessionStateProvider NuGet version v3.0.0-Preview or higher. 
 
 It supports lock-free session state provide with .net 4.6.2 or higher. To use session state in lock-free mode please include the following setting in your web.config. If you want to continue to use session state with locks, then no web.config changes are needed.
- 
+
+```xml
     <appSettings>
         <add key="aspnet:AllowConcurrentRequestsPerSession" value="true"/>
     </appSettings>
+```
 
 ## Using Session State with ASP.NET Core
 

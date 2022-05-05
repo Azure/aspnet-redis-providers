@@ -17,10 +17,12 @@ Updates .NET target framework to 4.6.2, StackExchange.Redis to v2.0.519.
 This package is in preview as version 3.0.0 is created on top of the new ASP.Net _async_ session state module, and so it has some major changes. 
 
 This package supports lock-free session state provide with .net 4.6.2 or higher. To use session state in lock-free mode please include the following setting in your web.config. If you want to continue to use session state with locks, then no web.config changes are needed.
- 
+
+```xml
     <appSettings>
         <add key="aspnet:AllowConcurrentRequestsPerSession" value="true"/>
     </appSettings>
+```
 
 ### v2.2.6
 Recreate stack exchange redis connection multiplexer, if it goes into a bad state. Also, this is the last release that supports .NET 4.0. 
