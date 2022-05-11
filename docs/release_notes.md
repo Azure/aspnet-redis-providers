@@ -4,8 +4,6 @@ Below is a summary of the the main features/bug fixes in the most recent release
 
 **Note:** For .NET Core, please refer details found [here](configuration.md#using-session-state-with-aspnet-core).
 
-**Note:** .NET 4.0 is not supported on      `StackExchange.Redis.StrongName` version 1.2.3 and higher; if you need .NET 4.0, please stick with 1.2.1.
-
 ## Session State Provider Release Notes
 
 **Note:** v4.0+ requires .NET Framework 4.6.2 or higher. v3.0+ requires .NET Framework 4.5.2 or higher. If you are using .net 4.0, 4.5.0 or 4.5.1, then please use an older version of Session State Provider (i.e. 2.x).
@@ -34,11 +32,11 @@ Recreate stack exchange redis connection multiplexer, if it goes into a bad stat
 https://github.com/Azure/aspnet-redis-providers/issues/69
 
 ### v2.2.4
-Lazy deserialize of session data: Deserialize session data only when accessed by application and not when fetched from Redis. As well as, Updated [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/).   
+Lazy deserialize of session data: Deserialize session data only when accessed by application and not when fetched from Redis. As well as, Updated [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis).   
 Issues fixed: https://github.com/Azure/aspnet-redis-providers/issues/46  
 
 ### v2.2.3
-Updated [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/) as part of one of the pull request merged.   
+Updated [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) as part of one of the pull request merged.   
 Merged following pull request:   
 https://github.com/Azure/aspnet-redis-providers/pull/43   
 https://github.com/Azure/aspnet-redis-providers/pull/47   
@@ -86,7 +84,7 @@ Updated `StackExchange.Redis.StrongName` to version 1.0.481 from 1.0.394. Due to
 **Note:** v4.0+ requires .NET Framework 4.6.2 or higher. v3.0+ requires .NET Framework 4.5.2 or higher. If you are using .net 4.0, 4.5.0 or 4.5.1, then please use an older version of Session State Provider (i.e. 2.x).
 
 ### v3.0.1
-Updates .NET target framework to 4.6.2, [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/) to v2.0.519. This version also uses the ASP.NET Async OutputCache Module.
+Updates .NET target framework to 4.6.2, [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) to v2.0.519. This version also uses the ASP.NET Async OutputCache Module.
 
 ### v2.0.1-Preview
 This package is in preview as version 2.0.1 is created on top of the new ASP.Net _async_ output cache module, and so it has some major changes. 
@@ -98,7 +96,7 @@ Recreate stack exchange redis connection multiplexer, if it goes into bad state.
 https://github.com/Azure/aspnet-redis-providers/issues/69
 
 ### v1.7.4
-Updated [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/).   
+Updated [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis).   
 
 ### v1.7.3
 Updated StackExchange.Redis as part of one of the pull request merged.   

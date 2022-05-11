@@ -19,13 +19,13 @@ Only way to provide this parameter is either through web.config or through `AppS
 Specify which database to use from Redis. Default is 0.
 
 ### `connectionTimeoutInMilliseconds` [number]
-This value will be used to set `ConnectTimeout` when creating `StackExchange.Redis.ConnectionMultiplexer`. Default is whatever provided by [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/).
+This value will be used to set `ConnectTimeout` when creating `StackExchange.Redis.ConnectionMultiplexer`. Default is whatever provided by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis).
 
 ### `operationTimeoutInMilliseconds` [number]
-This value will be used to set `SyncTimeout` when creating `StackExchange.Redis.ConnectionMultiplexer`. Default is whatever provided by [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/).
+This value will be used to set `SyncTimeout` when creating `StackExchange.Redis.ConnectionMultiplexer`. Default is whatever provided by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis).
 
 ### `connectionString`  [String]
-`connectionString` must be a valid [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/) connection string which means it can provide values for parameters like `host`, `port`, `accessKey`, `ssl` and other valid [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/) parameters. 
+`connectionString` must be a valid [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) connection string which means it can provide values for parameters like `host`, `port`, `accessKey`, `ssl` and other valid [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) parameters. 
 
 `connectionString` literal value will be used as key to fetch actual string from `AppSettings` if it exists. If not found inside` AppSettings` than literal value will be used as key to fetch actual string from `web.config` `ConnectionString` section if it exists. If it does not exists in `AppSettings` or `web.config` `ConnectionString` section than literal value will be used as it is as a `ConnectionString` when creating `StackExchange.Redis.ConnectionMultiplexer`.
 
@@ -87,7 +87,7 @@ Using `settingsClassName` and `settingsMethodName` to provide connection string:
 ### `loggingMethodName` [String]
 Only way to provide this parameter is either through `web.config` or through `AppSettings`. 
 
-This will allow you to debug your application by providing logs from Session State/Output Cache along with logs from [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/). `loggingClassName` should be assembly qualified class name that contains method specified by `loggingMethodName`. `loggingMethodName` should be public, static, should not take any parameters and should have a return type of `System.IO.TextWriter`.
+This will allow you to debug your application by providing logs from Session State/Output Cache along with logs from [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis). `loggingClassName` should be assembly qualified class name that contains method specified by `loggingMethodName`. `loggingMethodName` should be public, static, should not take any parameters and should have a return type of `System.IO.TextWriter`.
 
 ### `applicationName` (This parameter is only available for Session State Provider) [String] 
 Only way to provide this parameter is either through `web.config` or through `AppSettings`. 
@@ -184,7 +184,7 @@ It supports lock-free session state provide with .net 4.6.2 or higher. To use se
 
 There are certain settings that are specific to session state provider (like `applicationName`, `throwOnError`, `retryTimeoutInMilliseconds`, `databaseId`, `settingsClassName`, `settingsMethodName`, `loggingClassName`, `loggingMethodName`). 
 
-`connectionString` must be a valid [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/) connection string. No matter how you are passing connection string (either by providing in `web.config` or by returning from `settingsMethodName`), You can’t provide session state specific parameters through connectionString. 
+`connectionString` must be a valid [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) connection string. No matter how you are passing connection string (either by providing in `web.config` or by returning from `settingsMethodName`), You can’t provide session state specific parameters through connectionString. 
 
 Only way to provide parameters is either through `web.config` or through `AppSettings`. 
 
