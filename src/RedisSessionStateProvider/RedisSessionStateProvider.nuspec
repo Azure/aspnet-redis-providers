@@ -7,7 +7,7 @@
         <authors>Microsoft</authors>
         <owners>Microsoft</owners>
         <licenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</licenseUrl>
-        <projectUrl>https://github.com/Azure/aspnet-redis-providers/wiki</projectUrl>
+        <projectUrl>https://github.com/Azure/aspnet-redis-providers</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>Custom session state provider for redis cache.</description>
         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
