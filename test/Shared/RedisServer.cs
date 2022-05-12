@@ -46,8 +46,8 @@ namespace Microsoft.Web.Redis.FunctionalTests
         {
             KillRedisServers();
             _server = new Process();
-            string executable_path = $"{Environment.CurrentDirectory}\\..\\..\\..\\..\\..\\packages\\redis-64\\3.0.503\\tools\\redis-server.exe";
-            _server.StartInfo.FileName = executable_path;
+            string defaultExecutablePath = $"{Environment.CurrentDirectory}\\..\\..\\..\\..\\..\\packages\\redis-64\\3.0.503\\tools\\redis-server.exe";
+            _server.StartInfo.FileName = Environment.GetEnvironmentVariable("REDIS_SERVER_PATH") ?? defaultExecutablePath;
             _server.StartInfo.Arguments = "--maxmemory 20000000";
             _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             _server.Start();
