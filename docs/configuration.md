@@ -137,9 +137,9 @@ If you set retryTimeoutInMilliseconds to a number, say 5000, then when a session
 If you don’t think you need retry (like when you are running the Redis server on the same machine as your application) or if you want to handle the retry logic yourself, you can just make it 0.
 
 #### redisSerializerType [String] 
-By default, the serialization to store the values on Redis, is done in a binary format provided by the [BinaryFormatter](https://msdn.microsoft.com/en-us/library/system.runtime.serialization.formatters.binary.binaryformatter(v=vs.110).aspx) class.
+By default, the serialization to store the values on Redis, is done in a binary format provided by the [BinaryFormatter](https://msdn.microsoft.com/library/system.runtime.serialization.formatters.binary.binaryformatter(v=vs.110).aspx) class.
 
-But if you need a different serialization mechanism, you can use the 'redisSerializerType' parameter to specify the [assembly qualified type name](https://msdn.microsoft.com/en-us/library/system.type.assemblyqualifiedname(v=vs.110).aspx#Anchor_1) of a class that implements Microsoft.Web.Redis.ISerializer and has the custom logic to serialize/deserialize the values.
+But if you need a different serialization mechanism, you can use the 'redisSerializerType' parameter to specify the [assembly qualified type name](https://msdn.microsoft.com/library/system.type.assemblyqualifiedname(v=vs.110).aspx#Anchor_1) of a class that implements Microsoft.Web.Redis.ISerializer and has the custom logic to serialize/deserialize the values.
 
 For example, a Json serializer using [JSON.NET](http://www.newtonsoft.com/json):
 
@@ -181,10 +181,10 @@ Assuming this class is defined in an assembly with name "MyCompanyDll", you can 
 
 
 #### system.web/httpRuntime/executionTimeout 
-This value is used as request timeout and we use it to put expiry time on lock taken by any request. Check [this](https://msdn.microsoft.com/en-us/library/ms178587.aspx#Anchor_1) to understand what locking means. Check [this](https://msdn.microsoft.com/en-us/library/e1f13641(v=vs.100).aspx) to understand how to set executionTimeout and what is default value.
+This value is used as request timeout and we use it to put expiry time on lock taken by any request. Check [this](https://msdn.microsoft.com/library/ms178587.aspx#Anchor_1) to understand what locking means. Check [this](https://msdn.microsoft.com/library/e1f13641(v=vs.100).aspx) to understand how to set executionTimeout and what is default value.
 
 #### system.web/sessionState/timeout
-This value is used as session timeout and we use it to put expiry time on session data inside redis. Check [this](https://msdn.microsoft.com/en-us/library/h6bb9cz9(v=vs.100).aspx) to understand how to set timeout and what is default value.
+This value is used as session timeout and we use it to put expiry time on session data inside redis. Check [this](https://msdn.microsoft.com/library/h6bb9cz9(v=vs.100).aspx) to understand how to set timeout and what is default value.
 
 
 ## lock-free session state
@@ -200,6 +200,6 @@ It supports lock-free session state provide with .net 4.6.2 or higher. To use se
 
 Session works very differently in .NET Core as compared to the standard version of .NET. For more information look at the following links.
 
-[Configure session state](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1#configure-session-state)
+[Configure session state](https://docs.microsoft.com/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1#configure-session-state)
 
-[Using a Redis distributed cache](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-2.1#using-a-redis-distributed-cache)
+[Using a Redis distributed cache](https://docs.microsoft.com/aspnet/core/performance/caching/distributed?view=aspnetcore-2.1#using-a-redis-distributed-cache)

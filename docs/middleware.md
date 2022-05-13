@@ -3,10 +3,10 @@
 ## Overview 
 
 ### Middleware 
-ASP.NET Core introduced the concept of [middleware](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware) to handle HTTP requests and responses. Middleware components can evaluate logical conditions and can perform work on the input data. 
+ASP.NET Core introduced the concept of [middleware](https://docs.microsoft.com/aspnet/core/fundamentals/middleware) to handle HTTP requests and responses. Middleware components can evaluate logical conditions and can perform work on the input data. 
 
 ### Output Cache 
-An output cache operates at the application layer instead of caching HTTP responses. For example, a user might wish to cache a view to avoid performing redundant work when a user executes a duplicate controller action. ASP.NET Core does not currently provide support for an output cache and instead relies on [response caching](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/response).
+An output cache operates at the application layer instead of caching HTTP responses. For example, a user might wish to cache a view to avoid performing redundant work when a user executes a duplicate controller action. ASP.NET Core does not currently provide support for an output cache and instead relies on [response caching](https://docs.microsoft.com/aspnet/core/performance/caching/response).
 
 Building Middleware to cache the response exists as one method to achieve the desired functionality.  
 
