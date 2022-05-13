@@ -81,13 +81,13 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
             .StartAsync();
 
             var firstResponse = await host.GetTestClient().GetAsync("/");
-            var firstResponseBody = firstResponse.Content.ReadAsStringAsync().Result;
+            var firstResponseBody = await firstResponse.Content.ReadAsStringAsync();
             Assert.Equal(firstResponseBody, GetUnixTimeSeconds());
 
             Thread.Sleep(2000);
 
             var secondResponse = await host.GetTestClient().GetAsync("/");
-            var secondResponseBody = secondResponse.Content.ReadAsStringAsync().Result;
+            var secondResponseBody = await secondResponse.Content.ReadAsStringAsync();
             return secondResponseBody == GetUnixTimeSeconds();
         }
 
