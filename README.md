@@ -19,7 +19,7 @@ Open Microsoft.CacheProviders.sln with Visual Studio. You should install [xUnit.
 Right click on solution in "Solution Explorer" and click on "Build Solution" in visual studio to build all projects. Open "Test Explorer" in visual studio and run all tests by clicking on "Run All".
 
 ## Release Notes
-[Release Notes](https://github.com/Azure/aspnet-redis-providers/wiki/Release-Notes)
+[Release Notes](docs/release_notes.md)
 
 ## Questions?
 
