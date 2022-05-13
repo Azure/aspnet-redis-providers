@@ -21,14 +21,14 @@ In the `Startup.cs` file of a ASP.NET Core application, one can add custom middl
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     string redisConnectionString = "localhost";
-    app.UseMiddleware<OutputCachingMiddleware>(redisConnectionString);
+    app.UseMiddleware<RedisOutputCache>(redisConnectionString);
 }
 ```
 
 The default TTL (Time to Live) for a cache entry is 24 hours. One can also set an expiration for the cache entires by providing an optional TTL parameter (in seconds):
 
 ```csharp
-app.UseMiddleware<OutputCachingMiddleware>("localhost", 300); // TTL = 300 seconds
+app.UseMiddleware<RedisOutputCache>("localhost", 300); // TTL = 300 seconds
 ```
 
 ### Cache Key
