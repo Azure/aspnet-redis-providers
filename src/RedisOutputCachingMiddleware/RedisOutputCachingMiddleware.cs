@@ -9,14 +9,14 @@ using StackExchange.Redis;
 
 namespace RedisOutputCachingMiddleware
 {
-    public class OutputCachingMiddleware
+    public class RedisOutputCache
     {
         private readonly RequestDelegate _next;
         private readonly IDatabase _cache;
         // optional expiration time, default to 1 day if not defined 
-        private int _ttl = (int)TimeSpan.FromDays(1).TotalSeconds;
+        private int _ttl = Convert.ToInt32(TimeSpan.FromDays(1).TotalSeconds);
         
-        public OutputCachingMiddleware(RequestDelegate next, string redisConnectionString, [Optional] int ttl)
+        public RedisOutputCache(RequestDelegate next, string redisConnectionString, [Optional] int ttl)
         {
             _next = next;
             try
@@ -34,10 +34,7 @@ namespace RedisOutputCachingMiddleware
         public async Task InvokeAsync(HttpContext context)
         {
             // use the url, header, and request body as a key 
-            string pathAndQuery = context.Request.GetEncodedPathAndQuery();
-            string headers = context.Request.Headers.ToString();
-            string body = context.Request.Body.ToString();
-            RedisKey key = $"{pathAndQuery}{headers}{body}";
+            RedisKey key = $"{context.Request.GetEncodedPathAndQuery()}{context.Request.Headers}{context.Request.Body}";
             RedisValue value = await GetCacheAsync(key);
 
             if (!value.IsNullOrEmpty)
@@ -47,7 +44,7 @@ namespace RedisOutputCachingMiddleware
             }
 
             HttpResponse response = context.Response;
-            Stream originalStream = response.Body;
+            Stream responseStream = response.Body;
 
             try
             {
@@ -55,7 +52,7 @@ namespace RedisOutputCachingMiddleware
                 {
                     // record the output stream
                     response.Body = ms;
-                    // get the new page
+                    // invokes the next middleware (or action)
                     await _next(context);
                     // convert the output to a byte array
                     byte[] bytes = ms.ToArray();
@@ -66,14 +63,14 @@ namespace RedisOutputCachingMiddleware
                     if (ms.Length > 0)
                     {
                         ms.Seek(0, SeekOrigin.Begin);
-                        await ms.CopyToAsync(originalStream);
+                        await ms.CopyToAsync(responseStream);
                     }
                 }
             }
             finally
             {
                 // write the original stream as a response
-                response.Body = originalStream;
+                response.Body = responseStream;
             }
         }
 
@@ -85,7 +82,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
-                LogUtility.LogError($"Error in Get: {ex.Message}");
+                LogUtility.LogError($"Failed to retrieve cached value: {ex.Message}");
                 return RedisValue.Null;
             }
 
@@ -99,7 +96,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
-                LogUtility.LogError($"Error in Set: {ex.Message}");
+                LogUtility.LogError($"Failed to set cache value: {ex.Message}");
             }
         }
 

@@ -1,6 +1,7 @@
 # Redis Output Cache Middleware
 
 ## Overview 
+The output cache middleware uses Redis to cache output responses for each unique set of request inputs observed.
 
 ### Middleware 
 ASP.NET Core introduced the concept of [middleware](https://docs.microsoft.com/aspnet/core/fundamentals/middleware) to handle HTTP requests and responses. Middleware components can evaluate logical conditions and can perform work on the input data. 

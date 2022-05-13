@@ -21,35 +21,39 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
         }
 
         [Fact]
-        public void TestWithoutCache()
+        public async void TestWithoutCacheAsync()
         {
-            Assert.True(ResponseIsCurrent().Result);
+            bool isResponseCurrent = await ResponseIsCurrent();
+            Assert.True(isResponseCurrent);
         }
 
         [Fact]
-        public void TestWithCache()
+        public async void TestWithCacheAsync()
         {
             using (RedisServer Server = new RedisServer())
             {
-                Assert.False(ResponseIsCurrent().Result);
+            bool isResponseCurrent = await ResponseIsCurrent();
+            Assert.False(isResponseCurrent);
             }
         }
 
         [Fact]
-        public void TtlTestLess()
+        public async void TtlTestLessAsync()
         {
             using (RedisServer Server = new RedisServer())
             {
-                Assert.True(ResponseIsCurrent(1).Result);
+                bool isResponseCurrent = await ResponseIsCurrent(1);
+                Assert.True(isResponseCurrent);
             }
         }
 
         [Fact]
-        public void TtlTestGreater()
+        public async void TtlTestGreaterAsync()
         {
             using (RedisServer Server = new RedisServer())
             {
-                Assert.False(ResponseIsCurrent(3).Result);
+                bool isResponseCurrent = await ResponseIsCurrent(3);
+                Assert.False(isResponseCurrent);
             }
         }
 
@@ -66,7 +70,7 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
                     })
                     .Configure(app =>
                     {
-                        app.UseMiddleware<OutputCachingMiddleware>("localhost", ttl);
+                        app.UseMiddleware<RedisOutputCache>("localhost", ttl);
                         app.Run(async context =>
                         {
                             var time = GetUnixTimeSeconds();

@@ -10,14 +10,16 @@ namespace RedisOutputCachingMiddleware.UnitTests
         public void TestConstructorDefault()
         {
             var reqeustDelegate = A.Fake<RequestDelegate>();
-            var outputCachingMiddleware = new OutputCachingMiddleware(reqeustDelegate, "localhost");
+            var outputCachingMiddleware = new RedisOutputCache(reqeustDelegate, "localhost");
+            Assert.NotNull(outputCachingMiddleware);
         }
 
         [Fact]
         public void TestConstructorWithTtl()
         {
             var reqeustDelegate = A.Fake<RequestDelegate>();
-            var outputCachingMiddleware = new OutputCachingMiddleware(reqeustDelegate, "localhost", 123);
+            var outputCachingMiddleware = new RedisOutputCache(reqeustDelegate, "localhost", 123);
+            Assert.NotNull(outputCachingMiddleware);
         }
     }
 }
