@@ -23,5 +23,5 @@ Right click on solution in "Solution Explorer" and click on "Build Solution" in 
 
 ## Questions?
 
-* [Microsoft Q&A](https://docs.microsoft.com/answers/topics/25392/azure-cache-redis.html)
+* [Microsoft Q&A: azure-cache-redis tag](https://docs.microsoft.com/answers/topics/25392/azure-cache-redis.html)
 * [StackOverflow.com: azure-redis-cache tag](http://stackoverflow.com/questions/tagged/azure-redis-cache)
