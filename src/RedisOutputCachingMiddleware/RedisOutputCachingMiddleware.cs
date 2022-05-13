@@ -25,7 +25,7 @@ namespace RedisOutputCachingMiddleware
             }
             catch (Exception ex)
             {
-                LogUtility.LogError($"Cannot connect to Redis: {ex.Message}");
+                LogUtility.LogError("Cannot connect to Redis: " + ex.Message);
             }
             
             _ttl = ttl;

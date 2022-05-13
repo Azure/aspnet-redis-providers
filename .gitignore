@@ -13,7 +13,6 @@ csx
 *.idb
 *.pdb
 *.sdf
-.vs/*
 
 ; VC++ build output folders
 Debug
