@@ -4,6 +4,7 @@
 //
 
 using System;
+using System.Reflection;
 using StackExchange.Redis;
 
 namespace Microsoft.Web.Redis
@@ -63,6 +64,13 @@ namespace Microsoft.Web.Redis
                     _configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
                 }
             }
+
+            if (_configOption.ClientName is null)
+            {
+                _configOption.ClientName = "";
+            }
+            _configOption.ClientName += $"{Assembly.GetExecutingAssembly().GetName()}{Assembly.GetExecutingAssembly().GetName().Version}";
+
             CreateMultiplexer();
         }
 
