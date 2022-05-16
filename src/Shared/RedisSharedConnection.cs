@@ -65,11 +65,9 @@ namespace Microsoft.Web.Redis
                 }
             }
 
-            if (_configOption.ClientName is null)
-            {
-                _configOption.ClientName = "";
-            }
-            _configOption.ClientName += $"{Assembly.GetExecutingAssembly().GetName()}{Assembly.GetExecutingAssembly().GetName().Version}";
+            var SERedis = Assembly.GetAssembly(typeof(IRedis)).GetName();
+            var providers = Assembly.GetExecutingAssembly().GetName();
+            _configOption.ClientName = $"{_configOption.ClientName}({SERedis.Name}-v{SERedis.Version})({providers.Name}-v{providers.Version})";
 
             CreateMultiplexer();
         }
