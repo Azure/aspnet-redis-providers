@@ -37,7 +37,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             RedisConnectionWrapper.sharedConnection = null;
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void Set_ValidData_WithCustomSerializer()
         {
             
@@ -78,7 +78,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void Set_ValidData()
         {
             // this also tests host:port config part
@@ -116,7 +116,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void Set_NullData()
         {
             // this also tests host:port config part
@@ -154,7 +154,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void Set_ExpireData()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -179,7 +179,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryTakeWriteLockAndGetData_WithNullData()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -214,7 +214,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryTakeWriteLockAndGetData_WriteLockWithoutAnyOtherLock()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -256,7 +256,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryTakeWriteLockAndGetData_WriteLockWithOtherWriteLock()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -297,7 +297,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryTakeWriteLockAndGetData_WriteLockWithOtherWriteLockWithSameLockId()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -338,7 +338,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryTakeReadLockAndGetData_WithoutAnyLock()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -367,7 +367,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryTakeReadLockAndGetData_WithOtherWriteLock()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -405,7 +405,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryTakeWriteLockAndGetData_ExpireWriteLock()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -442,7 +442,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryReleaseLockIfLockIdMatch_ValidWriteLockRelease()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -478,7 +478,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryReleaseLockIfLockIdMatch_InvalidWriteLockRelease()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -516,7 +516,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryRemoveIfLockIdMatch_ValidLockIdAndRemove()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -550,7 +550,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryUpdateIfLockIdMatch_WithValidUpdateAndDelete()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -600,7 +600,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryUpdateIfLockIdMatch_WithOnlyUpdateAndNoDelete()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -650,7 +650,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryUpdateIfLockIdMatch_WithNoUpdateAndOnlyDelete()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -699,7 +699,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryUpdateIfLockIdMatch_ExpiryTime_OnValidData()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -738,7 +738,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryUpdateAndReleaseLockIfLockIdMatch_LargeLockTime_ExpireManuallyTest()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -767,7 +767,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryRemoveIfLockIdMatch_NullLockId()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
@@ -799,7 +799,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void TryUpdateIfLockIdMatch_LockIdNull()
         {
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
