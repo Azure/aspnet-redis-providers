@@ -64,10 +64,10 @@ namespace Microsoft.Web.Redis
                     _configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
                 }
             }
-
+            var currentClientName = _configOption.ClientName;
             var SERedis = Assembly.GetAssembly(typeof(IRedis)).GetName();
             var providers = Assembly.GetExecutingAssembly().GetName();
-            _configOption.ClientName = $"{_configOption.ClientName}({SERedis.Name}-v{SERedis.Version})({providers.Name}-v{providers.Version})";
+            _configOption.ClientName = $"{currentClientName}({SERedis.Name}-v{SERedis.Version})({providers.Name}-v{providers.Version})";
 
             CreateMultiplexer();
         }
