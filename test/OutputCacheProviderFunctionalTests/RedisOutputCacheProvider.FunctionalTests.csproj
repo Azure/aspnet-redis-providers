@@ -21,7 +21,6 @@
     <PackageReference Include="Microsoft.AspNet.OutputCache.OutputCacheModuleAsync" Version="1.0.2" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="redis-64" Version="3.0.503" />
     <PackageReference Include="StackExchange.Redis" Version="2.5.61" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="6.0.1" />
