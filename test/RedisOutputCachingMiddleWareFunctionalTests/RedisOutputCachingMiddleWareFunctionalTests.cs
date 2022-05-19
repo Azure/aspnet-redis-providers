@@ -1,15 +1,15 @@
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
-using System.Threading.Tasks;
-using Xunit;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Web.Redis.FunctionalTests;
 using RedisOutputCachingMiddleware;
 using System;
-using Microsoft.AspNetCore.Http;
 using System.Threading;
-using Microsoft.Web.Redis.FunctionalTests;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace RedisOutputCachingMiddleWare.FunctionalTests
 {
@@ -32,8 +32,8 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
         {
             using (RedisServer Server = new RedisServer())
             {
-            bool isResponseCurrent = await ResponseIsCurrent();
-            Assert.False(isResponseCurrent);
+                bool isResponseCurrent = await ResponseIsCurrent();
+                Assert.False(isResponseCurrent);
             }
         }
 

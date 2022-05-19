@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Web.Redis;
 using StackExchange.Redis;
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace RedisOutputCachingMiddleware
 {

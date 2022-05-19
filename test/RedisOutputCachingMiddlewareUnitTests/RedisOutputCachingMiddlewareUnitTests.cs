@@ -1,11 +1,9 @@
 using FakeItEasy;
-using Xunit;
 using Microsoft.AspNetCore.Http;
-using System.Net;
-using System.IO;
 using System;
+using System.IO;
 using System.Threading.Tasks;
-using StackExchange.Redis;
+using Xunit;
 
 namespace RedisOutputCachingMiddleware.UnitTests
 {
