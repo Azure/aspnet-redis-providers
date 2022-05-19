@@ -14,9 +14,10 @@ namespace RedisOutputCachingMiddleware
         private readonly RequestDelegate _next;
         private readonly IDatabase _cache;
         // optional expiration time, default to 1 day if not defined 
-        private int _ttl = Convert.ToInt32(TimeSpan.FromDays(1).TotalSeconds);
+        private int _ttl;
         
-        public RedisOutputCache(RequestDelegate next, string redisConnectionString, [Optional] int ttl)
+        // The default ttl is 86400 seconds, or 1 day
+        public RedisOutputCache(RequestDelegate next, string redisConnectionString, int ttl = 86400)
         {
             _next = next;
             try
