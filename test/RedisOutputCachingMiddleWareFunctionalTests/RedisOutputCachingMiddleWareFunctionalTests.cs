@@ -20,14 +20,14 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
             return DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public async void TestWithoutCacheAsync()
         {
             bool isResponseCurrent = await ResponseIsCurrent();
             Assert.True(isResponseCurrent);
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public async void TestWithCacheAsync()
         {
             using (RedisServer Server = new RedisServer())
@@ -37,7 +37,7 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public async void TtlTestLessAsync()
         {
             using (RedisServer Server = new RedisServer())
@@ -47,7 +47,7 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public async void TtlTestGreaterAsync()
         {
             using (RedisServer Server = new RedisServer())
