@@ -26,34 +26,12 @@ namespace Microsoft.Web.Redis
         internal static object configurationCreationLock = new object();
         internal ICacheConnection cache;
 
-        private static object _lastException = new object();
-
         /// <summary>
-        /// We do not want to throw exception from session state provider because this will break customer application and they can't get chance to handel it.
-        /// So if exception occurs because of some problem we store it in HttpContext using a key that we know and return null to customer. Now, when customer
-        /// get null from any of session operation they should call this method to identify if there was any exception and because of that got null.
+        /// How to handle exceptions alternative for LastException
         /// </summary>
-        public static Exception LastException
-        {
-            get 
-            {
-                if (HttpContext.Current != null)
-                {
-                    return (Exception) HttpContext.Current.Items[_lastException];
-                }
-                return null;
-            }
+        public Action<Exception> ExceptionHandler { get; set; }
 
-            set
-            {
-                if (HttpContext.Current != null)
-                {
-                    HttpContext.Current.Items[_lastException] = value;
-                }             
-            }
-        }
-
-        private void GetAccessToStore(string id) 
+        private void GetAccessToStore(string id)
         {
             if (cache == null)
             {
@@ -68,15 +46,15 @@ namespace Microsoft.Web.Redis
         public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)
         {
             if (config == null)
-            { 
+            {
                 throw new ArgumentNullException("config");
             }
-            
+
             if (name == null || name.Length == 0)
             {
                 name = "MyCacheStore";
             }
-            
+
             if (String.IsNullOrEmpty(config["description"]))
             {
                 config.Remove("description");
@@ -88,7 +66,7 @@ namespace Microsoft.Web.Redis
             // If configuration exists then use it otherwise read from config file and create one
             if (configuration == null)
             {
-                lock (configurationCreationLock) 
+                lock (configurationCreationLock)
                 {
                     if (configuration == null)
                     {
@@ -143,7 +121,11 @@ namespace Microsoft.Web.Redis
             catch (Exception e)
             {
                 LogUtility.LogError("EndRequest => {0}", e.ToString());
-                LastException = e;
+
+                //ExceptionHandler raises exception
+                if (ExceptionHandler != null)
+                    ExceptionHandler.Invoke(e);
+
                 if (configuration.ThrowOnError)
                 {
                     throw;
@@ -163,20 +145,21 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
-                {
-                    LogUtility.LogInfo("CreateUninitializedItem => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
-                    ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection(redisUtility);
-                    sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
-                    GetAccessToStore(id);
-                    // Converting timout from min to sec
-                    cache.Set(sessionData, (timeout * FROM_MIN_TO_SEC));
-                }
+                LogUtility.LogInfo("CreateUninitializedItem => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
+                ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection(redisUtility);
+                sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
+                GetAccessToStore(id);
+                // Converting timout from min to sec
+                cache.Set(sessionData, (timeout * FROM_MIN_TO_SEC));
             }
             catch (Exception e)
             {
                 LogUtility.LogError("CreateUninitializedItem => {0}", e.ToString());
-                LastException = e;
+
+                //ExceptionHandler raises exception
+                if (ExceptionHandler != null)
+                    ExceptionHandler.Invoke(e);
+
                 if (configuration.ThrowOnError)
                 {
                     throw;
@@ -222,7 +205,7 @@ namespace Microsoft.Web.Redis
                 }
                 GetAccessToStore(id);
                 ISessionStateItemCollection sessionData = null;
-            
+
                 int sessionTimeout;
                 bool isLockTaken = false;
                 //Take read or write lock and if locking successful than get data in sessionData and also update session timeout
@@ -253,7 +236,7 @@ namespace Microsoft.Web.Redis
                 // If locking is not successful then do not return any result just return lockAge, locked=true and lockId.
                 // ASP.NET tries to acquire lock again in 0.5 sec by calling this method again. Using lockAge it finds if 
                 // lock has been taken more than http request timeout than ASP.NET calls ReleaseItemExclusive and calls this method again to get lock.
-                if (locked) 
+                if (locked)
                 {
                     lockAge = cache.GetLockAge(lockId);
                     return null;
@@ -266,9 +249,9 @@ namespace Microsoft.Web.Redis
                     ReleaseItemExclusiveAsync(context, id, lockId, cancellationToken).Wait();
                     return null;
                 }
-            
+
                 // Restore action flag from session data
-                if (sessionData["SessionStateActions"] != null) 
+                if (sessionData["SessionStateActions"] != null)
                 {
                     actions = (SessionStateActions)Enum.Parse(typeof(SessionStateActions), sessionData["SessionStateActions"].ToString());
                 }
@@ -285,7 +268,11 @@ namespace Microsoft.Web.Redis
                 lockId = null;
                 lockAge = TimeSpan.Zero;
                 actions = 0;
-                LastException = e;
+
+                //ExceptionHandler raises exception
+                if (ExceptionHandler != null)
+                    ExceptionHandler.Invoke(e);
+
                 if (configuration.ThrowOnError)
                 {
                     throw;
@@ -298,18 +285,21 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
-                {
-                    LogUtility.LogInfo("ResetItemTimeout => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
-                    GetAccessToStore(id);
-                    cache.UpdateExpiryTime((int)configuration.SessionTimeout.TotalSeconds);
-                    cache = null;
-                }
+
+                LogUtility.LogInfo("ResetItemTimeout => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
+                GetAccessToStore(id);
+                cache.UpdateExpiryTime((int)configuration.SessionTimeout.TotalSeconds);
+                cache = null;
+
             }
             catch (Exception e)
             {
                 LogUtility.LogError("ResetItemTimeout => {0}", e.ToString());
-                LastException = e;
+
+                //ExceptionHandler raises exception
+                if (ExceptionHandler != null)
+                    ExceptionHandler.Invoke(e);
+
                 if (configuration.ThrowOnError)
                 {
                     throw;
@@ -322,17 +312,19 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
-                {
-                    LogUtility.LogInfo("RemoveItem => Session Id: {0}, Session provider object: {1}, Lock ID: {2}.", id, this.GetHashCode(), lockId);
-                    GetAccessToStore(id);
-                    cache.TryRemoveAndReleaseLock(lockId);
-                }
+                LogUtility.LogInfo("RemoveItem => Session Id: {0}, Session provider object: {1}, Lock ID: {2}.", id, this.GetHashCode(), lockId);
+                GetAccessToStore(id);
+                cache.TryRemoveAndReleaseLock(lockId);
+
             }
             catch (Exception e)
             {
                 LogUtility.LogError("RemoveItem => {0}", e.ToString());
-                LastException = e;
+
+                //ExceptionHandler raises exception
+                if (ExceptionHandler != null)
+                    ExceptionHandler.Invoke(e);
+
                 if (configuration.ThrowOnError)
                 {
                     throw;
@@ -356,7 +348,7 @@ namespace Microsoft.Web.Redis
                     sessionTimeoutInSeconds = (int)configuration.SessionTimeout.TotalSeconds;
                 }
 
-                if (LastException == null && lockId != null)
+                if (lockId != null)
                 {
                     LogUtility.LogInfo("ReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => For lockId: {2}.", id, this.GetHashCode(), lockId);
                     GetAccessToStore(id);
@@ -371,7 +363,11 @@ namespace Microsoft.Web.Redis
             catch (Exception e)
             {
                 LogUtility.LogError("ReleaseItemExclusive => {0}", e.ToString());
-                LastException = e;
+
+                //ExceptionHandler raises exception
+                if (ExceptionHandler != null)
+                    ExceptionHandler.Invoke(e);
+
                 if (configuration.ThrowOnError)
                 {
                     throw;
@@ -384,50 +380,53 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
+
+                GetAccessToStore(id);
+                // If it is new record
+                if (newItem)
                 {
-                    GetAccessToStore(id);
-                    // If it is new record
-                    if (newItem)
+                    ISessionStateItemCollection sessionItems = null;
+                    if (item != null && item.Items != null)
                     {
-                        ISessionStateItemCollection sessionItems = null;
-                        if (item != null && item.Items != null)
-                        {
-                            sessionItems = item.Items;
-                        }
-                        else
-                        {
-                            sessionItems = new ChangeTrackingSessionStateItemCollection(redisUtility);
-                        }
-
-                        if (sessionItems["SessionStateActions"] != null)
-                        {
-                            sessionItems.Remove("SessionStateActions");
-                        }
-
-                        // Converting timout from min to sec
-                        cache.Set(sessionItems, (item.Timeout * FROM_MIN_TO_SEC));
-                        LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => created new item in session.", id, this.GetHashCode());
-                    } // If update if lock matches
+                        sessionItems = item.Items;
+                    }
                     else
                     {
-                        if (item != null && item.Items != null)
+                        sessionItems = new ChangeTrackingSessionStateItemCollection(redisUtility);
+                    }
+
+                    if (sessionItems["SessionStateActions"] != null)
+                    {
+                        sessionItems.Remove("SessionStateActions");
+                    }
+
+                    // Converting timout from min to sec
+                    cache.Set(sessionItems, (item.Timeout * FROM_MIN_TO_SEC));
+                    LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => created new item in session.", id, this.GetHashCode());
+                } // If update if lock matches
+                else
+                {
+                    if (item != null && item.Items != null)
+                    {
+                        if (item.Items["SessionStateActions"] != null)
                         {
-                            if (item.Items["SessionStateActions"] != null)
-                            {
-                                item.Items.Remove("SessionStateActions");
-                            }
-                            // Converting timout from min to sec
-                            cache.TryUpdateAndReleaseLock(lockId, item.Items, (item.Timeout * FROM_MIN_TO_SEC));
-                            LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => updated item in session, Lock ID: {2}.", id, this.GetHashCode(), lockId);
+                            item.Items.Remove("SessionStateActions");
                         }
+                        // Converting timout from min to sec
+                        cache.TryUpdateAndReleaseLock(lockId, item.Items, (item.Timeout * FROM_MIN_TO_SEC));
+                        LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => updated item in session, Lock ID: {2}.", id, this.GetHashCode(), lockId);
                     }
                 }
+
             }
             catch (Exception e)
             {
                 LogUtility.LogError("SetAndReleaseItemExclusive => {0}", e.ToString());
-                LastException = e;
+
+                //ExceptionHandler raises exception
+                if (ExceptionHandler != null)
+                    ExceptionHandler.Invoke(e);
+
                 if (configuration.ThrowOnError)
                 {
                     throw;
