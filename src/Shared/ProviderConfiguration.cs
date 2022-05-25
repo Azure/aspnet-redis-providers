@@ -29,6 +29,7 @@ namespace Microsoft.Web.Redis
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
         public string RedisSerializerType { get; set; }
+        public int ConnectionPoolSize { get; set; }
 
         /* Empty constructor required for testing */
         internal ProviderConfiguration()
@@ -41,7 +42,6 @@ namespace Microsoft.Web.Redis
             configuration.ThrowOnError = GetBoolSettings(config, "throwOnError", true);
             int retryTimeoutInMilliSec = GetIntSettings(config, "retryTimeoutInMilliseconds", 5000);
             configuration.RetryTimeout = new TimeSpan(0, 0, 0, 0, retryTimeoutInMilliSec);
-            
             // Get request timeout from config
             HttpRuntimeSection httpRuntimeSection = ConfigurationManager.GetSection("system.web/httpRuntime") as HttpRuntimeSection;
             configuration.RequestTimeout = httpRuntimeSection.ExecutionTimeout;
@@ -61,7 +61,6 @@ namespace Microsoft.Web.Redis
             
             // No retry login for output cache provider
             configuration.RetryTimeout = TimeSpan.Zero;
-            
             // Session state specific attribute which are not applicable to output cache
             configuration.ThrowOnError = true;
             configuration.RequestTimeout = TimeSpan.Zero;
@@ -77,6 +76,7 @@ namespace Microsoft.Web.Redis
             EnableLoggingIfParametersAvailable(config);
             // Get connection host, port and password.
             // host, port, accessKey and ssl are firest fetched from appSettings if not found there than taken from web.config
+            ConnectionPoolSize = GetIntSettings(config, "ConnectionPoolSize", 1);
             ConnectionString = GetConnectionString(config);
             Host = GetStringSettings(config, "host", "127.0.0.1");
             Port = GetIntSettings(config, "port", 0);
