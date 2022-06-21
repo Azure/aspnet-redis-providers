@@ -33,10 +33,10 @@ namespace RedisOutputCachingMiddleware
             
         }
 
-        // To cache responses more efficiently for your workload, update this line to generate keys from different criteria
         public async Task InvokeAsync(HttpContext context)
         {
             // use the url, header, and request body as a key 
+            // To cache responses more efficiently for your workload, update this line to generate keys from different criteria
             RedisKey key = $"{context.Request.GetEncodedPathAndQuery()}{context.Request.Headers}{context.Request.Body}";
             RedisValue value = await GetCacheAsync(key);
 
