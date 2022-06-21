@@ -11,7 +11,7 @@ namespace Microsoft.Web.Redis
 {
     internal static class LogUtility
     {
-        public static TextWriter logger = null;
+        public static TextWriter logger = TextWriter.Null;
 
         public static void LogWarning(string msg, params object[] args)
         {

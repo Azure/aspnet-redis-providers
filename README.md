@@ -5,10 +5,11 @@ ASP.NET Redis Providers
 This repository contains code for Session State and Output Cache providers for Redis.
 1) Azure Redis Session State Provider can be use to store your session state in a Redis Cache rather than in-memory or in a SQL Server database.
 2) Azure Redis Output Cache Provider is an out-of-process storage mechanism for output cache data. This data is specifically for full HTTP responses (page output caching). 
+3) Azure Redis Output Cache Middleware contains an extensible [middleware](https://docs.microsoft.com/aspnet/core/fundamentals/middleware) project described in the [docs](docs/middleware.md) which provides output caching for ASP.NET Core 3.1 - 6.0. 
 
 ## Documentation
 
-See [Azure Redis Session State Provider Documentation](https://azure.microsoft.com/documentation/articles/cache-aspnet-session-state-provider/) and [Azure Redis Output Cache Provider Documentation](https://azure.microsoft.com/documentation/articles/cache-aspnet-output-cache-provider/)
+See [Azure Redis Session State Provider Documentation](https://docs.microsoft.com/azure/azure-cache-for-redis/cache-aspnet-session-state-provider) and [Azure Redis Output Cache Provider Documentation](https://docs.microsoft.com/azure/azure-cache-for-redis/cache-aspnet-output-cache-provider)
 
 ## License
 
@@ -23,5 +24,5 @@ Right click on solution in "Solution Explorer" and click on "Build Solution" in 
 
 ## Questions?
 
-* [Azure Cache Forum](https://social.msdn.microsoft.com/Forums/en-US/home?forum=azurecache)
-* [StackOverflow for Azure Redis Cache](http://stackoverflow.com/questions/tagged/azure-redis-cache)
+* [Microsoft Q&A: azure-cache-redis tag](https://docs.microsoft.com/answers/topics/25392/azure-cache-redis.html)
+* [StackOverflow.com: azure-redis-cache tag](http://stackoverflow.com/questions/tagged/azure-redis-cache)
