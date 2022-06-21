@@ -10,7 +10,7 @@ namespace RedisOutputCachingMiddleware.UnitTests
     public class RedisOutputCachingMiddlewareUnitTests
     {
         [Fact]
-        public void TestConstructorDefault()
+        private void TestConstructorDefault()
         {
             var reqeustDelegate = A.Fake<RequestDelegate>();
             var outputCachingMiddleware = new RedisOutputCache(reqeustDelegate, "localhost");
@@ -18,7 +18,7 @@ namespace RedisOutputCachingMiddleware.UnitTests
         }
 
         [Fact]
-        public void TestConstructorWithTtl()
+        private void TestConstructorWithTtl()
         {
             var reqeustDelegate = A.Fake<RequestDelegate>();
             var outputCachingMiddleware = new RedisOutputCache(reqeustDelegate, "localhost", 123);
@@ -26,7 +26,7 @@ namespace RedisOutputCachingMiddleware.UnitTests
         }
 
         [Fact]
-        public async Task InvokeAsyncTestAsync()
+        private async Task InvokeAsyncTestAsync()
         {
             var middleware = A.Fake<RedisOutputCache>();
 

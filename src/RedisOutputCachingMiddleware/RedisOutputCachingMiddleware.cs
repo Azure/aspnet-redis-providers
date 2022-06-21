@@ -20,6 +20,8 @@ namespace RedisOutputCachingMiddleware
         public RedisOutputCache(RequestDelegate next, string redisConnectionString, int ttl = 86400)
         {
             _next = next;
+            _ttl = ttl;
+
             try
             {
                 _cache = ConnectionMultiplexer.Connect(redisConnectionString).GetDatabase();
@@ -29,9 +31,9 @@ namespace RedisOutputCachingMiddleware
                 LogUtility.LogError($"Cannot connect to Redis: {ex.Message}");
             }
             
-            _ttl = ttl;
         }
 
+        // To cache responses more efficiently for your workload, update this line to generate keys from different criteria
         public async Task InvokeAsync(HttpContext context)
         {
             // use the url, header, and request body as a key 
@@ -49,22 +51,22 @@ namespace RedisOutputCachingMiddleware
 
             try
             {
-                using (var ms = new MemoryStream())
+                using (var responseBody = new MemoryStream())
                 {
                     // record the output stream
-                    response.Body = ms;
+                    response.Body = responseBody;
                     // invokes the next middleware (or action)
                     await _next(context);
                     // convert the output to a byte array
-                    byte[] bytes = ms.ToArray();
+                    byte[] bytes = responseBody.ToArray();
                     // cache the output
                     RedisValue redisValue = bytes;
                     await SetCacheAsync(key, redisValue);
 
-                    if (ms.Length > 0)
+                    if (responseBody.Length > 0)
                     {
-                        ms.Seek(0, SeekOrigin.Begin);
-                        await ms.CopyToAsync(responseStream);
+                        responseBody.Seek(0, SeekOrigin.Begin);
+                        await responseBody.CopyToAsync(responseStream);
                     }
                 }
             }

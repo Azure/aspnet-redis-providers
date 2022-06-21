@@ -11,9 +11,6 @@ An output cache operates at the application layer instead of caching HTTP respon
 
 Building Middleware to cache the response exists as one method to achieve the desired functionality.  
 
-### Upcoming ASP.NET Core 7 Support 
-Microsoft has recognized the demand for output caching and plans to add support in ASP.NET Core 7. 
-
 ## Usage 
 In the `Startup.cs` file of a ASP.NET Core application, one can add custom middleware as shown below:
 
@@ -33,3 +30,6 @@ app.UseMiddleware<RedisOutputCache>("localhost", 300); // TTL = 300 seconds
 
 ### Cache Key
 The default key for the output cache middleware is a concatenation of the request URL, headers, and body. Developers are encouraged to clone the repository and tailor the caching functionality for their own purposes. 
+
+### Upcoming ASP.NET 7.0 Support 
+Microsoft has recognized the demand for output caching. ASP.NET 7.0 will have native support for output caching, so this middleware should no longer be necessary in ASP.NET applications targeting 7.0+.
