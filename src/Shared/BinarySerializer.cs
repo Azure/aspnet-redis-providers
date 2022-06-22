@@ -4,7 +4,7 @@
 //
 
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using ProtoBuf;
 
 namespace Microsoft.Web.Redis
 {
@@ -16,10 +16,9 @@ namespace Microsoft.Web.Redis
             {
                 data = new RedisNull();
             }
-            var binaryFormatter = new BinaryFormatter();
             using (var memoryStream = new MemoryStream())
             {
-                binaryFormatter.Serialize(memoryStream, data);
+                Serializer.Serialize(memoryStream, data);
                 byte[] objectDataAsStream = memoryStream.ToArray();
                 return objectDataAsStream;
             }
@@ -31,11 +30,10 @@ namespace Microsoft.Web.Redis
             {
                 return null;
             }
-            var binaryFormatter = new BinaryFormatter();
             using (var memoryStream = new MemoryStream(data, 0, data.Length))
             {
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                object retObject = (object)binaryFormatter.Deserialize(memoryStream);
+                object retObject = Serializer.Deserialize<object>(memoryStream);
                 if (retObject.GetType() == typeof(RedisNull))
                 {
                     return null;
