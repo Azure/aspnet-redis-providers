@@ -5,9 +5,11 @@
 
 using System;
 using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace Microsoft.Web.Redis
 {
+    [ProtoContract]
     [Serializable]
     internal class RedisNull : ISerializable
     {
