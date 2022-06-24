@@ -73,7 +73,10 @@ namespace Microsoft.Web.Redis
         private static void EmbedProviderIdentityInConnectionClientName(ConfigurationOptions options)
         {
             AssemblyName provider = Assembly.GetExecutingAssembly().GetName();
-            options.ClientName += $"{options.Defaults.ClientName}({provider.Name}-v{provider.Version})";
+            if (String.IsNullOrWhiteSpace(options.ClientName))
+            {
+                options.ClientName = $"{options.Defaults.ClientName}({provider.Name}-v{provider.Version})";
+            }
         }
 
         public IDatabase Connection
