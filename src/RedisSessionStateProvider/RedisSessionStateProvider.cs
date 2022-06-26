@@ -400,10 +400,7 @@ namespace Microsoft.Web.Redis
                             sessionItems = new ChangeTrackingSessionStateItemCollection(redisUtility);
                         }
 
-                        if (sessionItems["SessionStateActions"] != null)
-                        {
-                            sessionItems.Remove("SessionStateActions");
-                        }
+                        sessionItems.Remove("SessionStateActions");
 
                         // Converting timout from min to sec
                         cache.Set(sessionItems, (item.Timeout * FROM_MIN_TO_SEC));
@@ -413,10 +410,8 @@ namespace Microsoft.Web.Redis
                     {
                         if (item != null && item.Items != null)
                         {
-                            if (item.Items["SessionStateActions"] != null)
-                            {
-                                item.Items.Remove("SessionStateActions");
-                            }
+                            item.Items.Remove("SessionStateActions");
+
                             // Converting timout from min to sec
                             cache.TryUpdateAndReleaseLock(lockId, item.Items, (item.Timeout * FROM_MIN_TO_SEC));
                             LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => updated item in session, Lock ID: {2}.", id, this.GetHashCode(), lockId);

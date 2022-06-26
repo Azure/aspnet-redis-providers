@@ -13,21 +13,6 @@ using System.Runtime.CompilerServices;
 
 namespace Microsoft.Web.Redis
 {
-    [ProtoContract]
-    public class Message
-    {
-        private readonly object data;
-
-        public Message() { }
-
-        public Message(object data)
-        {
-            this.data = data;
-        }
-
-        public object GetObject() { return data; }
-
-    }
 
     public class BinarySerializer : ISerializer
     {
@@ -37,18 +22,12 @@ namespace Microsoft.Web.Redis
             {
                 data = new RedisNull();
             }
+
             using (var memoryStream = new MemoryStream())
             {
                 // prepend type information to serialized data
                 Type type = data.GetType();
-
-                if (type.IsEnum)
-                {
-                    data = new Message(data);
-                    type = data.GetType();
-                }
-
-                var id = System.Text.ASCIIEncoding.ASCII.GetBytes(type.FullName + '|');
+                var id = System.Text.ASCIIEncoding.ASCII.GetBytes(type.AssemblyQualifiedName + '|');
                 memoryStream.Write(id, 0, id.Length);
                 Serializer.Serialize(memoryStream, data);
                 byte[] objectDataAsStream = memoryStream.ToArray();
@@ -62,6 +41,7 @@ namespace Microsoft.Web.Redis
             {
                 return null;
             }
+
             StringBuilder stringBuilder = new StringBuilder();
             using (var memoryStream = new MemoryStream(data))
             {
@@ -85,12 +65,6 @@ namespace Microsoft.Web.Redis
                 if (retObject.GetType() == typeof(RedisNull))
                 {
                     return null;
-                }
-
-                if (retObject.GetType() == typeof(Message))
-                {
-                    Message message = (Message)retObject;
-                    retObject = message.GetObject();
                 }
 
                 return retObject;
