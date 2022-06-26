@@ -5,11 +5,8 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using ProtoBuf;
-using System.Web.SessionState;
-using System.Runtime.CompilerServices;
 
 namespace Microsoft.Web.Redis
 {
