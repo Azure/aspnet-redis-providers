@@ -24,11 +24,10 @@ namespace Microsoft.Web.Redis
             {
                 // prepend type information to serialized data
                 Type type = data.GetType();
-                var id = System.Text.ASCIIEncoding.ASCII.GetBytes(type.AssemblyQualifiedName + '|');
+                var id = Encoding.UTF8.GetBytes(type.AssemblyQualifiedName + '|');
                 memoryStream.Write(id, 0, id.Length);
                 Serializer.Serialize(memoryStream, data);
-                byte[] objectDataAsStream = memoryStream.ToArray();
-                return objectDataAsStream;
+                return memoryStream.ToArray();
             }
         }
 
@@ -39,25 +38,18 @@ namespace Microsoft.Web.Redis
                 return null;
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
             using (var memoryStream = new MemoryStream(data))
             {
-                // read the type information from the serialized data
-                while (true)
+                object retObject = null;
+
+                var pipeIndex = Array.IndexOf(data, (byte)'|');
+                if (pipeIndex >= 0)
                 {
-                    var currentChar = (char)memoryStream.ReadByte();
-                    if (currentChar == '|')
-                    {
-                        break;
-                    }
-
-                    stringBuilder.Append(currentChar);
+                    var typeName = Encoding.UTF8.GetString(data, 0, pipeIndex);
+                    Type deserializationType = Type.GetType(typeName);
+                    memoryStream.Position = pipeIndex + 1;
+                    retObject = Serializer.Deserialize(deserializationType, memoryStream);
                 }
-
-                string typeName = stringBuilder.ToString();
-                Type deserializationType = Type.GetType(typeName);
-
-                object retObject = Serializer.Deserialize(deserializationType, memoryStream);
 
                 if (retObject.GetType() == typeof(RedisNull))
                 {
