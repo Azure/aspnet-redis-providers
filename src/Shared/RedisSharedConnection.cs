@@ -65,20 +65,16 @@ namespace Microsoft.Web.Redis
                 }
             }
 
-            // Embed Provider Identitiy in Connection ClientName
-            _configOption.Apply(EmbedProviderIdentityInConnectionClientName);
+            // Embed Provider Identity in Connection ClientName
+            if (String.IsNullOrWhiteSpace(_configOption.ClientName))
+            {
+                AssemblyName provider = Assembly.GetExecutingAssembly().GetName();
+                _configOption.ClientName = $"{_configOption.Defaults.ClientName}({provider.Name}-v{provider.Version})";
+            }
+
             CreateMultiplexer();
         }
-
-        private static void EmbedProviderIdentityInConnectionClientName(ConfigurationOptions options)
-        {
-            AssemblyName provider = Assembly.GetExecutingAssembly().GetName();
-            if (String.IsNullOrWhiteSpace(options.ClientName))
-            {
-                options.ClientName = $"{options.Defaults.ClientName}({provider.Name}-v{provider.Version})";
-            }
-        }
-
+        
         public IDatabase Connection
         {
             get { return _redisMultiplexer.Value.GetDatabase(_configOption.DefaultDatabase ?? _configuration.DatabaseId); }
@@ -96,7 +92,7 @@ namespace Microsoft.Web.Redis
                 {
                     var utcNow = DateTimeOffset.UtcNow;
                     elapsedSinceLastReconnect = utcNow - lastReconnectTime;
-                    
+
                     if (elapsedSinceLastReconnect < ReconnectFrequency)
                     {
                         return; // Some other thread made it through the check and the lock, so nothing to do. 
