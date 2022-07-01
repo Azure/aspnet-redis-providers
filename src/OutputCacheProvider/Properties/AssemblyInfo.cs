@@ -34,23 +34,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.1.0.0")]
 #endif
 [assembly: AssemblyTitle("Cache Providers")]
-
-namespace System.Reflection
-{
-    /// <summary>
-    /// Provided as a down-level stub for the 4.5 AssemblyMetaDataAttribute class.
-    /// All released assemblies should define [AssemblyMetadata("Serviceable", "True")].
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-    internal sealed class AssemblyMetadataAttribute : Attribute
-    {
-        public AssemblyMetadataAttribute(string key, string value)
-        {
-            Key = key;
-            Value = value;
-        }
-
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
-}

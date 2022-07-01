@@ -4,12 +4,7 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Web.Redis;
 using System.Collections.Specialized;
 
 
@@ -17,7 +12,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 {
     public class RedisOutputCacheFunctionalTests
     {
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void GetWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -28,11 +23,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-                Assert.Equal(null, provider.Get("key1"));
+                Assert.Null(provider.Get("key1"));
             }
         }
         
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void SetGetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -49,7 +44,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddWithExistingSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -67,7 +62,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }            
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -84,7 +79,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddWhenSetExpiresTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -108,7 +103,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void RemoveWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -119,11 +114,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 provider.Remove("key6");
                 object data = provider.Get("key6");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void RemoveTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -137,11 +132,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Set("key7", "data7", utxExpiry);
                 provider.Remove("key7");
                 object data = provider.Get("key7");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void ExpiryTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -156,11 +151,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 object data = provider.Get("key8");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddScriptFixForExpiryTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -177,7 +172,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 data = provider.Get("key9");
-                Assert.Equal(null, data);
+                Assert.Null(data);
             }
         }
 

@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 
 namespace Microsoft.Web.Redis {
-    using System;
     
     
     /// <summary>
@@ -39,7 +38,7 @@ namespace Microsoft.Web.Redis {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Web.Redis.RedisProviderResource", typeof(RedisProviderResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Web.RedisOutputCacheProvider.RedisProviderResource", typeof(RedisProviderResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

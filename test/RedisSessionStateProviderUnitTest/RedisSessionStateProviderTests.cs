@@ -11,6 +11,9 @@ using System.Configuration.Provider;
 using System.Web.SessionState;
 using System.Collections.Generic;
 using System.Web.Configuration;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.AspNet.SessionState;
 
 namespace Microsoft.Web.Redis.Tests
 {
@@ -24,7 +27,7 @@ namespace Microsoft.Web.Redis.Tests
         }
 
         [Fact]
-        public void EndRequest_Successful()
+        public async Task EndRequest_Successful()
         {
             Utility.SetConfigUtilityToDefault();
             var mockCache = A.Fake<ICacheConnection>();
@@ -32,7 +35,7 @@ namespace Microsoft.Web.Redis.Tests
             sessionStateStore.sessionId = "session-id";
             sessionStateStore.sessionLockId = "session-lock-id";
             sessionStateStore.cache = mockCache;
-            sessionStateStore.EndRequest(null);
+            await sessionStateStore.EndRequestAsync(null);
             A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(A<object>.Ignored, A<int>.Ignored)).MustHaveHappened();
         }
 
@@ -42,25 +45,25 @@ namespace Microsoft.Web.Redis.Tests
             Utility.SetConfigUtilityToDefault();
             SessionStateStoreData sssd = new SessionStateStoreData(Utility.GetChangeTrackingSessionStateItemCollection(), null, 900);
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
-            Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStore.CreateNewStoreData(null, 900),sssd));
+            Assert.True(Utility.CompareSessionStateStoreData(sessionStateStore.CreateNewStoreData(null, 900),sssd));
         }
 
         [Fact]
-        public void CreateUninitializedItem_Successful()
+        public async Task CreateUninitializedItem_Successful()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id"; 
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.CreateUninitializedItem(null, id, 15);
+            await sessionStateStore.CreateUninitializedItemAsync(null, id, 15, CancellationToken.None);
             A.CallTo(() => mockCache.Set(A<ISessionStateItemCollection>.That.Matches(
                 o => o.Count == 1 && SessionStateActions.InitializeItem.Equals(o["SessionStateActions"]) 
                 ), 900)).MustHaveHappened();
         }
 
         [Fact]
-        public void GetItem_NullFromStore()
+        public async Task GetItem_NullFromStore()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
@@ -77,18 +80,25 @@ namespace Microsoft.Web.Redis.Tests
             
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            SessionStateStoreData sessionStateStoreData = sessionStateStore.GetItem(null, id, out locked, out lockAge, out lockId, out actions);
+
+            SessionStateStoreData sessionStateStoreData = null;
+            GetItemResult data = await sessionStateStore.GetItemAsync(null, id, CancellationToken.None);
+            sessionStateStoreData = data.Item;
+            locked = data.Locked;
+            lockAge = data.LockAge;
+            lockId = data.LockId;
+            actions = data.Actions;
             A.CallTo(() => mockCache.TryCheckWriteLockAndGetData(out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
             A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(mockLockId, A<int>.Ignored)).MustHaveHappened(); 
             
-            Assert.Equal(null, sessionStateStoreData);
-            Assert.Equal(false, locked);
+            Assert.Null(sessionStateStoreData);
+            Assert.False(locked);
             Assert.Equal(TimeSpan.Zero, lockAge);
             Assert.Equal(0, lockId);
         }
 
         [Fact]
-        public void GetItem_RecordLocked()
+        public async Task GetItem_RecordLocked()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
@@ -106,16 +116,23 @@ namespace Microsoft.Web.Redis.Tests
 
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            SessionStateStoreData sessionStateStoreData = sessionStateStore.GetItem(null, id, out locked, out lockAge, out lockId, out actions);
+            SessionStateStoreData sessionStateStoreData;
+
+            GetItemResult data = await sessionStateStore.GetItemAsync(null, id, CancellationToken.None);
+            sessionStateStoreData = data.Item;
+            locked = data.Locked;
+            lockAge = data.LockAge;
+            lockId = data.LockId;
+            actions = data.Actions;
             A.CallTo(() => mockCache.TryCheckWriteLockAndGetData(out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
             A.CallTo(() => mockCache.GetLockAge(A<object>.Ignored)).MustHaveHappened();
             
-            Assert.Equal(null, sessionStateStoreData);
-            Assert.Equal(true, locked);
+            Assert.Null(sessionStateStoreData);
+            Assert.True(locked);
         }
 
         [Fact]
-        public void GetItem_RecordFound()
+        public async Task GetItem_RecordFound()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
@@ -141,18 +158,24 @@ namespace Microsoft.Web.Redis.Tests
 
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            SessionStateStoreData sessionStateStoreData = sessionStateStore.GetItem(null, id, out locked, out lockAge, out lockId, out actions);
+            SessionStateStoreData sessionStateStoreData;
+
+            GetItemResult data = await sessionStateStore.GetItemAsync(null, id, CancellationToken.None);
+            sessionStateStoreData = data.Item;
+            locked = data.Locked;
+            lockAge = data.LockAge;
+            lockId = data.LockId;
+            actions = data.Actions;
+
             A.CallTo(() => mockCache.TryCheckWriteLockAndGetData(out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
-            
-            
-            Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
-            Assert.Equal(false, locked);
+            Assert.True(Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
+            Assert.False(locked);
             Assert.Equal(TimeSpan.Zero, lockAge);
-            Assert.Equal(actions, SessionStateActions.None);
+            Assert.Equal(SessionStateActions.None, actions);
         }
 
         [Fact]
-        public void GetItemExclusive_RecordLocked()
+        public async Task GetItemExclusive_RecordLocked()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
@@ -171,16 +194,24 @@ namespace Microsoft.Web.Redis.Tests
 
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            SessionStateStoreData sessionStateStoreData = sessionStateStore.GetItemExclusive(null, id, out locked, out lockAge, out lockId, out actions);
+            SessionStateStoreData sessionStateStoreData;
+
+            GetItemResult data = await sessionStateStore.GetItemExclusiveAsync(null, id, CancellationToken.None);
+            sessionStateStoreData = data.Item;
+            locked = data.Locked;
+            lockAge = data.LockAge;
+            lockId = data.LockId;
+            actions = data.Actions;
+
             A.CallTo(() => mockCache.TryTakeWriteLockAndGetData(A<DateTime>.Ignored, 90, out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
             A.CallTo(() => mockCache.GetLockAge(A<object>.Ignored)).MustHaveHappened();
 
-            Assert.Equal(null, sessionStateStoreData);
-            Assert.Equal(true, locked);
+            Assert.Null(sessionStateStoreData);
+            Assert.True(locked);
         }
 
         [Fact]
-        public void GetItemExclusive_RecordFound()
+        public async Task GetItemExclusive_RecordFound()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
@@ -205,17 +236,25 @@ namespace Microsoft.Web.Redis.Tests
             
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            SessionStateStoreData sessionStateStoreData = sessionStateStore.GetItemExclusive(null, id, out locked, out lockAge, out lockId, out actions);
+            SessionStateStoreData sessionStateStoreData;
+
+            GetItemResult data = await sessionStateStore.GetItemExclusiveAsync(null, id, CancellationToken.None);
+            sessionStateStoreData = data.Item;
+            locked = data.Locked;
+            lockAge = data.LockAge;
+            lockId = data.LockId;
+            actions = data.Actions;
+
             A.CallTo(() => mockCache.TryTakeWriteLockAndGetData(A<DateTime>.Ignored, 90, out mockLockId, out sessionData, out sessionTimeout)).MustHaveHappened();
 
-            Assert.Equal(true, Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
-            Assert.Equal(false, locked);
+            Assert.True(Utility.CompareSessionStateStoreData(sessionStateStoreData, sssd));
+            Assert.False(locked);
             Assert.Equal(TimeSpan.Zero, lockAge);
-            Assert.Equal(actions, SessionStateActions.None);
+            Assert.Equal(SessionStateActions.None, actions);
         }
 
         [Fact]
-        public void ResetItemTimeout_Successful()
+        public async Task ResetItemTimeout_Successful()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
@@ -223,36 +262,36 @@ namespace Microsoft.Web.Redis.Tests
             
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.ResetItemTimeout(null, id);
+            await sessionStateStore.ResetItemTimeoutAsync(null, id, CancellationToken.None);
             A.CallTo(() => mockCache.UpdateExpiryTime(900)).MustHaveHappened();
         }
 
         [Fact]
-        public void RemoveItem_Successful()
+        public async Task RemoveItem_Successful()
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.RemoveItem(null, id, "lockId", null);
-            A.CallTo(() => mockCache.TryRemoveAndReleaseLockIfLockIdMatch(A<object>.Ignored)).MustHaveHappened();
+            await sessionStateStore.RemoveItemAsync(null, id, "lockId", null, CancellationToken.None);
+            A.CallTo(() => mockCache.TryRemoveAndReleaseLock(A<object>.Ignored)).MustHaveHappened();
         }
 
         [Fact]
-        public void ReleaseItemExclusive_Successful()
+        public async Task ReleaseItemExclusive_Successful()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.ReleaseItemExclusive(null, id, "lockId");
+            await sessionStateStore.ReleaseItemExclusiveAsync(null, id, "lockId", CancellationToken.None);
             A.CallTo(() => mockCache.TryReleaseLockIfLockIdMatch(A<object>.Ignored, A<int>.Ignored)).MustHaveHappened();
         }
 
         [Fact]
-        public void SetAndReleaseItemExclusive_NewItemNullItems()
+        public async Task SetAndReleaseItemExclusive_NewItemNullItems()
         {
             Utility.SetConfigUtilityToDefault(); 
             string id = "session-id";
@@ -261,12 +300,12 @@ namespace Microsoft.Web.Redis.Tests
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, null, true);
+            await sessionStateStore.SetAndReleaseItemExclusiveAsync(null, id, sssd, null, true, CancellationToken.None);
             A.CallTo(() => mockCache.Set(A<ISessionStateItemCollection>.That.Matches(o => o.Count == 0), 900)).MustHaveHappened();
         }
 
         [Fact]
-        public void SetAndReleaseItemExclusive_NewItemValidItems()
+        public async Task SetAndReleaseItemExclusive_NewItemValidItems()
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
@@ -277,14 +316,14 @@ namespace Microsoft.Web.Redis.Tests
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, null, true);
+            await sessionStateStore.SetAndReleaseItemExclusiveAsync(null, id, sssd, null, true, CancellationToken.None);
             A.CallTo(() => mockCache.Set(A<ISessionStateItemCollection>.That.Matches(
                 o => o.Count == 1 && o["session-key"] != null
                 ), 900)).MustHaveHappened();
         }
 
         [Fact]
-        public void SetAndReleaseItemExclusive_OldItemNullItems()
+        public async Task SetAndReleaseItemExclusive_OldItemNullItems()
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
@@ -293,12 +332,12 @@ namespace Microsoft.Web.Redis.Tests
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, 7, false);
-            A.CallTo(() => mockCache.TryUpdateAndReleaseLockIfLockIdMatch(A<object>.Ignored, A<ISessionStateItemCollection>.Ignored, 900)).MustNotHaveHappened();
+            await sessionStateStore.SetAndReleaseItemExclusiveAsync(null, id, sssd, 7, false, CancellationToken.None);
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLock(A<object>.Ignored, A<ISessionStateItemCollection>.Ignored, 900)).MustNotHaveHappened();
         }
 
         [Fact]
-        public void SetAndReleaseItemExclusive_OldItemRemovedItems()
+        public async Task SetAndReleaseItemExclusive_OldItemRemovedItems()
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
@@ -310,13 +349,13 @@ namespace Microsoft.Web.Redis.Tests
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, 7, false);
-            A.CallTo(() => mockCache.TryUpdateAndReleaseLockIfLockIdMatch(A<object>.Ignored, 
+            await sessionStateStore.SetAndReleaseItemExclusiveAsync(null, id, sssd, 7, false, CancellationToken.None);
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLock(A<object>.Ignored, 
                 A<ChangeTrackingSessionStateItemCollection>.That.Matches(o => o.Count == 0 && o.GetModifiedKeys().Count == 0 && o.GetDeletedKeys().Count == 1), 900)).MustHaveHappened();
         }
 
         [Fact]
-        public void SetAndReleaseItemExclusive_OldItemInsertedItems()
+        public async Task SetAndReleaseItemExclusive_OldItemInsertedItems()
         {
             Utility.SetConfigUtilityToDefault();
             string id = "session-id";
@@ -327,8 +366,8 @@ namespace Microsoft.Web.Redis.Tests
             var mockCache = A.Fake<ICacheConnection>();
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
-            sessionStateStore.SetAndReleaseItemExclusive(null, id, sssd, 7, false);
-            A.CallTo(() => mockCache.TryUpdateAndReleaseLockIfLockIdMatch(A<object>.Ignored, 
+            await sessionStateStore.SetAndReleaseItemExclusiveAsync(null, id, sssd, 7, false, CancellationToken.None);
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLock(A<object>.Ignored, 
                 A<ChangeTrackingSessionStateItemCollection>.That.Matches(o => o.Count == 1 && o.GetModifiedKeys().Count == 1 && o.GetDeletedKeys().Count == 0), 900)).MustHaveHappened();  
         }
     }

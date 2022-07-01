@@ -3,13 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
-using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace Microsoft.Web.Redis.FunctionalTests
@@ -18,7 +14,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
     {
         Process _server;
 
-        private void WaitForRedisToStart()
+        private static void WaitForRedisToStart()
         {
             // if redis is not up in 2 seconds time than return failure
             for (int i = 0; i < 200; i++)
@@ -26,7 +22,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 Thread.Sleep(10);
                 try
                 {
-                    Socket socket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
+                    Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     socket.Connect("localhost", 6379);
                     socket.Close();
                     LogUtility.LogInfo("Successful started redis server after Time: {0} ms", (i+1) * 10);
@@ -39,6 +35,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         public RedisServer()
         {
+            _server = new Process();
             Restart();
         }
 
@@ -46,7 +43,8 @@ namespace Microsoft.Web.Redis.FunctionalTests
         {
             KillRedisServers();
             _server = new Process();
-            _server.StartInfo.FileName = "..\\..\\..\\..\\..\\..\\packages\\redis-64.3.0.503\\tools\\redis-server.exe";
+            string executable_path = $"{Environment.CurrentDirectory}\\..\\..\\..\\..\\..\\packages\\redis-64\\3.0.503\\tools\\redis-server.exe";
+            _server.StartInfo.FileName = executable_path;
             _server.StartInfo.Arguments = "--maxmemory 20000000";
             _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             _server.Start();
@@ -54,7 +52,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         }
 
         // Make sure that no redis-server instance is running
-        private void KillRedisServers()
+        private static void KillRedisServers()
         {
             foreach (var proc in Process.GetProcessesByName("redis-server"))
             {

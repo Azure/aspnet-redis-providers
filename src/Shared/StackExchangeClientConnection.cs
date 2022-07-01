@@ -160,11 +160,6 @@ namespace Microsoft.Web.Redis
 
         public string GetLockId(object rowDataFromRedis)
         {
-            return StackExchangeClientConnection.GetLockIdStatic(rowDataFromRedis);
-        }
-
-        internal static string GetLockIdStatic(object rowDataFromRedis)
-        {
             RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
             RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;
             Debug.Assert(lockScriptReturnValueArray != null);
@@ -194,7 +189,7 @@ namespace Microsoft.Web.Redis
                         string key = (string) data[i];
                         if (key != null)
                         {
-                            sessionData.SetData(key, (byte[])data[i + 1]);
+                            sessionData.SetDataWithoutUpdatingModifiedKeys(key, (byte[])data[i + 1]);
                         }
                     }
                 }

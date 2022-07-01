@@ -55,7 +55,7 @@ namespace Microsoft.Web.Redis
                 foreach (string key in sessionItems.GetModifiedKeys())
                 {
                     list.Add(key);
-                    list.Add(GetBytesFromObject(sessionItems[key]));
+                    list.Add(GetBytesFromObject(sessionItems.GetDataWithoutUpdatingModifiedKeys(key)));
                     noOfItemsUpdated++;
                 }
             }
@@ -68,7 +68,7 @@ namespace Microsoft.Web.Redis
             foreach (string key in sessionItems.Keys)
             {
                 list.Add(key);
-                list.Add(GetBytesFromObject(sessionItems[key]));
+                list.Add(GetBytesFromObject(sessionItems.GetDataWithoutUpdatingModifiedKeys(key)));
             }
             return list;
         }

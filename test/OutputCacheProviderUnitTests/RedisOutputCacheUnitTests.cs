@@ -4,16 +4,8 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Web.Redis;
-using System.Web;
 using FakeItEasy;
-using System.Configuration;
-using System.Web.Configuration;
 using System.Collections.Specialized;
 
 namespace Microsoft.Web.Redis.UnitTests
@@ -78,12 +70,11 @@ namespace Microsoft.Web.Redis.UnitTests
             config.Add("redisSerializerType", "Microsoft.Web.Redis.BinarySerializer");
             cache.Initialize("name", config);
 
-            Assert.Equal(RedisOutputCacheProvider.configuration.Host, "localhost");
-            Assert.Equal(RedisOutputCacheProvider.configuration.Port, 1234);
-            Assert.Equal(RedisOutputCacheProvider.configuration.AccessKey, "hello world");
-            Assert.Equal(RedisOutputCacheProvider.configuration.UseSsl, true);
-            Assert.Equal(RedisOutputCacheProvider.configuration.RedisSerializerType,
-                "Microsoft.Web.Redis.BinarySerializer");
+            Assert.Equal("localhost", RedisOutputCacheProvider.configuration.Host);
+            Assert.Equal(1234, RedisOutputCacheProvider.configuration.Port);
+            Assert.Equal("hello world", RedisOutputCacheProvider.configuration.AccessKey);
+            Assert.True(RedisOutputCacheProvider.configuration.UseSsl);
+            Assert.Equal("Microsoft.Web.Redis.BinarySerializer", RedisOutputCacheProvider.configuration.RedisSerializerType);
         }
     }
 }

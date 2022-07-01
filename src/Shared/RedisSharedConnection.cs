@@ -5,6 +5,7 @@
 
 using System;
 using StackExchange.Redis;
+using System.Reflection;
 
 namespace Microsoft.Web.Redis
 {
@@ -28,7 +29,8 @@ namespace Microsoft.Web.Redis
         public RedisSharedConnection(ProviderConfiguration configuration)
         {
             _configuration = configuration;
-            
+            _configOption = new ConfigurationOptions();
+
             // If connection string is given then use it otherwise use individual options
             if (!string.IsNullOrEmpty(configuration.ConnectionString))
             {
@@ -40,7 +42,6 @@ namespace Microsoft.Web.Redis
             }
             else
             {
-                _configOption = new ConfigurationOptions();
                 if (configuration.Port == 0)
                 {
                     _configOption.EndPoints.Add(configuration.Host);
@@ -63,6 +64,14 @@ namespace Microsoft.Web.Redis
                     _configOption.SyncTimeout = configuration.OperationTimeoutInMilliSec;
                 }
             }
+
+            // Embed Provider Identity in Connection ClientName
+            if (String.IsNullOrWhiteSpace(_configOption.ClientName))
+            {
+                AssemblyName provider = Assembly.GetExecutingAssembly().GetName();
+                _configOption.ClientName = $"{_configOption.Defaults.ClientName}({provider.Name}-v{provider.Version})";
+            }
+
             CreateMultiplexer();
         }
 
