@@ -13,7 +13,7 @@ See [Azure Redis Session State Provider Documentation](https://docs.microsoft.co
 
 ## License
 
-This project is under the umbrella of the [.NET Foundation](http://www.dotnetfoundation.org/) and is licensed under [the MIT License](https://github.com/Azure/aspnet-redis-providers/blob/master/License.txt)
+This project is licensed under [the MIT License](https://github.com/Azure/aspnet-redis-providers/blob/master/License.txt)
 
 ## Build and Test
 Open Microsoft.CacheProviders.sln with Visual Studio. You should install [xUnit.net runner for Visual Studio](https://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099) in visual studio using "TOOLS -> Extensions and Updates..."

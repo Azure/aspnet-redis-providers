@@ -12,7 +12,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 {
     public class RedisOutputCacheFunctionalTests
     {
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void GetWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
         
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void SetGetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -44,7 +44,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddWithExistingSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -62,7 +62,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }            
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -79,7 +79,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddWhenSetExpiresTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -103,7 +103,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void RemoveWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -118,7 +118,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void RemoveTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -136,7 +136,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void ExpiryTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -155,7 +155,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Disable Functional Tests")]
         public void AddScriptFixForExpiryTest()
         {
             using (RedisServer Server = new RedisServer())
