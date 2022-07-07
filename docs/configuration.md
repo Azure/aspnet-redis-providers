@@ -91,7 +91,7 @@ This will allow you to debug your application by providing logs from Session Sta
 
 ### `applicationName` (This parameter is only available for Session State Provider) [String] 
 Only way to provide this parameter is either through `web.config` or through `AppSettings`. 
-It is possible that customer is using same Redis Cache for difference purpose. To make sure that session key do not collied with other we try to prifix it with application name. Default is ModuleName of current process or `/`.
+It is possible that customer is using same Redis Cache for difference purpose. To make sure that session key do not collide with other we try to prifix it with application name. Default is ModuleName of current process or `/`.
 
 ### `throwOnError` (This parameter is only available for Session State Provider) [boolean] 
 Only way to provide this parameter is either through `web.config` or through `AppSettings`. 
