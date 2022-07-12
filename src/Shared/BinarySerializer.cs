@@ -10,26 +10,33 @@ using ProtoBuf;
 
 namespace Microsoft.Web.Redis
 {
+
     public class BinarySerializer : ISerializer
     {
-        private readonly string redisNull = "REDIS_NULL";
-        private readonly string initializeItem = "INITIALIZE_INSTANCE";
+        private readonly byte redisNull = 1;
+        private readonly byte initializeItem = 2;
+        private readonly byte str = 3;
         public byte[] Serialize(object data)
         {
             using (var memoryStream = new MemoryStream())
             {
                 if (data is null)
                 {
-                    data = redisNull;
+                    return new byte[] { redisNull };
                 }
                 if (data is SessionStateActions.InitializeItem)
                 {
-                    data = initializeItem;
+                    return new byte[] { initializeItem };
                 }
+                if (data is string)
+                {
+                    memoryStream.WriteByte(str);
+                }
+
                 Serializer.Serialize(memoryStream, data);
                 return memoryStream.ToArray();
             }
-            
+
         }
 
         public object Deserialize(byte[] data)
@@ -39,24 +46,33 @@ namespace Microsoft.Web.Redis
                 return null;
             }
 
+            byte firstByte = data[0];
+
+            if (firstByte == redisNull)
+            {
+                return null;
+            }
+
+            if (firstByte == initializeItem)
+            {
+                return SessionStateActions.InitializeItem;
+            }
+
             using (var memoryStream = new MemoryStream(data))
             {
-                object retObject = Serializer.Deserialize<byte[]>(memoryStream);
-                
-                try
+                if (firstByte == str)
                 {
-                    string retString = Encoding.Default.GetString((byte[])retObject);
-                    if (retString == redisNull)
-                    {
-                        return null;
-                    }
-                    else if (retString == initializeItem)
-                    {
-                        return SessionStateActions.InitializeItem;
-                    }
-                    return retString;
+                    memoryStream.ReadByte();
                 }
-                catch
+
+                byte[] retObject = Serializer.Deserialize<byte[]>(memoryStream);
+
+
+                if (firstByte == str)
+                {
+                    return Encoding.Default.GetString(retObject);
+                }
+                else
                 {
                     return retObject;
                 }
