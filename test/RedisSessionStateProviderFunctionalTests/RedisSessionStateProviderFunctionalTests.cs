@@ -9,6 +9,8 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 using System.Threading;
+using System.Web;
+using System.Web.SessionState;
 using Microsoft.AspNet.SessionState;
 
 namespace Microsoft.Web.Redis.FunctionalTests
@@ -145,6 +147,20 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 string sessionId = ResetRedisConnectionWrapperAndConfiguration();
                 RedisSessionStateProvider ssp = new RedisSessionStateProvider();
                 await ssp.ReleaseItemExclusiveAsync(null, sessionId, null, CancellationToken.None);
+                DisposeRedisConnectionWrapper();
+            }
+        }
+        
+        [Fact]
+        public async Task SetAndReleaseItemExclusiveWithSessionStateItemCollection()
+        {
+            using (RedisServer redisServer = new RedisServer())
+            {
+                string sessionId = ResetRedisConnectionWrapperAndConfiguration();
+                RedisSessionStateProvider ssp = new RedisSessionStateProvider();
+                var item = new SessionStateStoreData(new SessionStateItemCollection(), new HttpStaticObjectsCollection(), 1);
+                item.Items["testKey"] = "test data";
+                await ssp.SetAndReleaseItemExclusiveAsync(null, sessionId, item, null, true, CancellationToken.None);
                 DisposeRedisConnectionWrapper();
             }
         }
