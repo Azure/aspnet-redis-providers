@@ -19,9 +19,6 @@
     <Compile Include="..\Shared\*" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="..\Shared\RedisNull.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.SessionState.SessionStateModule" Version="1.1.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
