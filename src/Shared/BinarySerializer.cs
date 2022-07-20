@@ -4,9 +4,11 @@
 //
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.SessionState;
+using ProtoBuf;
 
 namespace Microsoft.Web.Redis
 {
@@ -19,7 +21,8 @@ namespace Microsoft.Web.Redis
             redisNull,
             initializeItem,
             str,
-            byteArray
+            byteArray,
+            obj
         }
 
         public byte[] Serialize(object data)
@@ -35,7 +38,22 @@ namespace Microsoft.Web.Redis
                 case byte[]:
                     return PrependHeaderToData((byte[])data, (byte)DataTypes.byteArray);
                 default:
-                    throw new ArgumentException("Object type is not supported.");
+                    try
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            memoryStream.WriteByte((byte)DataTypes.obj);
+                            Type type = data.GetType();
+                            var id = Encoding.UTF8.GetBytes(type.AssemblyQualifiedName + '|');
+                            memoryStream.Write(id, 0, id.Length);
+                            Serializer.Serialize(memoryStream, data);
+                            return memoryStream.ToArray();
+                        }
+                    }
+                    catch
+                    {
+                        throw new ArgumentException("Object type is not supported.");
+                    }
             }
         }
 
@@ -72,7 +90,27 @@ namespace Microsoft.Web.Redis
                 case (byte)DataTypes.byteArray:
                     return data.Skip(1).ToArray();
                 default:
-                    throw new ArgumentException("Unknown type.");
+                    try
+                    {
+                        object retObject = null;
+                        using (var memoryStream = new MemoryStream(data))
+                        {
+                            var pipeIndex = Array.IndexOf(data, (byte)'|');
+                            if (pipeIndex >= 0)
+                            {
+                                var typeName = Encoding.UTF8.GetString(data, 0, pipeIndex);
+                                Type deserializationType = Type.GetType(typeName);
+                                memoryStream.Position = pipeIndex + 1;
+                                retObject = Serializer.Deserialize(deserializationType, memoryStream);
+                            }
+                        }
+                        return retObject;
+                    }
+                    catch
+                    {
+                        throw new ArgumentException("Unknown type.");
+                    }
+
             }
         }
     }
