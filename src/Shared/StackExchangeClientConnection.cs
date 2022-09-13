@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Web.SessionState;
 using StackExchange.Redis;
 
@@ -39,7 +40,7 @@ namespace Microsoft.Web.Redis
         {
             RedisKey[] redisKeyArgs = new RedisKey[keyArgs.Length];
             RedisValue[] redisValueArgs = new RedisValue[valueArgs.Length];
-            
+
             int i = 0;
             foreach (string key in keyArgs)
             {
@@ -171,7 +172,22 @@ namespace Microsoft.Web.Redis
             Debug.Assert(lockScriptReturnValueArray != null);
 
             SessionStateItemCollection sessionData = null;
-            // TODO
+            if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
+            {
+                RedisResult[] data = (RedisResult[])lockScriptReturnValueArray[1];
+                var serializedSessionStateItemCollection = data[1];
+
+                if (serializedSessionStateItemCollection != null)
+                {
+                    MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
+
+                    if (ms.Length > 0)
+                    {
+                        BinaryReader reader = new BinaryReader(ms);
+                        sessionData = SessionStateItemCollection.Deserialize(reader);
+                    }
+                }
+            }
             return sessionData;
         }
 

@@ -21,9 +21,9 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider.configuration = GetDefaultConfigUtility(); 
         }
 
-        internal static ChangeTrackingSessionStateItemCollection GetChangeTrackingSessionStateItemCollection()
+        internal static SessionStateItemCollection SessionStateItemCollection()
         {
-            return new ChangeTrackingSessionStateItemCollection(new RedisUtility(GetDefaultConfigUtility()));
+            return new SessionStateItemCollection();
         }
 
         internal static ProviderConfiguration GetDefaultConfigUtility()
@@ -41,7 +41,6 @@ namespace Microsoft.Web.Redis.Tests
             configuration.OperationTimeoutInMilliSec = 1000;
             configuration.RetryTimeout = TimeSpan.Zero;
             configuration.ThrowOnError = true;
-            configuration.RedisSerializerType = null;
             return configuration;
         }
 

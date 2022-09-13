@@ -16,7 +16,6 @@ namespace Microsoft.Web.Redis.Tests
 {
     public class RedisUtilityTests
     {
-        private static RedisUtility RedisUtility = new RedisUtility(Utility.GetDefaultConfigUtility());
 
         [Fact]
         public void AppendRemoveItemsInList_EmptySessionItems()

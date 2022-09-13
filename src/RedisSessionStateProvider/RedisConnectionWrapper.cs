@@ -4,7 +4,10 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis
@@ -15,10 +18,10 @@ namespace Microsoft.Web.Redis
         static object lockForSharedConnection = new object();
 
         public KeyGenerator Keys { set; get; }
-        
+
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
-        
+
 
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
@@ -54,8 +57,8 @@ namespace Microsoft.Web.Redis
             }
         }
 
-/*-------Start of UpdateExpiryTime operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
-        
+        /*-------Start of UpdateExpiryTime operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+
         // KEYS[1] = = data-id, internal-id
         // ARGV[1] = session-timeout 
         // this order should not change LUA script depends on it
@@ -87,10 +90,10 @@ namespace Microsoft.Web.Redis
             redisConnection.Eval(updateExpiryTimeScript, keyArgs, valueArgs);
         }
 
-/*-------End of UpdateExpiryTime operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+        /*-------End of UpdateExpiryTime operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/*-------Start of Set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
-        
+        /*-------Start of Set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+
         // KEYS[1] = = data-id, internal-id
         // ARGV[1] = last-index-in-list, ARGV[2] = session-timeout 
         // ARGV[3..] = { data as key and value one by one }
@@ -105,10 +108,30 @@ namespace Microsoft.Web.Redis
 
         private bool SetPrepare(ISessionStateItemCollection data, int sessionTimeout, out string[] keyArgs, out object[] valueArgs)
         {
-                keyArgs = null;
-                valueArgs = null;
-            // TODO
-            return false;
+            keyArgs = null;
+            valueArgs = null;
+            try
+            {
+                MemoryStream ms = new MemoryStream();
+                BinaryWriter writer = new BinaryWriter(ms);
+
+                if (data != null)
+                    ((SessionStateItemCollection)data).Serialize(writer);
+
+                writer.Close();
+
+                byte[] SerializedSessionStateItemCollection = ms.ToArray();
+
+
+                keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
+
+                valueArgs = new object[] { 4, sessionTimeout, new Object(), SerializedSessionStateItemCollection };
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public void Set(ISessionStateItemCollection data, int sessionTimeout)
@@ -120,10 +143,10 @@ namespace Microsoft.Web.Redis
                 redisConnection.Eval(setScript, keyArgs, valueArgs);
             }
         }
-        
-/*-------End of Set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/*-------Start of Lock set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+        /*-------End of Set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        /*-------Start of Lock set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // KEYS = { write-lock-id, data-id, internal-id }
         // ARGV = { write-lock-value-that-we-want-to-set, request-timout } 
@@ -206,7 +229,7 @@ namespace Microsoft.Web.Redis
                     end
                     return retArray
                     ");
-        
+
         public bool TryCheckWriteLockAndGetData(out object lockId, out ISessionStateItemCollection data, out int sessionTimeout)
         {
             string[] keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
@@ -229,10 +252,10 @@ namespace Microsoft.Web.Redis
             return ret;
         }
 
-/*-------End of Lock set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+        /*-------End of Lock set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/*-------Start of Lock release operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
-        
+        /*-------Start of Lock release operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+
         public void TryReleaseLockIfLockIdMatch(object lockId, int sessionTimeout)
         {
             string[] keyArgs = { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
@@ -257,7 +280,7 @@ namespace Microsoft.Web.Redis
                 return 1
                 ");
 
-/*-------End of Lock release operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+        /*-------End of Lock release operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // KEYS = { write-lock-id, data-id, internal-id}
         // ARGV = { write-lock-value }
@@ -272,7 +295,7 @@ namespace Microsoft.Web.Redis
                 redis.call('DEL',KEYS[3])
                 redis.call('DEL',KEYS[1])
                 ");
-        
+
         public void TryRemoveAndReleaseLock(object lockId)
         {
             string[] keyArgs = { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
@@ -281,7 +304,7 @@ namespace Microsoft.Web.Redis
             redisConnection.Eval(removeSessionScript, keyArgs, valueArgs);
         }
 
-/*-------Start of TryUpdate operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+        /*-------Start of TryUpdate operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // KEYS[1] = write-lock-id, KEYS[2] = data-id, KEYS[3] = internal-id
         // ARGV[1] = write-lock-value, ARGV[2] = session time out, 
@@ -310,8 +333,6 @@ namespace Microsoft.Web.Redis
             if (data != null)
             {
                 List<object> list = new List<object>();
-                SessionStateItemCollection sessionItems = (SessionStateItemCollection)data;
-                // TODO
                 int noOfItemsRemoved = 0;
                 int noOfItemsUpdated = 0;
 
@@ -325,7 +346,7 @@ namespace Microsoft.Web.Redis
                 valueArgs[5] = noOfItemsUpdated;
                 valueArgs[6] = noOfItemsRemoved + 9; // first item updated will be next to last item removed
                 valueArgs[7] = list.Count + 8; // index for last item in list in LUA
-                
+
                 // if nothing is changed in session then also execute update script to update session timeout
                 if (list.Count != 0)
                 {
@@ -345,7 +366,7 @@ namespace Microsoft.Web.Redis
                 redisConnection.Eval(removeAndUpdateSessionDataScript, keyArgs, valueArgs);
             }
         }
-        
-/*-------End of TryUpdateIfLockIdMatch operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        /*-------End of TryUpdateIfLockIdMatch operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
     }
 }

@@ -6,7 +6,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 {
     public class StackExchangeClientConnectionFunctionalTests
     {
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void Constructor_DatabaseIdFromConfigurationProperty()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -21,7 +21,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void Constructor_DatabaseIdFromConnectionString()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -36,7 +36,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void Constructor_DatabaseIdFromConfigurationPropertyWhenNotSetInConnectionString()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -55,8 +55,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         private StackExchangeClientConnection GetStackExchangeClientConnection(ProviderConfiguration configuration)
         {
             var sharedConnection = new RedisSharedConnection(configuration);
-            var redisUtility = new RedisUtility(configuration);
-            return new StackExchangeClientConnection(configuration, redisUtility, sharedConnection);
+            return new StackExchangeClientConnection(configuration, sharedConnection);
         }
     }
 }
