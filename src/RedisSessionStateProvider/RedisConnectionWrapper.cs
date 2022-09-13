@@ -310,7 +310,7 @@ namespace Microsoft.Web.Redis
             if (data != null)
             {
                 List<object> list = new List<object>();
-                ChangeTrackingSessionStateItemCollection sessionItems = (ChangeTrackingSessionStateItemCollection)data;
+                SessionStateItemCollection sessionItems = (SessionStateItemCollection)data;
                 // TODO
                 int noOfItemsRemoved = 0;
                 int noOfItemsUpdated = 0;

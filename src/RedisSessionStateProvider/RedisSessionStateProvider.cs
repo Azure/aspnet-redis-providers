@@ -154,7 +154,7 @@ namespace Microsoft.Web.Redis
         {
             //Creating empty session store data and return it. 
             LogUtility.LogInfo("CreateNewStoreData => Session provider object: {0}.", this.GetHashCode());
-            return new SessionStateStoreData(new ChangeTrackingSessionStateItemCollection(), new HttpStaticObjectsCollection(), timeout);
+            return new SessionStateStoreData(new SessionStateItemCollection(), new HttpStaticObjectsCollection(), timeout);
         }
 
         public override async Task CreateUninitializedItemAsync(HttpContextBase context, string id, int timeout, CancellationToken cancellationToken)
@@ -164,7 +164,7 @@ namespace Microsoft.Web.Redis
                 if (LastException == null)
                 {
                     LogUtility.LogInfo("CreateUninitializedItem => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
-                    ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection();
+                    ISessionStateItemCollection sessionData = new SessionStateItemCollection();
                     sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
                     GetAccessToStore(id);
                     // Converting timout from min to sec
@@ -395,7 +395,7 @@ namespace Microsoft.Web.Redis
                         }
                         else
                         {
-                            sessionItems = new ChangeTrackingSessionStateItemCollection();
+                            sessionItems = new SessionStateItemCollection();
                         }
 
                         if (sessionItems["SessionStateActions"] != null)
