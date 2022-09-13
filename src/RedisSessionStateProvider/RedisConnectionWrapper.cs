@@ -13,7 +13,6 @@ namespace Microsoft.Web.Redis
     {
         internal static RedisSharedConnection sharedConnection;
         static object lockForSharedConnection = new object();
-        internal static RedisUtility redisUtility;
 
         public KeyGenerator Keys { set; get; }
         
@@ -34,11 +33,10 @@ namespace Microsoft.Web.Redis
                     if (sharedConnection == null)
                     {
                         sharedConnection = new RedisSharedConnection(configuration);
-                        redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
-            redisConnection = new StackExchangeClientConnection(configuration, redisUtility, sharedConnection);
+            redisConnection = new StackExchangeClientConnection(configuration, sharedConnection);
         }
 
         public TimeSpan GetLockAge(object lockId)
@@ -107,22 +105,9 @@ namespace Microsoft.Web.Redis
 
         private bool SetPrepare(ISessionStateItemCollection data, int sessionTimeout, out string[] keyArgs, out object[] valueArgs)
         {
-            keyArgs = null;
-            valueArgs = null;
-            if (data != null && data.Count > 0)
-            {
-                ChangeTrackingSessionStateItemCollection sessionItems = (ChangeTrackingSessionStateItemCollection)data;
-                List<object> list = redisUtility.GetNewItemsAsList(sessionItems);
-                if (list.Count > 0)
-                {
-                    keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
-                    valueArgs = new object[list.Count + 2]; // this +2 is for first 2 values in ARGV that we will add now
-                    valueArgs[0] = list.Count + 2;
-                    valueArgs[1] = sessionTimeout;
-                    list.CopyTo(valueArgs, 2);
-                    return true;
-                }
-            }
+                keyArgs = null;
+                valueArgs = null;
+            // TODO
             return false;
         }
 
@@ -326,8 +311,9 @@ namespace Microsoft.Web.Redis
             {
                 List<object> list = new List<object>();
                 ChangeTrackingSessionStateItemCollection sessionItems = (ChangeTrackingSessionStateItemCollection)data;
-                int noOfItemsRemoved = redisUtility.AppendRemoveItemsInList(sessionItems, list);
-                int noOfItemsUpdated = redisUtility.AppendUpdatedOrNewItemsInList(sessionItems, list);
+                // TODO
+                int noOfItemsRemoved = 0;
+                int noOfItemsUpdated = 0;
 
                 keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
                 valueArgs = new object[list.Count + 8]; // this +8 is for first wight values in ARGV that we will add now

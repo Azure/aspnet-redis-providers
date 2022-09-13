@@ -22,7 +22,6 @@ namespace Microsoft.Web.Redis
         Dictionary<string, string> allKeys = new Dictionary<string, string>();
         HashSet<string> modifiedKeys = new HashSet<string>();
         HashSet<string> deletedKeys = new HashSet<string>();
-        RedisUtility _utility = null;
         bool dirtyFlag = false;
 
         private string GetSessionNormalizedKeyToUse(string name)
@@ -61,9 +60,8 @@ namespace Microsoft.Web.Redis
             return deletedKeys;
         }
 
-        public ChangeTrackingSessionStateItemCollection(RedisUtility utility)
+        public ChangeTrackingSessionStateItemCollection()
         {
-            _utility = utility;
             innerCollection = new SessionStateItemCollection();
         }
 
@@ -149,49 +147,24 @@ namespace Microsoft.Web.Redis
 
         private object GetData(string normalizedName)
         {
-            ValueWrapper valueWrapper = (ValueWrapper) innerCollection[normalizedName];
-            if (valueWrapper != null)
-            {
-                object actualValue = valueWrapper.GetActualValue(_utility);
-                // if actualValue is mutable then add it to modified list even during get operation
-                if (actualValue != null && !actualValue.GetType().IsValueType && actualValue.GetType() != typeof(string))
-                {
-                    AddInModifiedKeys(normalizedName);
-                }
-                return actualValue;
-            }
+            // TODO
             return null;
         }
 
         private void SetData(string normalizedName, object value)
         {
-            AddInModifiedKeys(normalizedName);
-            ValueWrapper valueWrapper = (ValueWrapper) innerCollection[normalizedName];
-            if (valueWrapper != null)
-            {
-                valueWrapper.SetActualValue(value);
-            }
-            else
-            {
-                innerCollection[normalizedName] = new ValueWrapper(value);
-            }
+            // TODO
         }
 
         internal void SetDataWithoutUpdatingModifiedKeys(string name, byte[] value)
         {
-            name = GetSessionNormalizedKeyToUse(name);
-            innerCollection[name] = new ValueWrapper(value);
+            // TODO
         }
 
         internal object GetDataWithoutUpdatingModifiedKeys(string name)
         {
-            name = GetSessionNormalizedKeyToUse(name);
-            ValueWrapper valueWrapper = (ValueWrapper)innerCollection[name];
-            if (valueWrapper != null)
-            {
-                return valueWrapper.GetActualValue(_utility);
-            }
-            return null;;
+            // TODO 
+            return null;
         }
 
         public override IEnumerator GetEnumerator()

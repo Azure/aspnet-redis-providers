@@ -21,7 +21,6 @@ namespace Microsoft.Web.Redis
         internal object sessionLockId;
         private const int FROM_MIN_TO_SEC = 60;
 
-        internal static RedisUtility redisUtility;
         internal static ProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
         internal ICacheConnection cache;
@@ -93,7 +92,6 @@ namespace Microsoft.Web.Redis
                     if (configuration == null)
                     {
                         configuration = ProviderConfiguration.ProviderConfigurationForSessionState(config);
-                        redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
@@ -156,7 +154,7 @@ namespace Microsoft.Web.Redis
         {
             //Creating empty session store data and return it. 
             LogUtility.LogInfo("CreateNewStoreData => Session provider object: {0}.", this.GetHashCode());
-            return new SessionStateStoreData(new ChangeTrackingSessionStateItemCollection(redisUtility), new HttpStaticObjectsCollection(), timeout);
+            return new SessionStateStoreData(new ChangeTrackingSessionStateItemCollection(), new HttpStaticObjectsCollection(), timeout);
         }
 
         public override async Task CreateUninitializedItemAsync(HttpContextBase context, string id, int timeout, CancellationToken cancellationToken)
@@ -166,7 +164,7 @@ namespace Microsoft.Web.Redis
                 if (LastException == null)
                 {
                     LogUtility.LogInfo("CreateUninitializedItem => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
-                    ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection(redisUtility);
+                    ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection();
                     sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
                     GetAccessToStore(id);
                     // Converting timout from min to sec
@@ -397,7 +395,7 @@ namespace Microsoft.Web.Redis
                         }
                         else
                         {
-                            sessionItems = new ChangeTrackingSessionStateItemCollection(redisUtility);
+                            sessionItems = new ChangeTrackingSessionStateItemCollection();
                         }
 
                         if (sessionItems["SessionStateActions"] != null)
