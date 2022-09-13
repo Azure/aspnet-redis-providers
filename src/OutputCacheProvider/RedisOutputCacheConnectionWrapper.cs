@@ -4,6 +4,9 @@
 //
 
 using System;
+using System.IO;
+using System.Security.Policy;
+using System.Web.Caching;
 
 namespace Microsoft.Web.Redis
 {
@@ -11,7 +14,6 @@ namespace Microsoft.Web.Redis
     {
         internal static RedisSharedConnection sharedConnection;
         static object lockForSharedConnection = new object();
-        internal static RedisUtility redisUtility;
 
         internal IRedisClientConnection redisConnection;
         ProviderConfiguration configuration;
@@ -28,11 +30,10 @@ namespace Microsoft.Web.Redis
                     if (sharedConnection == null)
                     {
                         sharedConnection = new RedisSharedConnection(configuration);
-                        redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
-            redisConnection = new StackExchangeClientConnection(configuration, redisUtility, sharedConnection);
+            redisConnection = new StackExchangeClientConnection(configuration, sharedConnection);
         }
 
 /*-------Start of Add operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -53,10 +54,25 @@ namespace Microsoft.Web.Redis
             key = GetKeyForRedis(key);
             TimeSpan expiryTime = utcExpiry - DateTime.UtcNow;
             string[] keyArgs = new string[] { key };
-            object[] valueArgs = new object[] { redisUtility.GetBytesFromObject(entry), (long) expiryTime.TotalMilliseconds };
+
+            MemoryStream ms1 = new MemoryStream();
+            try
+            {
+                OutputCache.Serialize(ms1, entry);
+            } catch (ArgumentException)
+            {
+                LogUtility.LogWarning("{0} is not one of the specified output-cache types.", entry);
+            }
+            byte[] data = ms1.ToArray();
+
+            object[] valueArgs = new object[] { 
+                data,
+                (long) expiryTime.TotalMilliseconds };
 
             object rowDataFromRedis = redisConnection.Eval(addScript, keyArgs, valueArgs);
-            return redisUtility.GetObjectFromBytes(redisConnection.GetOutputCacheDataFromResult(rowDataFromRedis));
+
+            MemoryStream ms2 = new MemoryStream((byte[])rowDataFromRedis);
+            return OutputCache.Deserialize(ms2);
         }
 
 /*-------End of Add operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -64,15 +80,22 @@ namespace Microsoft.Web.Redis
         public void Set(string key, object entry, DateTime utcExpiry)
         {
             key = GetKeyForRedis(key);
-            byte[] data = redisUtility.GetBytesFromObject(entry);
+
+            MemoryStream ms = new MemoryStream();
+            OutputCache.Serialize(ms, entry);
+            byte[] data = ms.ToArray();
+
             redisConnection.Set(key, data, utcExpiry);
         }
 
         public object Get(string key)
         {
             key = GetKeyForRedis(key);
+
             byte[] data = redisConnection.Get(key);
-            return redisUtility.GetObjectFromBytes(data);
+            MemoryStream ms = new MemoryStream(data);
+            object retObject = OutputCache.Deserialize(ms);
+            return retObject;
         }
 
         public void Remove(string key)

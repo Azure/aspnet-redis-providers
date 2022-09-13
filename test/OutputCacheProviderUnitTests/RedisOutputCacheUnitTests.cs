@@ -74,7 +74,6 @@ namespace Microsoft.Web.Redis.UnitTests
             Assert.Equal(1234, RedisOutputCacheProvider.configuration.Port);
             Assert.Equal("hello world", RedisOutputCacheProvider.configuration.AccessKey);
             Assert.True(RedisOutputCacheProvider.configuration.UseSsl);
-            Assert.Equal("Microsoft.Web.Redis.BinarySerializer", RedisOutputCacheProvider.configuration.RedisSerializerType);
         }
     }
 }
