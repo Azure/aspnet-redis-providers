@@ -6,13 +6,13 @@
 using System;
 using Xunit;
 using System.Collections.Specialized;
-
+using System.Web.Caching;
 
 namespace Microsoft.Web.Redis.FunctionalTests
 {
     public class RedisOutputCacheFunctionalTests
     {
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void GetWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
         
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void SetGetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -38,13 +38,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3); 
-                provider.Set("key2", "data2", utxExpiry);
+                provider.Set("key2", new FileResponseElement("data2", 0, 0), utxExpiry);
                 object data = provider.Get("key2");
-                Assert.Equal("data2", data);
+                Assert.Equal("data2", ((FileResponseElement)data).Path);
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void AddWithExistingSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -55,14 +55,14 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-                provider.Set("key3", "data3", utxExpiry);
-                provider.Add("key3", "data3.1", utxExpiry);
+                provider.Set("key3", new FileResponseElement("data3", 0, 0), utxExpiry);
+                provider.Add("key3", new FileResponseElement("data3.1", 0, 0), utxExpiry);
                 object data = provider.Get("key3");
-                Assert.Equal("data3", data);
+                Assert.Equal("data3", ((FileResponseElement)data).Path);
             }            
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void AddWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -73,13 +73,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-                provider.Add("key4", "data4", utxExpiry);
+                provider.Add("key4", new FileResponseElement("data4", 0, 0), utxExpiry);
                 object data = provider.Get("key4");
-                Assert.Equal("data4", data);
+                Assert.Equal("data4", ((FileResponseElement)data).Path);
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void AddWhenSetExpiresTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -90,20 +90,20 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
 
                 DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
-                provider.Set("key5", "data5", utxExpiry);
+                provider.Set("key5", new FileResponseElement("data5", 0, 0), utxExpiry);
                 object data = provider.Get("key5");
-                Assert.Equal("data5", data);
+                Assert.Equal("data5", ((FileResponseElement)data).Path);
 
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 utxExpiry = DateTime.UtcNow.AddMinutes(3);
-                provider.Add("key5", "data5.1", utxExpiry);
+                provider.Add("key5", new FileResponseElement("data5.1", 0, 0), utxExpiry);
                 data = provider.Get("key5");
-                Assert.Equal("data5.1", data);
+                Assert.Equal("data5.1", ((FileResponseElement)data).Path);
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void RemoveWithoutSetTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -118,7 +118,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void RemoveTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -129,14 +129,14 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
-                provider.Set("key7", "data7", utxExpiry);
+                provider.Set("key7", new FileResponseElement("data7", 0, 0), utxExpiry);
                 provider.Remove("key7");
                 object data = provider.Get("key7");
                 Assert.Null(data);
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void ExpiryTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -147,7 +147,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
                 
                 DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
-                provider.Set("key8", "data8", utxExpiry);
+                provider.Set("key8", new FileResponseElement("data8", 0, 0), utxExpiry);
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 object data = provider.Get("key8");
@@ -155,7 +155,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public void AddScriptFixForExpiryTest()
         {
             using (RedisServer Server = new RedisServer())
@@ -166,9 +166,9 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 provider.Initialize("name", config);
 
                 DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
-                provider.Add("key9", "data9", utxExpiry);
+                provider.Add("key9", new FileResponseElement("data9", 0, 0), utxExpiry);
                 object data = provider.Get("key9");
-                Assert.Equal("data9", data);
+                Assert.Equal("data9", ((FileResponseElement)data).Path);
                 // Wait for 1.1 seconds so that data will expire
                 System.Threading.Thread.Sleep(1100);
                 data = provider.Get("key9");
