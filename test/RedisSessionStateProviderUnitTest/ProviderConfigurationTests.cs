@@ -144,7 +144,7 @@ namespace Microsoft.Web.Redis.Tests
 
             Exception ex2 = Assert.Throws<ConfigurationErrorsException>(() => ProviderConfiguration.GetConnectionString(config2));
             Assert.Contains("Either use the combination of parameters \"settingsClassName\" and \"settingsMethodName\" to provide the value of connection string or use the parameter \"connectionString\" but not both.", ex2.Message);
-            
+
             NameValueCollection config3 = new NameValueCollection();
             config3.Add("connectionString", "DummyString");
             config3.Add(settingsMethodName, "DummyMethodName");
@@ -261,7 +261,7 @@ namespace Microsoft.Web.Redis.Tests
         {
             return 0;
         }
-        
+
         public static TextWriter GetTextWriter()
         {
             return new StreamWriter(@"GetTextWriter.txt");

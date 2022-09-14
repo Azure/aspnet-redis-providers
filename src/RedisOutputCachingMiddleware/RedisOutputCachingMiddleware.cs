@@ -15,7 +15,7 @@ namespace RedisOutputCachingMiddleware
         private readonly IDatabase _cache;
         // optional expiration time, default to 1 day if not defined 
         private int _ttl;
-        
+
         // The default ttl is 86400 seconds, or 1 day
         public RedisOutputCache(RequestDelegate next, string redisConnectionString, int ttl = 86400)
         {
@@ -30,7 +30,7 @@ namespace RedisOutputCachingMiddleware
             {
                 LogUtility.LogError($"Cannot connect to Redis: {ex.Message}");
             }
-            
+
         }
 
         public async Task InvokeAsync(HttpContext context)

@@ -33,7 +33,7 @@ namespace Microsoft.Web.Redis
         {
             TimeSpan timeSpan = new TimeSpan(0, 0, timeInSeconds);
             RedisKey redisKey = key;
-            return (bool)RetryLogic(() => RealConnection.KeyExpire(redisKey,timeSpan));
+            return (bool)RetryLogic(() => RealConnection.KeyExpire(redisKey, timeSpan));
         }
 
         public object Eval(string script, string[] keyArgs, object[] valueArgs)
@@ -141,7 +141,7 @@ namespace Microsoft.Web.Redis
             int sessionTimeout = (int)lockScriptReturnValueArray[2];
             if (sessionTimeout == -1)
             {
-                sessionTimeout = (int) _configuration.SessionTimeout.TotalSeconds;
+                sessionTimeout = (int)_configuration.SessionTimeout.TotalSeconds;
             }
             // converting seconds to minutes
             sessionTimeout = sessionTimeout / 60;
@@ -179,16 +179,24 @@ namespace Microsoft.Web.Redis
 
                 if (serializedSessionStateItemCollection != null)
                 {
-                    MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
-
-                    if (ms.Length > 0)
-                    {
-                        BinaryReader reader = new BinaryReader(ms);
-                        sessionData = SessionStateItemCollection.Deserialize(reader);
-                    }
+                    sessionData = DeserializeSessionStateItemCollection((byte[])serializedSessionStateItemCollection);
                 }
             }
             return sessionData;
+        }
+
+        private SessionStateItemCollection DeserializeSessionStateItemCollection(byte[] serializedSessionStateItemCollection)
+        {
+            try
+            {
+                MemoryStream ms = new MemoryStream(serializedSessionStateItemCollection);
+                BinaryReader reader = new BinaryReader(ms);
+                return SessionStateItemCollection.Deserialize(reader);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public void Set(string key, byte[] data, DateTime utcExpiry)
@@ -202,8 +210,8 @@ namespace Microsoft.Web.Redis
         public byte[] Get(string key)
         {
             RedisKey redisKey = key;
-            RedisValue redisValue = (RedisValue) OperationExecutor(() => RealConnection.StringGet(redisKey));
-            return (byte[]) redisValue;
+            RedisValue redisValue = (RedisValue)OperationExecutor(() => RealConnection.StringGet(redisKey));
+            return (byte[])redisValue;
         }
 
         public void Remove(string key)
@@ -212,10 +220,10 @@ namespace Microsoft.Web.Redis
             OperationExecutor(() => RealConnection.KeyDelete(redisKey));
         }
 
-        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis) 
+        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis)
         {
             RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
-            return (byte[]) rowDataAsRedisResult;
+            return (byte[])rowDataAsRedisResult;
         }
     }
 }

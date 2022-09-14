@@ -25,11 +25,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
                     Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     socket.Connect("localhost", 6379);
                     socket.Close();
-                    LogUtility.LogInfo("Successful started redis server after Time: {0} ms", (i+1) * 10);
+                    LogUtility.LogInfo("Successful started redis server after Time: {0} ms", (i + 1) * 10);
                     break;
                 }
                 catch
-                {}
+                { }
             }
         }
 
@@ -43,7 +43,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         {
             KillRedisServers();
             _server = new Process();
-            string executable_path = $"{Environment.CurrentDirectory}\\..\\..\\..\\..\\..\\packages\\redis-64\\3.0.503\\tools\\redis-server.exe";
+            string executable_path = "C:\\Users\\stanleysmall\\source\\repos\\redis-server.exe";
             _server.StartInfo.FileName = executable_path;
             _server.StartInfo.Arguments = "--maxmemory 20000000";
             _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;

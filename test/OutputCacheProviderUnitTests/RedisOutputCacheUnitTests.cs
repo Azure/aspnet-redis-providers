@@ -13,18 +13,18 @@ namespace Microsoft.Web.Redis.UnitTests
     public class RedisOutputCacheUnitTests
     {
         [Fact]
-        public void TryGet() 
+        public void TryGet()
         {
             var fake = A.Fake<IOutputCacheConnection>();
             A.CallTo(() => fake.Get("key1")).Returns(new ArgumentException("foo"));
             RedisOutputCacheProvider cache = new RedisOutputCacheProvider();
             cache.cache = fake;
             var obj = cache.Get("key1");
-            Assert.IsType<ArgumentException>(obj);            
+            Assert.IsType<ArgumentException>(obj);
         }
 
         [Fact]
-        public void TryAdd() 
+        public void TryAdd()
         {
             var fake = A.Fake<IOutputCacheConnection>();
             DateTime utcExpiry = DateTime.Now;
@@ -64,7 +64,7 @@ namespace Microsoft.Web.Redis.UnitTests
             cache.cache = fake;
             NameValueCollection config = new NameValueCollection();
             config.Add("host", "localhost");
-            config.Add("port", "1234"); 
+            config.Add("port", "1234");
             config.Add("accessKey", "hello world");
             config.Add("ssl", "true");
             config.Add("redisSerializerType", "Microsoft.Web.Redis.BinarySerializer");

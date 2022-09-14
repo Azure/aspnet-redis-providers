@@ -21,12 +21,12 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
                 provider.Initialize("name", config);
-                
+
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 Assert.Null(provider.Get("key1"));
             }
         }
-        
+
         [Fact(Skip = "Disable Functional Tests")]
         public void SetGetTest()
         {
@@ -36,8 +36,8 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
                 provider.Initialize("name", config);
-                
-                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3); 
+
+                DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Set("key2", new FileResponseElement("data2", 0, 0), utxExpiry);
                 object data = provider.Get("key2");
                 Assert.Equal("data2", ((FileResponseElement)data).Path);
@@ -53,13 +53,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
                 provider.Initialize("name", config);
-                
+
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Set("key3", new FileResponseElement("data3", 0, 0), utxExpiry);
                 provider.Add("key3", new FileResponseElement("data3.1", 0, 0), utxExpiry);
                 object data = provider.Get("key3");
                 Assert.Equal("data3", ((FileResponseElement)data).Path);
-            }            
+            }
         }
 
         [Fact(Skip = "Disable Functional Tests")]
@@ -71,7 +71,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
                 provider.Initialize("name", config);
-                
+
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Add("key4", new FileResponseElement("data4", 0, 0), utxExpiry);
                 object data = provider.Get("key4");
@@ -127,7 +127,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
                 provider.Initialize("name", config);
-                
+
                 DateTime utxExpiry = DateTime.UtcNow.AddMinutes(3);
                 provider.Set("key7", new FileResponseElement("data7", 0, 0), utxExpiry);
                 provider.Remove("key7");
@@ -145,7 +145,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 NameValueCollection config = new NameValueCollection();
                 config.Add("ssl", "false");
                 provider.Initialize("name", config);
-                
+
                 DateTime utxExpiry = DateTime.UtcNow.AddSeconds(1);
                 provider.Set("key8", new FileResponseElement("data8", 0, 0), utxExpiry);
                 // Wait for 1.1 seconds so that data will expire
@@ -176,6 +176,6 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        
+
     }
 }

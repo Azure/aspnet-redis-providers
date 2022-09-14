@@ -112,25 +112,32 @@ namespace Microsoft.Web.Redis
             valueArgs = null;
             try
             {
-                MemoryStream ms = new MemoryStream();
-                BinaryWriter writer = new BinaryWriter(ms);
-
-                if (data != null)
-                    ((SessionStateItemCollection)data).Serialize(writer);
-
-                writer.Close();
-
-                byte[] SerializedSessionStateItemCollection = ms.ToArray();
-
+                byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection((SessionStateItemCollection)data);
 
                 keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
 
-                valueArgs = new object[] { 4, sessionTimeout, new Object(), SerializedSessionStateItemCollection };
+                valueArgs = new object[] { 4, sessionTimeout, new Object(), serializedSessionStateItemCollection };
                 return true;
             }
             catch
             {
                 return false;
+            }
+        }
+
+        private byte[] SerializeSessionStateItemCollection(SessionStateItemCollection sessionStateItemCollection)
+        {
+            try
+            {
+                MemoryStream ms = new MemoryStream();
+                BinaryWriter writer = new BinaryWriter(ms);
+                sessionStateItemCollection.Serialize(writer);
+                writer.Close();
+                return ms.ToArray();
+            }
+            catch
+            {
+                return null;
             }
         }
 

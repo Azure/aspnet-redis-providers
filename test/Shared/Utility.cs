@@ -4,12 +4,6 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis.Tests
@@ -18,7 +12,7 @@ namespace Microsoft.Web.Redis.Tests
     {
         internal static void SetConfigUtilityToDefault()
         {
-            RedisSessionStateProvider.configuration = GetDefaultConfigUtility(); 
+            RedisSessionStateProvider.configuration = GetDefaultConfigUtility();
         }
 
         internal static SessionStateItemCollection SessionStateItemCollection()

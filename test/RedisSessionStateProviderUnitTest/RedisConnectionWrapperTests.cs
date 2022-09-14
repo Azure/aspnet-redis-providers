@@ -59,7 +59,7 @@ namespace Microsoft.Web.Redis.Tests
             SessionStateItemCollection data = new SessionStateItemCollection();
             data["key"] = "value";
             redisConn.Set(data, 90);
-            A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 2), 
+            A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 2),
                 A<object[]>.That.Matches(o => o.Length == 4))).MustHaveHappened();
         }
 
@@ -118,7 +118,7 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => redisConn.redisConnection.IsLocked(A<object>.Ignored)).Returns(true);
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).Returns(15);
 
-            
+
             int sessionTimeout;
             Assert.False(redisConn.TryTakeWriteLockAndGetData(lockTime, lockTimeout, out lockId, out data, out sessionTimeout));
             Assert.Equal(lockTime.Ticks.ToString(), lockId);
@@ -199,7 +199,7 @@ namespace Microsoft.Web.Redis.Tests
 
             var serializedSessionData = ms.ToArray();
 
-            object[] sessionData = { "",  serializedSessionData};
+            object[] sessionData = { "", serializedSessionData };
             object[] returnFromRedis = { "", sessionData, "15" };
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
@@ -229,7 +229,7 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
-            
+
             redisConn.TryReleaseLockIfLockIdMatch(lockId, 900);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3 && s[0].Equals(redisConn.Keys.LockKey)),
                  A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();

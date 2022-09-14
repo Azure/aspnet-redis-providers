@@ -36,5 +36,5 @@ namespace Microsoft.Web.Redis
                 logger.WriteLine("[{0}]{1}{2}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), type, msgToPrint);
             }
         }
-    } 
+    }
 }
