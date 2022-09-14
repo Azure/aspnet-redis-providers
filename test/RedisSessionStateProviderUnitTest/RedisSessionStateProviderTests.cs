@@ -350,9 +350,8 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
             await sessionStateStore.SetAndReleaseItemExclusiveAsync(null, id, sssd, 7, false, CancellationToken.None);
-            // TODO
-            //A.CallTo(() => mockCache.TryUpdateAndReleaseLock(A<object>.Ignored, 
-            //    A<SessionStateItemCollection>.That.Matches(o => o.Count == 0 && o.GetModifiedKeys().Count == 0 && o.GetDeletedKeys().Count == 1), 900)).MustHaveHappened();
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLock(A<object>.Ignored, 
+                A<SessionStateItemCollection>.That.Matches(o => o.Count == 0), 900)).MustHaveHappened();
         }
 
         [Fact]
@@ -368,9 +367,8 @@ namespace Microsoft.Web.Redis.Tests
             RedisSessionStateProvider sessionStateStore = new RedisSessionStateProvider();
             sessionStateStore.cache = mockCache;
             await sessionStateStore.SetAndReleaseItemExclusiveAsync(null, id, sssd, 7, false, CancellationToken.None);
-            // TODO
-            //A.CallTo(() => mockCache.TryUpdateAndReleaseLock(A<object>.Ignored, 
-            //    A<SessionStateItemCollection>.That.Matches(o => o.Count == 1 && o.GetModifiedKeys().Count == 1 && o.GetDeletedKeys().Count == 0), 900)).MustHaveHappened();  
+            A.CallTo(() => mockCache.TryUpdateAndReleaseLock(A<object>.Ignored, 
+                A<SessionStateItemCollection>.That.Matches(o => o.Count == 1), 900)).MustHaveHappened();  
         }
     }
 }

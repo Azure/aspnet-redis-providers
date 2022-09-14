@@ -7,6 +7,7 @@ using FakeItEasy;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -144,10 +145,18 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
-            object[] sessionData = { "Key", null }; // TODO RedisUtility.GetBytesFromObject("value") };
+            SessionStateItemCollection sessionDataReturn = new SessionStateItemCollection();
+            sessionDataReturn["key1"] = "value1";
+            sessionDataReturn["key2"] = "value2";
+
+            MemoryStream ms = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(ms);
+            sessionDataReturn.Serialize(writer);
+
+            var serializedSessionData = ms.ToArray();
+
+            object[] sessionData = { "", serializedSessionData };
             object[] returnFromRedis = { lockTime.Ticks.ToString(), sessionData, "15", false };
-            SessionStateItemCollection sessionDataReturn = null; // TODO Utility.GetSessionStateItemCollection();
-            sessionDataReturn["key"] = "value";
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                  A<object[]>.That.Matches(o => o.Length == 2))).Returns(returnFromRedis);
@@ -159,7 +168,7 @@ namespace Microsoft.Web.Redis.Tests
             int sessionTimeout;
             Assert.True(redisConn.TryTakeWriteLockAndGetData(lockTime, lockTimeout, out lockId, out data, out sessionTimeout));
             Assert.Equal(lockTime.Ticks.ToString(), lockId);
-            Assert.Equal(1, data.Count);
+            Assert.Equal(2, data.Count);
             Assert.Equal(15, sessionTimeout);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                 A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
@@ -180,10 +189,18 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
-            object[] sessionData = { "Key", null }; // TODO RedisUtility.GetBytesFromObject("value") };
+            SessionStateItemCollection sessionDataReturn = new SessionStateItemCollection();
+            sessionDataReturn["key1"] = "value1";
+            sessionDataReturn["key2"] = "value2";
+
+            MemoryStream ms = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(ms);
+            sessionDataReturn.Serialize(writer);
+
+            var serializedSessionData = ms.ToArray();
+
+            object[] sessionData = { "",  serializedSessionData};
             object[] returnFromRedis = { "", sessionData, "15" };
-            SessionStateItemCollection sessionDataReturn = null; // TODO Utility.GetSessionStateItemCollection();
-            sessionDataReturn["key"] = "value";
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                  A<object[]>.That.Matches(o => o.Length == 0))).Returns(returnFromRedis);
@@ -194,7 +211,7 @@ namespace Microsoft.Web.Redis.Tests
             int sessionTimeout;
             Assert.True(redisConn.TryCheckWriteLockAndGetData(out lockId, out data, out sessionTimeout));
             Assert.Null(lockId);
-            Assert.Equal(1, data.Count);
+            Assert.Equal(2, data.Count);
             Assert.Equal(15, sessionTimeout);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                 A<object[]>.That.Matches(o => o.Length == 0))).MustHaveHappened();
@@ -239,7 +256,7 @@ namespace Microsoft.Web.Redis.Tests
             string id = "session_id";
             int sessionTimeout = 900;
             object lockId = DateTime.Now.Ticks;
-            SessionStateItemCollection data = null; // TODO Utility.GetSessionStateItemCollection();
+            SessionStateItemCollection data = new SessionStateItemCollection();
 
             RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
@@ -264,7 +281,7 @@ namespace Microsoft.Web.Redis.Tests
             string id = "session_id";
             int sessionTimeout = 900;
             object lockId = DateTime.Now.Ticks;
-            SessionStateItemCollection data = null; // TODO Utility.GetSessionStateItemCollection();
+            SessionStateItemCollection data = new SessionStateItemCollection();
             data["KeyDel"] = "valueDel";
             data["Key"] = "value";
             data.Remove("KeyDel");
@@ -276,13 +293,13 @@ namespace Microsoft.Web.Redis.Tests
 
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3), A<object[]>.That.Matches(
-               o => o.Length == 11 &&
-                    o[2].Equals(1) &&
+               o => o.Length == 8 &&
+                    o[2].Equals(0) &&
                     o[3].Equals(9) &&
-                    o[4].Equals(9) &&
-                    o[5].Equals(1) &&
-                    o[6].Equals(10) &&
-                    o[7].Equals(11)
+                    o[4].Equals(8) &&
+                    o[5].Equals(0) &&
+                    o[6].Equals(9) &&
+                    o[7].Equals(8)
                 ))).MustHaveHappened();
         }
 
