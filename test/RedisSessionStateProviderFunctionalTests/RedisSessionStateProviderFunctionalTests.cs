@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             RedisConnectionWrapper.sharedConnection = null;
         }
 
-        [Fact()]
+        [Fact(Skip = "Disable Functional Tests")]
         public async Task SessionWriteCycle_Valid()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -64,7 +64,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact()]
+        [Fact(Skip = "Disable Functional Tests")]
         public async Task SessionReadCycle_Valid()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -94,7 +94,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact()]
+        [Fact(Skip = "Disable Functional Tests")]
         public async Task SessionTimoutChangeFromGlobalAspx()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -137,7 +137,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact()]
+        [Fact(Skip = "Disable Functional Tests")]
         public async Task ReleaseItemExclusiveWithNullLockId()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -149,7 +149,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact()]
+        [Fact(Skip = "Disable Functional Tests")]
         public async Task RemoveItemWithNullLockId()
         {
             using (RedisServer redisServer = new RedisServer())
