@@ -265,13 +265,13 @@ namespace Microsoft.Web.Redis.Tests
 
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3), A<object[]>.That.Matches(
-               o => o.Length == 8 &&
+               o => o.Length == 10 &&
                     o[2].Equals(0) &&
                     o[3].Equals(9) &&
                     o[4].Equals(8) &&
-                    o[5].Equals(0) &&
+                    o[5].Equals(1) &&
                     o[6].Equals(9) &&
-                    o[7].Equals(8)
+                    o[7].Equals(10)
                 ))).MustHaveHappened();
         }
 
@@ -293,13 +293,13 @@ namespace Microsoft.Web.Redis.Tests
 
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3), A<object[]>.That.Matches(
-               o => o.Length == 8 &&
+               o => o.Length == 10 &&
                     o[2].Equals(0) &&
                     o[3].Equals(9) &&
                     o[4].Equals(8) &&
-                    o[5].Equals(0) &&
+                    o[5].Equals(1) &&
                     o[6].Equals(9) &&
-                    o[7].Equals(8)
+                    o[7].Equals(10)
                 ))).MustHaveHappened();
         }
 

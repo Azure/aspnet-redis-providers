@@ -14,6 +14,8 @@ namespace Microsoft.Web.Redis
 {
     internal class RedisConnectionWrapper : ICacheConnection
     {
+        private string KEY = "SESSION_STATE_ITEM_COLLECTION";
+
         internal static RedisSharedConnection sharedConnection;
         static object lockForSharedConnection = new object();
 
@@ -116,7 +118,7 @@ namespace Microsoft.Web.Redis
 
                 keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
 
-                valueArgs = new object[] { 4, sessionTimeout, new Object(), serializedSessionStateItemCollection };
+                valueArgs = new object[] { 4, sessionTimeout, KEY, serializedSessionStateItemCollection };
                 return true;
             }
             catch
@@ -342,6 +344,16 @@ namespace Microsoft.Web.Redis
                 List<object> list = new List<object>();
                 int noOfItemsRemoved = 0;
                 int noOfItemsUpdated = 0;
+                try
+                {
+                    byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection((SessionStateItemCollection)data);
+                    list.Add(KEY);
+                    list.Add(serializedSessionStateItemCollection);
+                    noOfItemsUpdated = 1;
+                }
+                catch
+                {
+                }
 
                 keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
                 valueArgs = new object[list.Count + 8]; // this +8 is for first wight values in ARGV that we will add now
