@@ -14,7 +14,6 @@ namespace Microsoft.Web.Redis
 {
     internal class RedisConnectionWrapper : ICacheConnection
     {
-        private string KEY = "SESSION_STATE_ITEM_COLLECTION";
 
         internal static RedisSharedConnection sharedConnection;
         static object lockForSharedConnection = new object();
@@ -97,11 +96,10 @@ namespace Microsoft.Web.Redis
         /*-------Start of Set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // KEYS[1] = = data-id, internal-id
-        // ARGV[1] = last-index-in-list, ARGV[2] = session-timeout 
-        // ARGV[3..] = { data as key and value one by one }
+        // ARGV[1] = serialized session state, ARGV[2] = session-timeout 
         // this order should not change LUA script depends on it
         static readonly string setScript = (@" 
-                redis.call('HMSET', KEYS[1], unpack(ARGV, 3, ARGV[1]))
+                redis.call('HMSET', KEYS[1], 'SessionState', ARGV[1])
                 redis.call('EXPIRE',KEYS[1],ARGV[2]) 
                 redis.call('HMSET', KEYS[2], 'SessionTimeout', ARGV[2])
                 redis.call('EXPIRE',KEYS[2],ARGV[2]) 
@@ -118,7 +116,7 @@ namespace Microsoft.Web.Redis
 
                 keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
 
-                valueArgs = new object[] { 4, sessionTimeout, KEY, serializedSessionStateItemCollection };
+                valueArgs = new object[] {serializedSessionStateItemCollection, sessionTimeout};
                 return true;
             }
             catch
@@ -347,7 +345,7 @@ namespace Microsoft.Web.Redis
                 try
                 {
                     byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection((SessionStateItemCollection)data);
-                    list.Add(KEY);
+                    list.Add("SessionState");
                     list.Add(serializedSessionStateItemCollection);
                     noOfItemsUpdated = 1;
                 }

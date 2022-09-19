@@ -60,7 +60,7 @@ namespace Microsoft.Web.Redis.Tests
             data["key"] = "value";
             redisConn.Set(data, 90);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 2),
-                A<object[]>.That.Matches(o => o.Length == 4))).MustHaveHappened();
+                A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
         }
 
         [Fact]
