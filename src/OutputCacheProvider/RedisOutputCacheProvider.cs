@@ -15,7 +15,7 @@ namespace Microsoft.Web.Redis
         internal static ProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
         internal IOutputCacheConnection cache;
-
+        
         public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)
         {
             if (config == null)
@@ -34,7 +34,7 @@ namespace Microsoft.Web.Redis
                 config.Add("description", "Redis as a session data store");
             }
             base.Initialize(name, config);
-
+            
             // If configuration exists then use it otherwise read from config file and create one
             if (configuration == null)
             {
@@ -55,7 +55,7 @@ namespace Microsoft.Web.Redis
                 GetAccessToCacheStore();
                 return cache.Get(key);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 LogUtility.LogError("Error in Get: " + e.Message);
             }

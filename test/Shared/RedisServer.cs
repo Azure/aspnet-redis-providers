@@ -25,11 +25,11 @@ namespace Microsoft.Web.Redis.FunctionalTests
                     Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     socket.Connect("localhost", 6379);
                     socket.Close();
-                    LogUtility.LogInfo("Successful started redis server after Time: {0} ms", (i + 1) * 10);
+                    LogUtility.LogInfo("Successful started redis server after Time: {0} ms", (i+1) * 10);
                     break;
                 }
                 catch
-                { }
+                {}
             }
         }
 

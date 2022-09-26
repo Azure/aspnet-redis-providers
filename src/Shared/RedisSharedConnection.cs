@@ -92,7 +92,7 @@ namespace Microsoft.Web.Redis
                 {
                     var utcNow = DateTimeOffset.UtcNow;
                     elapsedSinceLastReconnect = utcNow - lastReconnectTime;
-
+                    
                     if (elapsedSinceLastReconnect < ReconnectFrequency)
                     {
                         return; // Some other thread made it through the check and the lock, so nothing to do. 
