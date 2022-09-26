@@ -13,9 +13,8 @@ namespace Microsoft.Web.Redis
 {
     internal class StackExchangeClientConnection : IRedisClientConnection
     {
-
-        ProviderConfiguration _configuration;
-        RedisSharedConnection _sharedConnection;
+        private ProviderConfiguration _configuration;
+        private RedisSharedConnection _sharedConnection;
 
         public StackExchangeClientConnection(ProviderConfiguration configuration, RedisSharedConnection sharedConnection)
         {

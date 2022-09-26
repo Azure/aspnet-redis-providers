@@ -30,6 +30,7 @@ namespace Microsoft.Web.Redis
         public string ConnectionString { get; set; }
 
         /* Empty constructor required for testing */
+
         internal ProviderConfiguration()
         { }
 
@@ -104,7 +105,6 @@ namespace Microsoft.Web.Redis
                     {
                         ApplicationName = "/";
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -343,7 +343,7 @@ namespace Microsoft.Web.Redis
                 if (ClassType == null)
                 {
                     // If class name is not assembly qualified name and it also doesn't contain namespace (it is just class name) than
-                    // try to use assembly name as namespace and try to load class from all assemblies one by one 
+                    // try to use assembly name as namespace and try to load class from all assemblies one by one
                     ClassType = a.GetType(a.GetName().Name + "." + ClassName, throwOnError: false, ignoreCase: true);
                 }
                 if (ClassType != null)

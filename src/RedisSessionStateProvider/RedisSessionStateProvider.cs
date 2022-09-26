@@ -14,10 +14,11 @@ namespace Microsoft.Web.Redis
 {
     public class RedisSessionStateProvider : SessionStateStoreProviderAsyncBase
     {
-        // We want to release lock (if exists) during EndRequest, to do that we need session-id and lockId but EndRequest do not have these parameter passed to it. 
-        // So we are going to store 'sessionId' and 'lockId' when we acquire lock. so that EndRequest can release lock at the end. 
+        // We want to release lock (if exists) during EndRequest, to do that we need session-id and lockId but EndRequest do not have these parameter passed to it.
+        // So we are going to store 'sessionId' and 'lockId' when we acquire lock. so that EndRequest can release lock at the end.
         // If we removed the lock before that than we will clear these by our self so that EndRequest won't do that again (only Release item exclusive does that).
         internal string sessionId;
+
         internal object sessionLockId;
         private const int FROM_MIN_TO_SEC = 60;
 
@@ -152,7 +153,7 @@ namespace Microsoft.Web.Redis
 
         public override SessionStateStoreData CreateNewStoreData(HttpContextBase context, int timeout)
         {
-            //Creating empty session store data and return it. 
+            //Creating empty session store data and return it.
             LogUtility.LogInfo("CreateNewStoreData => Session provider object: {0}.", this.GetHashCode());
             return new SessionStateStoreData(new SessionStateItemCollection(), new HttpStaticObjectsCollection(), timeout);
         }
@@ -249,7 +250,7 @@ namespace Microsoft.Web.Redis
                 }
 
                 // If locking is not successful then do not return any result just return lockAge, locked=true and lockId.
-                // ASP.NET tries to acquire lock again in 0.5 sec by calling this method again. Using lockAge it finds if 
+                // ASP.NET tries to acquire lock again in 0.5 sec by calling this method again. Using lockAge it finds if
                 // lock has been taken more than http request timeout than ASP.NET calls ReleaseItemExclusive and calls this method again to get lock.
                 if (locked)
                 {
