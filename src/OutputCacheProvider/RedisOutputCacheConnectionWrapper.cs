@@ -66,10 +66,7 @@ namespace Microsoft.Web.Redis
         public void Set(string key, object entry, DateTime utcExpiry)
         {
             key = GetKeyForRedis(key);
-
-            MemoryStream ms = new MemoryStream();
-            OutputCache.Serialize(ms, entry);
-            byte[] data = ms.ToArray();
+            byte[] data = SerializeOutputCacheEntry(entry);
 
             redisConnection.Set(key, data, utcExpiry);
         }
