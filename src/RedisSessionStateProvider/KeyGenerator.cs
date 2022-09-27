@@ -17,9 +17,9 @@ namespace Microsoft.Web.Redis
         private void GenerateKeys(string id, string app)
         {
             this.id = id;
-            DataKey = "{" + app + "_" + id + "}_Data";
-            LockKey = "{" + app + "_" + id + "}_Write_Lock";
-            InternalKey = "{" + app + "_" + id + "}_Internal";
+            DataKey = "{" + app + "_" + id + "}_SessionStateItemCollection";
+            LockKey = "{" + app + "_" + id + "}_WriteLock";
+            InternalKey = "{" + app + "_" + id + "}_SessionTimeout";
         }
 
         public KeyGenerator(string sessionId, string applicationName)
