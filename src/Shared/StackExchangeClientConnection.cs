@@ -173,8 +173,8 @@ namespace Microsoft.Web.Redis
             SessionStateItemCollection sessionData = null;
             if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
             {
-                RedisResult[] data = (RedisResult[])lockScriptReturnValueArray[1];
-                var serializedSessionStateItemCollection = data[1];
+                RedisResult data = lockScriptReturnValueArray[1];
+                var serializedSessionStateItemCollection = data;
 
                 if (serializedSessionStateItemCollection != null)
                 {
