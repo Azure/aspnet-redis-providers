@@ -110,7 +110,7 @@ namespace Microsoft.Web.Redis
             valueArgs = null;
             try
             {
-                byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection((SessionStateItemCollection)data);
+                byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection(data);
 
                 keyArgs = new string[] { Keys.DataKey, Keys.InternalKey };
 
@@ -123,13 +123,13 @@ namespace Microsoft.Web.Redis
             }
         }
 
-        private byte[] SerializeSessionStateItemCollection(SessionStateItemCollection sessionStateItemCollection)
+        private byte[] SerializeSessionStateItemCollection(ISessionStateItemCollection sessionStateItemCollection)
         {
             try
             {
                 MemoryStream ms = new MemoryStream();
                 BinaryWriter writer = new BinaryWriter(ms);
-                sessionStateItemCollection.Serialize(writer);
+                ((SessionStateItemCollection)sessionStateItemCollection).Serialize(writer);
                 writer.Close();
                 return ms.ToArray();
             }
@@ -342,7 +342,7 @@ namespace Microsoft.Web.Redis
                 int noOfItemsUpdated = 0;
                 try
                 {
-                    byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection((SessionStateItemCollection)data);
+                    byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection(data);
                     list.Add("SessionState");
                     list.Add(serializedSessionStateItemCollection);
                     noOfItemsUpdated = 1;

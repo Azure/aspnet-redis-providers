@@ -178,17 +178,17 @@ namespace Microsoft.Web.Redis
 
                 if (serializedSessionStateItemCollection != null)
                 {
-                    sessionData = DeserializeSessionStateItemCollection((byte[])serializedSessionStateItemCollection);
+                    sessionData = DeserializeSessionStateItemCollection(serializedSessionStateItemCollection);
                 }
             }
             return sessionData;
         }
 
-        private SessionStateItemCollection DeserializeSessionStateItemCollection(byte[] serializedSessionStateItemCollection)
+        private SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
         {
             try
             {
-                MemoryStream ms = new MemoryStream(serializedSessionStateItemCollection);
+                MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
                 BinaryReader reader = new BinaryReader(ms);
                 return SessionStateItemCollection.Deserialize(reader);
             }
