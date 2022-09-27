@@ -14,11 +14,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
 {
     public class RedisConnectionWrapperFunctionalTests
     {
-        static int uniqueSessionNumber = 1;
+        private static int uniqueSessionNumber = 1;
 
         private RedisConnectionWrapper GetRedisConnectionWrapperWithUniqueSession()
         {
-
             return GetRedisConnectionWrapperWithUniqueSession(Utility.GetDefaultConfigUtility());
         }
 
@@ -40,7 +39,6 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void Set_ValidData_WithCustomSerializer()
         {
-
             // this also tests host:port config part
             ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             pc.ApplicationName = "APPTEST";
@@ -58,17 +56,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Get actual connection and get data blob from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
-                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
 
-                // Check that data shoud be same as what inserted
-                Assert.Equal(1, sessionDataFromRedis.Length);
-                SessionStateItemCollection dataFromRedis = new SessionStateItemCollection();
-                foreach (HashEntry entry in sessionDataFromRedis)
-                {
-                    MemoryStream ms = new MemoryStream(entry.Value);
-                    BinaryReader reader = new BinaryReader(ms);
-                    dataFromRedis = SessionStateItemCollection.Deserialize(reader);
-                }
+                RedisValue sessionDataFromRedis = actualConnection.StringGet(redisConn.Keys.DataKey);
+                SessionStateItemCollection dataFromRedis = null;
+                MemoryStream ms = new MemoryStream(sessionDataFromRedis);
+                BinaryReader reader = new BinaryReader(ms);
+                dataFromRedis = SessionStateItemCollection.Deserialize(reader);
+
                 Assert.Equal("value", dataFromRedis["key"]);
                 Assert.Equal("value1", dataFromRedis["key1"]);
 
@@ -98,17 +92,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Get actual connection and get data blob from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
-                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
 
-                // Check that data shoud be same as what inserted
-                Assert.Equal(1, sessionDataFromRedis.Length);
-                SessionStateItemCollection dataFromRedis = new SessionStateItemCollection();
-                foreach (HashEntry entry in sessionDataFromRedis)
-                {
-                    MemoryStream ms = new MemoryStream(entry.Value);
-                    BinaryReader reader = new BinaryReader(ms);
-                    dataFromRedis = SessionStateItemCollection.Deserialize(reader);
-                }
+                RedisValue sessionDataFromRedis = actualConnection.StringGet(redisConn.Keys.DataKey);
+                SessionStateItemCollection dataFromRedis = null;
+                MemoryStream ms = new MemoryStream(sessionDataFromRedis);
+                BinaryReader reader = new BinaryReader(ms);
+                dataFromRedis = SessionStateItemCollection.Deserialize(reader);
+
                 Assert.Equal("value", dataFromRedis["key"]);
                 Assert.Equal("value1", dataFromRedis["key1"]);
 
@@ -138,17 +128,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Get actual connection and get data blob from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
-                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
 
-                // Check that data shoud be same as what inserted
-                Assert.Equal(1, sessionDataFromRedis.Length);
+                RedisValue sessionDataFromRedis = actualConnection.StringGet(redisConn.Keys.DataKey);
                 SessionStateItemCollection dataFromRedis = null;
-                foreach (HashEntry entry in sessionDataFromRedis)
-                {
-                    MemoryStream ms = new MemoryStream(entry.Value);
-                    BinaryReader reader = new BinaryReader(ms);
-                    dataFromRedis = SessionStateItemCollection.Deserialize(reader);
-                }
+                MemoryStream ms = new MemoryStream(sessionDataFromRedis);
+                BinaryReader reader = new BinaryReader(ms);
+                dataFromRedis = SessionStateItemCollection.Deserialize(reader);
+
                 Assert.Equal("value", dataFromRedis["key"]);
                 Assert.Null(dataFromRedis["key1"]);
 
@@ -312,7 +298,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 redisConn.Set(data, 900);
 
                 int lockTimeout = 900;
-                // Same LockId 
+                // Same LockId
                 DateTime lockTime = DateTime.Now;
 
                 // Takewrite lock successfully first time
@@ -584,17 +570,14 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Get actual connection and get data from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
-                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
-                Assert.Equal(1, sessionDataFromRedis.Length);
-                SessionStateItemCollection sessionDataFromRedisAsCollection = new SessionStateItemCollection();
-                foreach (HashEntry entry in sessionDataFromRedis)
-                {
-                    MemoryStream ms = new MemoryStream(entry.Value);
-                    BinaryReader reader = new BinaryReader(ms);
-                    sessionDataFromRedisAsCollection = SessionStateItemCollection.Deserialize(reader);
-                }
-                Assert.Equal("value1", sessionDataFromRedisAsCollection["key1"]);
-                Assert.Equal("value2-updated", sessionDataFromRedisAsCollection["key2"]);
+                RedisValue sessionDataFromRedis = actualConnection.StringGet(redisConn.Keys.DataKey);
+                SessionStateItemCollection dataFromRedis2 = null;
+                MemoryStream ms = new MemoryStream(sessionDataFromRedis);
+                BinaryReader reader = new BinaryReader(ms);
+                dataFromRedis2 = SessionStateItemCollection.Deserialize(reader);
+
+                Assert.Equal("value1", dataFromRedis2["key1"]);
+                Assert.Equal("value2-updated", dataFromRedis2["key2"]);
 
                 // check lock removed and remove data from redis
                 actualConnection.KeyDelete(redisConn.Keys.DataKey);
@@ -635,15 +618,12 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Get actual connection and get data from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
-                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
-                Assert.Single(sessionDataFromRedis);
-                SessionStateItemCollection sessionDataFromRedisAsCollection = new SessionStateItemCollection();
-                foreach (HashEntry entry in sessionDataFromRedis)
-                {
-                    MemoryStream ms = new MemoryStream(entry.Value);
-                    BinaryReader reader = new BinaryReader(ms);
-                    sessionDataFromRedisAsCollection = SessionStateItemCollection.Deserialize(reader);
-                }
+                RedisValue sessionDataFromRedis = actualConnection.StringGet(redisConn.Keys.DataKey);
+                SessionStateItemCollection sessionDataFromRedisAsCollection = null;
+                MemoryStream ms = new MemoryStream(sessionDataFromRedis);
+                BinaryReader reader = new BinaryReader(ms);
+                sessionDataFromRedisAsCollection = SessionStateItemCollection.Deserialize(reader);
+
                 Assert.Equal("value1", sessionDataFromRedisAsCollection["key1"]);
                 Assert.Equal("value2-updated", sessionDataFromRedisAsCollection["key2"]);
                 Assert.Equal("value3", sessionDataFromRedisAsCollection["key3"]);
@@ -687,15 +667,12 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Get actual connection and get data from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
-                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
-                Assert.Equal(1, sessionDataFromRedis.Length);
-                SessionStateItemCollection sessionDataFromRedisAsCollection = new SessionStateItemCollection();
-                foreach (HashEntry entry in sessionDataFromRedis)
-                {
-                    MemoryStream ms = new MemoryStream(entry.Value);
-                    BinaryReader reader = new BinaryReader(ms);
-                    sessionDataFromRedisAsCollection = SessionStateItemCollection.Deserialize(reader);
-                }
+                RedisValue sessionDataFromRedis = actualConnection.StringGet(redisConn.Keys.DataKey);
+                SessionStateItemCollection sessionDataFromRedisAsCollection = null;
+                MemoryStream ms = new MemoryStream(sessionDataFromRedis);
+                BinaryReader reader = new BinaryReader(ms);
+                sessionDataFromRedisAsCollection = SessionStateItemCollection.Deserialize(reader);
+
                 Assert.Equal("value1", sessionDataFromRedisAsCollection["key1"]);
                 Assert.Equal("value2", sessionDataFromRedisAsCollection["key2"]);
 
@@ -833,15 +810,12 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
                 // Get actual connection and get data from redis
                 IDatabase actualConnection = GetRealRedisConnection(redisConn);
-                HashEntry[] sessionDataFromRedis = actualConnection.HashGetAll(redisConn.Keys.DataKey);
-                Assert.Single(sessionDataFromRedis);
-                SessionStateItemCollection sessionDataFromRedisAsCollection = new SessionStateItemCollection();
-                foreach (HashEntry entry in sessionDataFromRedis)
-                {
-                    MemoryStream ms = new MemoryStream(entry.Value);
-                    BinaryReader reader = new BinaryReader(ms);
-                    sessionDataFromRedisAsCollection = SessionStateItemCollection.Deserialize(reader);
-                }
+                RedisValue sessionDataFromRedis = actualConnection.StringGet(redisConn.Keys.DataKey);
+                SessionStateItemCollection sessionDataFromRedisAsCollection = null;
+                MemoryStream ms = new MemoryStream(sessionDataFromRedis);
+                BinaryReader reader = new BinaryReader(ms);
+                sessionDataFromRedisAsCollection = SessionStateItemCollection.Deserialize(reader);
+
                 Assert.Equal("value1-updated", sessionDataFromRedisAsCollection["key1"]);
 
                 // check lock removed and remove data from redis
