@@ -13,9 +13,8 @@ namespace Microsoft.Web.Redis
 {
     internal class StackExchangeClientConnection : IRedisClientConnection
     {
-
-        ProviderConfiguration _configuration;
-        RedisSharedConnection _sharedConnection;
+        private ProviderConfiguration _configuration;
+        private RedisSharedConnection _sharedConnection;
 
         public StackExchangeClientConnection(ProviderConfiguration configuration, RedisSharedConnection sharedConnection)
         {
@@ -179,17 +178,17 @@ namespace Microsoft.Web.Redis
 
                 if (serializedSessionStateItemCollection != null)
                 {
-                    sessionData = DeserializeSessionStateItemCollection((byte[])serializedSessionStateItemCollection);
+                    sessionData = DeserializeSessionStateItemCollection(serializedSessionStateItemCollection);
                 }
             }
             return sessionData;
         }
 
-        private SessionStateItemCollection DeserializeSessionStateItemCollection(byte[] serializedSessionStateItemCollection)
+        private SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
         {
             try
             {
-                MemoryStream ms = new MemoryStream(serializedSessionStateItemCollection);
+                MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
                 BinaryReader reader = new BinaryReader(ms);
                 return SessionStateItemCollection.Deserialize(reader);
             }

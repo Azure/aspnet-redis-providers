@@ -30,14 +30,16 @@ namespace Microsoft.Web.Redis
         public string ConnectionString { get; set; }
 
         /* Empty constructor required for testing */
+
         internal ProviderConfiguration()
         { }
 
         internal static ProviderConfiguration ProviderConfigurationForSessionState(NameValueCollection config)
         {
-            ProviderConfiguration configuration = new ProviderConfiguration(config);
-
-            configuration.ThrowOnError = GetBoolSettings(config, "throwOnError", true);
+            ProviderConfiguration configuration = new ProviderConfiguration(config)
+            {
+                ThrowOnError = GetBoolSettings(config, "throwOnError", true)
+            };
             int retryTimeoutInMilliSec = GetIntSettings(config, "retryTimeoutInMilliseconds", 5000);
             configuration.RetryTimeout = new TimeSpan(0, 0, 0, 0, retryTimeoutInMilliSec);
 
@@ -56,15 +58,16 @@ namespace Microsoft.Web.Redis
 
         internal static ProviderConfiguration ProviderConfigurationForOutputCache(NameValueCollection config)
         {
-            ProviderConfiguration configuration = new ProviderConfiguration(config);
+            ProviderConfiguration configuration = new ProviderConfiguration(config)
+            {
+                // No retry login for output cache provider
+                RetryTimeout = TimeSpan.Zero,
 
-            // No retry login for output cache provider
-            configuration.RetryTimeout = TimeSpan.Zero;
-
-            // Session state specific attribute which are not applicable to output cache
-            configuration.ThrowOnError = true;
-            configuration.RequestTimeout = TimeSpan.Zero;
-            configuration.SessionTimeout = TimeSpan.Zero;
+                // Session state specific attribute which are not applicable to output cache
+                ThrowOnError = true,
+                RequestTimeout = TimeSpan.Zero,
+                SessionTimeout = TimeSpan.Zero
+            };
 
             LogUtility.LogInfo("Host: {0}, Port: {1}, UseSsl: {2}, DatabaseId: {3}, ApplicationName: {4}",
                                             configuration.Host, configuration.Port, configuration.UseSsl, configuration.DatabaseId, configuration.ApplicationName);
@@ -104,7 +107,6 @@ namespace Microsoft.Web.Redis
                     {
                         ApplicationName = "/";
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -343,7 +345,7 @@ namespace Microsoft.Web.Redis
                 if (ClassType == null)
                 {
                     // If class name is not assembly qualified name and it also doesn't contain namespace (it is just class name) than
-                    // try to use assembly name as namespace and try to load class from all assemblies one by one 
+                    // try to use assembly name as namespace and try to load class from all assemblies one by one
                     ClassType = a.GetType(a.GetName().Name + "." + ClassName, throwOnError: false, ignoreCase: true);
                 }
                 if (ClassType != null)

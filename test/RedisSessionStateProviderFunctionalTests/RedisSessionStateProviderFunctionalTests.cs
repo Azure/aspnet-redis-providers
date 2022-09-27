@@ -169,6 +169,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact(Skip = "Disable Functional Tests")]
         public async Task TestThroughputAsync()
         {
+            // Test to compare efficiency between code changes; reads and writes 10000 items to Redis
             using (RedisServer redisServer = new RedisServer())
             {
                 string sessionId = ResetRedisConnectionWrapperAndConfiguration();
@@ -201,9 +202,8 @@ namespace Microsoft.Web.Redis.FunctionalTests
                 {
                     var result = data.Item.Items["key" + i.ToString()];
                     Assert.Equal("value" + i.ToString(), result);
-
                 }
-                
+
                 watch.Stop();
 
                 Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");

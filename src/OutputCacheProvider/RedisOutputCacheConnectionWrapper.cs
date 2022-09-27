@@ -12,10 +12,10 @@ namespace Microsoft.Web.Redis
     internal class RedisOutputCacheConnectionWrapper : IOutputCacheConnection
     {
         internal static RedisSharedConnection sharedConnection;
-        static object lockForSharedConnection = new object();
+        private static object lockForSharedConnection = new object();
 
         internal IRedisClientConnection redisConnection;
-        ProviderConfiguration configuration;
+        private ProviderConfiguration configuration;
 
         public RedisOutputCacheConnectionWrapper(ProviderConfiguration configuration)
         {
@@ -36,10 +36,11 @@ namespace Microsoft.Web.Redis
         }
 
         /*-------Start of Add operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+
         // KEYS = { key }
-        // ARGV = { page data, expiry time in miliseconds } 
+        // ARGV = { page data, expiry time in miliseconds }
         // retArray = { page data from cache or new }
-        static readonly string addScript = (@"
+        private static readonly string addScript = (@"
                     local retVal = redis.call('GET',KEYS[1])
                     if retVal == false then
                        redis.call('PSETEX',KEYS[1],ARGV[2],ARGV[1])
@@ -89,6 +90,7 @@ namespace Microsoft.Web.Redis
         {
             return configuration.ApplicationName + "_" + key;
         }
+
         private byte[] SerializeOutputCacheEntry(object outputCacheEntry)
         {
             try
