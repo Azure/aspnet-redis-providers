@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Web.SessionState;
 using StackExchange.Redis;
 
@@ -12,15 +13,12 @@ namespace Microsoft.Web.Redis
 {
     internal class StackExchangeClientConnection : IRedisClientConnection
     {
+        private ProviderConfiguration _configuration;
+        private RedisSharedConnection _sharedConnection;
 
-        ProviderConfiguration _configuration;
-        RedisUtility _redisUtility;
-        RedisSharedConnection _sharedConnection;
-
-        public StackExchangeClientConnection(ProviderConfiguration configuration, RedisUtility redisUtility, RedisSharedConnection sharedConnection)
+        public StackExchangeClientConnection(ProviderConfiguration configuration, RedisSharedConnection sharedConnection)
         {
             _configuration = configuration;
-            _redisUtility = redisUtility;
             _sharedConnection = sharedConnection;
         }
 
@@ -34,14 +32,14 @@ namespace Microsoft.Web.Redis
         {
             TimeSpan timeSpan = new TimeSpan(0, 0, timeInSeconds);
             RedisKey redisKey = key;
-            return (bool)RetryLogic(() => RealConnection.KeyExpire(redisKey,timeSpan));
+            return (bool)RetryLogic(() => RealConnection.KeyExpire(redisKey, timeSpan));
         }
 
         public object Eval(string script, string[] keyArgs, object[] valueArgs)
         {
             RedisKey[] redisKeyArgs = new RedisKey[keyArgs.Length];
             RedisValue[] redisValueArgs = new RedisValue[valueArgs.Length];
-            
+
             int i = 0;
             foreach (string key in keyArgs)
             {
@@ -142,7 +140,7 @@ namespace Microsoft.Web.Redis
             int sessionTimeout = (int)lockScriptReturnValueArray[2];
             if (sessionTimeout == -1)
             {
-                sessionTimeout = (int) _configuration.SessionTimeout.TotalSeconds;
+                sessionTimeout = (int)_configuration.SessionTimeout.TotalSeconds;
             }
             // converting seconds to minutes
             sessionTimeout = sessionTimeout / 60;
@@ -172,29 +170,32 @@ namespace Microsoft.Web.Redis
             RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;
             Debug.Assert(lockScriptReturnValueArray != null);
 
-            ChangeTrackingSessionStateItemCollection sessionData = null;
+            SessionStateItemCollection sessionData = null;
             if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
             {
-                RedisResult[] data = (RedisResult[])lockScriptReturnValueArray[1];
-                
-                // LUA script returns data as object array so keys and values are store one after another
-                // This list has to be even because it contains pair of <key, value> as {key, value, key, value}
-                if (data != null && data.Length != 0 && data.Length % 2 == 0)
+                RedisResult data = lockScriptReturnValueArray[1];
+                var serializedSessionStateItemCollection = data;
+
+                if (serializedSessionStateItemCollection != null)
                 {
-                    sessionData = new ChangeTrackingSessionStateItemCollection(_redisUtility);
-                    // In every cycle of loop we are getting one pair of key value and putting it into session items
-                    // thats why increment is by 2 because we want to move to next pair
-                    for (int i = 0; (i + 1) < data.Length; i += 2)
-                    {
-                        string key = (string) data[i];
-                        if (key != null)
-                        {
-                            sessionData.SetDataWithoutUpdatingModifiedKeys(key, (byte[])data[i + 1]);
-                        }
-                    }
+                    sessionData = DeserializeSessionStateItemCollection(serializedSessionStateItemCollection);
                 }
             }
             return sessionData;
+        }
+
+        private SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
+        {
+            try
+            {
+                MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
+                BinaryReader reader = new BinaryReader(ms);
+                return SessionStateItemCollection.Deserialize(reader);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public void Set(string key, byte[] data, DateTime utcExpiry)
@@ -208,8 +209,8 @@ namespace Microsoft.Web.Redis
         public byte[] Get(string key)
         {
             RedisKey redisKey = key;
-            RedisValue redisValue = (RedisValue) OperationExecutor(() => RealConnection.StringGet(redisKey));
-            return (byte[]) redisValue;
+            RedisValue redisValue = (RedisValue)OperationExecutor(() => RealConnection.StringGet(redisKey));
+            return (byte[])redisValue;
         }
 
         public void Remove(string key)
@@ -218,10 +219,10 @@ namespace Microsoft.Web.Redis
             OperationExecutor(() => RealConnection.KeyDelete(redisKey));
         }
 
-        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis) 
+        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis)
         {
             RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
-            return (byte[]) rowDataAsRedisResult;
+            return (byte[])rowDataAsRedisResult;
         }
     }
 }

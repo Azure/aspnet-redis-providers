@@ -14,14 +14,14 @@ namespace Microsoft.Web.Redis
 {
     public class RedisSessionStateProvider : SessionStateStoreProviderAsyncBase
     {
-        // We want to release lock (if exists) during EndRequest, to do that we need session-id and lockId but EndRequest do not have these parameter passed to it. 
-        // So we are going to store 'sessionId' and 'lockId' when we acquire lock. so that EndRequest can release lock at the end. 
+        // We want to release lock (if exists) during EndRequest, to do that we need session-id and lockId but EndRequest do not have these parameter passed to it.
+        // So we are going to store 'sessionId' and 'lockId' when we acquire lock. so that EndRequest can release lock at the end.
         // If we removed the lock before that than we will clear these by our self so that EndRequest won't do that again (only Release item exclusive does that).
         internal string sessionId;
+
         internal object sessionLockId;
         private const int FROM_MIN_TO_SEC = 60;
 
-        internal static RedisUtility redisUtility;
         internal static ProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
         internal ICacheConnection cache;
@@ -35,11 +35,11 @@ namespace Microsoft.Web.Redis
         /// </summary>
         public static Exception LastException
         {
-            get 
+            get
             {
                 if (HttpContext.Current != null)
                 {
-                    return (Exception) HttpContext.Current.Items[_lastException];
+                    return (Exception)HttpContext.Current.Items[_lastException];
                 }
                 return null;
             }
@@ -49,11 +49,11 @@ namespace Microsoft.Web.Redis
                 if (HttpContext.Current != null)
                 {
                     HttpContext.Current.Items[_lastException] = value;
-                }             
+                }
             }
         }
 
-        private void GetAccessToStore(string id) 
+        private void GetAccessToStore(string id)
         {
             if (cache == null)
             {
@@ -68,15 +68,15 @@ namespace Microsoft.Web.Redis
         public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)
         {
             if (config == null)
-            { 
+            {
                 throw new ArgumentNullException("config");
             }
-            
+
             if (name == null || name.Length == 0)
             {
                 name = "MyCacheStore";
             }
-            
+
             if (String.IsNullOrEmpty(config["description"]))
             {
                 config.Remove("description");
@@ -88,12 +88,11 @@ namespace Microsoft.Web.Redis
             // If configuration exists then use it otherwise read from config file and create one
             if (configuration == null)
             {
-                lock (configurationCreationLock) 
+                lock (configurationCreationLock)
                 {
                     if (configuration == null)
                     {
                         configuration = ProviderConfiguration.ProviderConfigurationForSessionState(config);
-                        redisUtility = new RedisUtility(configuration);
                     }
                 }
             }
@@ -154,9 +153,9 @@ namespace Microsoft.Web.Redis
 
         public override SessionStateStoreData CreateNewStoreData(HttpContextBase context, int timeout)
         {
-            //Creating empty session store data and return it. 
+            //Creating empty session store data and return it.
             LogUtility.LogInfo("CreateNewStoreData => Session provider object: {0}.", this.GetHashCode());
-            return new SessionStateStoreData(new ChangeTrackingSessionStateItemCollection(redisUtility), new HttpStaticObjectsCollection(), timeout);
+            return new SessionStateStoreData(new SessionStateItemCollection(), new HttpStaticObjectsCollection(), timeout);
         }
 
         public override async Task CreateUninitializedItemAsync(HttpContextBase context, string id, int timeout, CancellationToken cancellationToken)
@@ -166,7 +165,7 @@ namespace Microsoft.Web.Redis
                 if (LastException == null)
                 {
                     LogUtility.LogInfo("CreateUninitializedItem => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
-                    ISessionStateItemCollection sessionData = new ChangeTrackingSessionStateItemCollection(redisUtility);
+                    ISessionStateItemCollection sessionData = new SessionStateItemCollection();
                     sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
                     GetAccessToStore(id);
                     // Converting timout from min to sec
@@ -222,7 +221,7 @@ namespace Microsoft.Web.Redis
                 }
                 GetAccessToStore(id);
                 ISessionStateItemCollection sessionData = null;
-            
+
                 int sessionTimeout;
                 bool isLockTaken = false;
                 //Take read or write lock and if locking successful than get data in sessionData and also update session timeout
@@ -251,9 +250,9 @@ namespace Microsoft.Web.Redis
                 }
 
                 // If locking is not successful then do not return any result just return lockAge, locked=true and lockId.
-                // ASP.NET tries to acquire lock again in 0.5 sec by calling this method again. Using lockAge it finds if 
+                // ASP.NET tries to acquire lock again in 0.5 sec by calling this method again. Using lockAge it finds if
                 // lock has been taken more than http request timeout than ASP.NET calls ReleaseItemExclusive and calls this method again to get lock.
-                if (locked) 
+                if (locked)
                 {
                     lockAge = cache.GetLockAge(lockId);
                     return null;
@@ -266,9 +265,9 @@ namespace Microsoft.Web.Redis
                     ReleaseItemExclusiveAsync(context, id, lockId, cancellationToken).Wait();
                     return null;
                 }
-            
+
                 // Restore action flag from session data
-                if (sessionData["SessionStateActions"] != null) 
+                if (sessionData["SessionStateActions"] != null)
                 {
                     actions = (SessionStateActions)Enum.Parse(typeof(SessionStateActions), sessionData["SessionStateActions"].ToString());
                 }
@@ -397,7 +396,7 @@ namespace Microsoft.Web.Redis
                         }
                         else
                         {
-                            sessionItems = new ChangeTrackingSessionStateItemCollection(redisUtility);
+                            sessionItems = new SessionStateItemCollection();
                         }
 
                         if (sessionItems["SessionStateActions"] != null)

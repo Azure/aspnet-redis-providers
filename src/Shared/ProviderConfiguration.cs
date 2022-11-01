@@ -28,20 +28,21 @@ namespace Microsoft.Web.Redis
         public int ConnectionTimeoutInMilliSec { get; set; }
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
-        public string RedisSerializerType { get; set; }
 
         /* Empty constructor required for testing */
+
         internal ProviderConfiguration()
-        {}
+        { }
 
         internal static ProviderConfiguration ProviderConfigurationForSessionState(NameValueCollection config)
         {
-            ProviderConfiguration configuration = new ProviderConfiguration(config);
-            
-            configuration.ThrowOnError = GetBoolSettings(config, "throwOnError", true);
+            ProviderConfiguration configuration = new ProviderConfiguration(config)
+            {
+                ThrowOnError = GetBoolSettings(config, "throwOnError", true)
+            };
             int retryTimeoutInMilliSec = GetIntSettings(config, "retryTimeoutInMilliseconds", 5000);
             configuration.RetryTimeout = new TimeSpan(0, 0, 0, 0, retryTimeoutInMilliSec);
-            
+
             // Get request timeout from config
             HttpRuntimeSection httpRuntimeSection = ConfigurationManager.GetSection("system.web/httpRuntime") as HttpRuntimeSection;
             configuration.RequestTimeout = httpRuntimeSection.ExecutionTimeout;
@@ -57,15 +58,16 @@ namespace Microsoft.Web.Redis
 
         internal static ProviderConfiguration ProviderConfigurationForOutputCache(NameValueCollection config)
         {
-            ProviderConfiguration configuration = new ProviderConfiguration(config);
-            
-            // No retry login for output cache provider
-            configuration.RetryTimeout = TimeSpan.Zero;
-            
-            // Session state specific attribute which are not applicable to output cache
-            configuration.ThrowOnError = true;
-            configuration.RequestTimeout = TimeSpan.Zero;
-            configuration.SessionTimeout = TimeSpan.Zero;
+            ProviderConfiguration configuration = new ProviderConfiguration(config)
+            {
+                // No retry login for output cache provider
+                RetryTimeout = TimeSpan.Zero,
+
+                // Session state specific attribute which are not applicable to output cache
+                ThrowOnError = true,
+                RequestTimeout = TimeSpan.Zero,
+                SessionTimeout = TimeSpan.Zero
+            };
 
             LogUtility.LogInfo("Host: {0}, Port: {1}, UseSsl: {2}, DatabaseId: {3}, ApplicationName: {4}",
                                             configuration.Host, configuration.Port, configuration.UseSsl, configuration.DatabaseId, configuration.ApplicationName);
@@ -82,7 +84,6 @@ namespace Microsoft.Web.Redis
             Port = GetIntSettings(config, "port", 0);
             AccessKey = GetStringSettings(config, "accessKey", null);
             UseSsl = GetBoolSettings(config, "ssl", true);
-            RedisSerializerType = GetStringSettings(config, "redisSerializerType", null);
             // All below parameters are only fetched from web.config
             DatabaseId = GetIntSettings(config, "databaseId", 0);
             ApplicationName = GetStringSettings(config, "applicationName", null);
@@ -106,7 +107,6 @@ namespace Microsoft.Web.Redis
                     {
                         ApplicationName = "/";
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -156,7 +156,7 @@ namespace Microsoft.Web.Redis
                 return appSettingsValue;
             }
 
-            if (!string.IsNullOrWhiteSpace(literalValue) 
+            if (!string.IsNullOrWhiteSpace(literalValue)
                 && ConfigurationManager.ConnectionStrings[literalValue] != null
                 && !string.IsNullOrWhiteSpace(ConfigurationManager.ConnectionStrings[literalValue].ConnectionString))
             {
@@ -181,7 +181,7 @@ namespace Microsoft.Web.Redis
                 return int.Parse(literalValue);
             }
             catch (FormatException)
-            {}
+            { }
 
             string appSettingsValue = GetFromAppSetting(literalValue);
             if (appSettingsValue == null)
@@ -301,12 +301,12 @@ namespace Microsoft.Web.Redis
         {
             string LoggingClassName = GetStringSettings(config, "loggingClassName", null);
             string LoggingMethodName = GetStringSettings(config, "loggingMethodName", null);
-            
-            if( !string.IsNullOrEmpty(LoggingClassName) && !string.IsNullOrEmpty(LoggingMethodName) )
+
+            if (!string.IsNullOrEmpty(LoggingClassName) && !string.IsNullOrEmpty(LoggingMethodName))
             {
                 // Find 'Type' that is same as fully qualified class name if not found than also don't throw error and ignore case while searching
                 Type LoggingClass = Type.GetType(LoggingClassName, throwOnError: false, ignoreCase: true);
-                
+
                 if (LoggingClass == null)
                 {
                     // If class name is not assembly qualified name than look for class in all assemblies one by one
@@ -316,7 +316,7 @@ namespace Microsoft.Web.Redis
                 if (LoggingClass == null)
                 {
                     // All ways of loading assembly are failed so throw
-                    throw new TypeLoadException (string.Format(RedisProviderResource.ClassNotFound, LoggingClassName));
+                    throw new TypeLoadException(string.Format(RedisProviderResource.ClassNotFound, LoggingClassName));
                 }
 
                 MethodInfo LoggingMethod = LoggingClass.GetMethod(LoggingMethodName, new Type[] { });
@@ -332,7 +332,7 @@ namespace Microsoft.Web.Redis
                 {
                     throw new MissingMethodException(string.Format(RedisProviderResource.MethodWrongReturnType, LoggingMethodName, LoggingClassName, "System.IO.TextWriter"));
                 }
-                LogUtility.logger = (TextWriter) LoggingMethod.Invoke(null, new object[] {});
+                LogUtility.logger = (TextWriter)LoggingMethod.Invoke(null, new object[] { });
             }
         }
 
@@ -345,7 +345,7 @@ namespace Microsoft.Web.Redis
                 if (ClassType == null)
                 {
                     // If class name is not assembly qualified name and it also doesn't contain namespace (it is just class name) than
-                    // try to use assembly name as namespace and try to load class from all assemblies one by one 
+                    // try to use assembly name as namespace and try to load class from all assemblies one by one
                     ClassType = a.GetType(a.GetName().Name + "." + ClassName, throwOnError: false, ignoreCase: true);
                 }
                 if (ClassType != null)
