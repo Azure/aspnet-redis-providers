@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             RedisConnectionWrapper.sharedConnection = null;
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public async Task SessionWriteCycle_Valid()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -64,7 +64,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public async Task SessionReadCycle_Valid()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -94,7 +94,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public async Task SessionTimoutChangeFromGlobalAspx()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -136,7 +136,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public async Task ReleaseItemExclusiveWithNullLockId()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -148,7 +148,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact()]
         public async Task RemoveItemWithNullLockId()
         {
             using (RedisServer redisServer = new RedisServer())
@@ -165,7 +165,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             return RedisConnectionWrapper.sharedConnection.Connection;
         }
 
-        [Fact(Skip = "Disable Functional Tests")]
+        [Fact(Skip = "Only used to evaluate performance")]
         public async Task TestThroughputAsync()
         {
             // Test to compare efficiency between code changes; reads and writes 10000 items to Redis
