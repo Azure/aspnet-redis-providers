@@ -49,6 +49,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             _server.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             _server.Start();
             WaitForRedisToStart();
+            Thread.Sleep(2000);
         }
 
         // Make sure that no redis-server instance is running
