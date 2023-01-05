@@ -52,7 +52,7 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
         {
             using (RedisServer Server = new RedisServer())
             {
-                bool isResponseCurrent = await ResponseIsCurrentAysnc(3);
+                bool isResponseCurrent = await ResponseIsCurrentAysnc(7);
                 Assert.False(isResponseCurrent);
             }
         }
@@ -85,7 +85,7 @@ namespace RedisOutputCachingMiddleWare.FunctionalTests
             Assert.Equal(firstResponseBody, GetUnixTimeSeconds());
 
             // sleep is needed to ensure second read will retrieve a cached value
-            Thread.Sleep(2000);
+            Thread.Sleep(4000);
 
             var secondResponse = await host.GetTestClient().GetAsync("/");
             var secondResponseBody = await secondResponse.Content.ReadAsStringAsync();

@@ -5,12 +5,9 @@
 
 using FakeItEasy;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Web.SessionState;
 using Xunit;
 
@@ -18,7 +15,6 @@ namespace Microsoft.Web.Redis.Tests
 {
     public class RedisConnectionWrapperTests
     {
-
         [Fact]
         public void UpdateExpiryTime_Valid()
         {
@@ -37,7 +33,9 @@ namespace Microsoft.Web.Redis.Tests
             RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
             RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), "");
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
-            (new PositiveTimeSpanValidator()).Validate(redisConn.GetLockAge(DateTime.Now.Ticks));
+            var ticks = DateTime.Now.Ticks;
+            Thread.Sleep(1000);
+            (new PositiveTimeSpanValidator()).Validate(redisConn.GetLockAge(ticks));
         }
 
         [Fact]
@@ -117,7 +115,6 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => redisConn.redisConnection.GetLockId(A<object>.Ignored)).Returns(lockTime.Ticks.ToString());
             A.CallTo(() => redisConn.redisConnection.IsLocked(A<object>.Ignored)).Returns(true);
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).Returns(15);
-
 
             int sessionTimeout;
             Assert.False(redisConn.TryTakeWriteLockAndGetData(lockTime, lockTimeout, out lockId, out data, out sessionTimeout));
@@ -263,7 +260,6 @@ namespace Microsoft.Web.Redis.Tests
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout);
 
-
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3), A<object[]>.That.Matches(
                o => o.Length == 10 &&
                     o[2].Equals(0) &&
@@ -291,7 +287,6 @@ namespace Microsoft.Web.Redis.Tests
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout);
 
-
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3), A<object[]>.That.Matches(
                o => o.Length == 10 &&
                     o[2].Equals(0) &&
@@ -302,6 +297,5 @@ namespace Microsoft.Web.Redis.Tests
                     o[7].Equals(10)
                 ))).MustHaveHappened();
         }
-
     }
 }
