@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Web.Redis.FunctionalTests;
-using RedisOutputCachingMiddleware;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RedisOutputCachingMiddleWare.FunctionalTests
+namespace Microsoft.Web.Redis.FunctionalTests
 {
     public class RedisOutputCachingMiddleWareFunctionalTests
     {
