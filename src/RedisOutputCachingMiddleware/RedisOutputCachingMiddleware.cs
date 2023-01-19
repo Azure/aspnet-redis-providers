@@ -1,21 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Web.Redis;
 using StackExchange.Redis;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace RedisOutputCachingMiddleware
+namespace Microsoft.Web.Redis
 {
     public class RedisOutputCache
     {
         private readonly RequestDelegate _next;
         private readonly IDatabase _cache;
-        // optional expiration time, default to 1 day if not defined 
+
+        // optional expiration time, default to 1 day if not defined
         private int _ttl;
-        
+
         // The default ttl is 86400 seconds, or 1 day
         public RedisOutputCache(RequestDelegate next, string redisConnectionString, int ttl = 86400)
         {
@@ -30,12 +29,11 @@ namespace RedisOutputCachingMiddleware
             {
                 LogUtility.LogError($"Cannot connect to Redis: {ex.Message}");
             }
-            
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // use the url, header, and request body as a key 
+            // use the url, header, and request body as a key
             // To cache responses more efficiently for your workload, update this line to generate keys from different criteria
             RedisKey key = $"{context.Request.GetEncodedPathAndQuery()}{context.Request.Headers}{context.Request.Body}";
             RedisValue value = await GetCacheAsync(key);
@@ -88,7 +86,6 @@ namespace RedisOutputCachingMiddleware
                 LogUtility.LogError($"Failed to retrieve cached value: {ex.Message}");
                 return RedisValue.Null;
             }
-
         }
 
         private async Task SetCacheAsync(RedisKey key, RedisValue value)
@@ -102,6 +99,5 @@ namespace RedisOutputCachingMiddleware
                 LogUtility.LogError($"Failed to set cache value: {ex.Message}");
             }
         }
-
     }
 }

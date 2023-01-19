@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace RedisOutputCachingMiddleware.UnitTests
+namespace Microsoft.Web.Redis.Tests
 {
     public class RedisOutputCachingMiddlewareUnitTests
     {
