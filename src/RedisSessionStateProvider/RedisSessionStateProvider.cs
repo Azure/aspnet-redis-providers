@@ -211,6 +211,7 @@ namespace Microsoft.Web.Redis
             try
             {
                 SessionStateStoreData sessionStateStoreData = null;
+                LastException = null;
                 locked = false;
                 lockAge = TimeSpan.Zero;
                 lockId = 0;
