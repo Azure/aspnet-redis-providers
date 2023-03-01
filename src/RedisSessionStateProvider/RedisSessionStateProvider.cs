@@ -162,15 +162,12 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
-                {
-                    LogUtility.LogInfo("CreateUninitializedItem => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
-                    ISessionStateItemCollection sessionData = new SessionStateItemCollection();
-                    sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
-                    GetAccessToStore(id);
-                    // Converting timout from min to sec
-                    cache.Set(sessionData, (timeout * FROM_MIN_TO_SEC));
-                }
+                LogUtility.LogInfo("CreateUninitializedItem => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
+                ISessionStateItemCollection sessionData = new SessionStateItemCollection();
+                sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
+                GetAccessToStore(id);
+                // Converting timout from min to sec
+                cache.Set(sessionData, (timeout * FROM_MIN_TO_SEC));
             }
             catch (Exception e)
             {
@@ -211,7 +208,6 @@ namespace Microsoft.Web.Redis
             try
             {
                 SessionStateStoreData sessionStateStoreData = null;
-                LastException = null;
                 locked = false;
                 lockAge = TimeSpan.Zero;
                 lockId = 0;
@@ -298,13 +294,10 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
-                {
-                    LogUtility.LogInfo("ResetItemTimeout => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
-                    GetAccessToStore(id);
-                    cache.UpdateExpiryTime((int)configuration.SessionTimeout.TotalSeconds);
-                    cache = null;
-                }
+                LogUtility.LogInfo("ResetItemTimeout => Session Id: {0}, Session provider object: {1}.", id, this.GetHashCode());
+                GetAccessToStore(id);
+                cache.UpdateExpiryTime((int)configuration.SessionTimeout.TotalSeconds);
+                cache = null;
             }
             catch (Exception e)
             {
@@ -322,12 +315,10 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
-                {
-                    LogUtility.LogInfo("RemoveItem => Session Id: {0}, Session provider object: {1}, Lock ID: {2}.", id, this.GetHashCode(), lockId);
-                    GetAccessToStore(id);
-                    cache.TryRemoveAndReleaseLock(lockId);
-                }
+
+                LogUtility.LogInfo("RemoveItem => Session Id: {0}, Session provider object: {1}, Lock ID: {2}.", id, this.GetHashCode(), lockId);
+                GetAccessToStore(id);
+                cache.TryRemoveAndReleaseLock(lockId);
             }
             catch (Exception e)
             {
@@ -356,7 +347,7 @@ namespace Microsoft.Web.Redis
                     sessionTimeoutInSeconds = (int)configuration.SessionTimeout.TotalSeconds;
                 }
 
-                if (LastException == null && lockId != null)
+                if (lockId != null)
                 {
                     LogUtility.LogInfo("ReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => For lockId: {2}.", id, this.GetHashCode(), lockId);
                     GetAccessToStore(id);
@@ -384,45 +375,43 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                if (LastException == null)
+                GetAccessToStore(id);
+                // If it is new record
+                if (newItem)
                 {
-                    GetAccessToStore(id);
-                    // If it is new record
-                    if (newItem)
+                    ISessionStateItemCollection sessionItems = null;
+                    if (item != null && item.Items != null)
                     {
-                        ISessionStateItemCollection sessionItems = null;
-                        if (item != null && item.Items != null)
-                        {
-                            sessionItems = item.Items;
-                        }
-                        else
-                        {
-                            sessionItems = new SessionStateItemCollection();
-                        }
-
-                        if (sessionItems["SessionStateActions"] != null)
-                        {
-                            sessionItems.Remove("SessionStateActions");
-                        }
-
-                        // Converting timout from min to sec
-                        cache.Set(sessionItems, (item.Timeout * FROM_MIN_TO_SEC));
-                        LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => created new item in session.", id, this.GetHashCode());
-                    } // If update if lock matches
+                        sessionItems = item.Items;
+                    }
                     else
                     {
-                        if (item != null && item.Items != null)
+                        sessionItems = new SessionStateItemCollection();
+                    }
+
+                    if (sessionItems["SessionStateActions"] != null)
+                    {
+                        sessionItems.Remove("SessionStateActions");
+                    }
+
+                    // Converting timout from min to sec
+                    cache.Set(sessionItems, (item.Timeout * FROM_MIN_TO_SEC));
+                    LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => created new item in session.", id, this.GetHashCode());
+                } // If update if lock matches
+                else
+                {
+                    if (item != null && item.Items != null)
+                    {
+                        if (item.Items["SessionStateActions"] != null)
                         {
-                            if (item.Items["SessionStateActions"] != null)
-                            {
-                                item.Items.Remove("SessionStateActions");
-                            }
-                            // Converting timout from min to sec
-                            cache.TryUpdateAndReleaseLock(lockId, item.Items, (item.Timeout * FROM_MIN_TO_SEC));
-                            LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => updated item in session, Lock ID: {2}.", id, this.GetHashCode(), lockId);
+                            item.Items.Remove("SessionStateActions");
                         }
+                        // Converting timout from min to sec
+                        cache.TryUpdateAndReleaseLock(lockId, item.Items, (item.Timeout * FROM_MIN_TO_SEC));
+                        LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => updated item in session, Lock ID: {2}.", id, this.GetHashCode(), lockId);
                     }
                 }
+
             }
             catch (Exception e)
             {
