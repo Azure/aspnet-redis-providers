@@ -53,7 +53,7 @@ namespace Microsoft.Web.Redis
                 }
                 _configOption.Password = configuration.AccessKey;
                 _configOption.Ssl = configuration.UseSsl;
-                _configOption.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls;
+                _configOption.SslProtocols = SslProtocols.None;
                 _configOption.AbortOnConnectFail = false;
 
                 if (configuration.ConnectionTimeoutInMilliSec != 0)
