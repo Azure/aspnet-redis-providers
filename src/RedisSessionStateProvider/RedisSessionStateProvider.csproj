@@ -8,6 +8,11 @@
     <SignAssembly Condition=" '$(EnableCodeSigning)' == 'true' ">true</SignAssembly>
     <DelaySign Condition=" '$(EnableCodeSigning)' == 'true' ">true</DelaySign>
     <AssemblyOriginatorKeyFile Condition=" '$(EnableCodeSigning)' == 'true' ">dummy.snk</AssemblyOriginatorKeyFile>
+	<VersionPrefix>5.0.0</VersionPrefix>
+	  <authors>Microsoft</authors>
+	<copyright>© Microsoft Corporation. All rights reserved.</copyright>
+	<PackageLicenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</PackageLicenseUrl>
+	<PackageProjectUrl>https://github.com/Azure/aspnet-redis-providers</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Net" />

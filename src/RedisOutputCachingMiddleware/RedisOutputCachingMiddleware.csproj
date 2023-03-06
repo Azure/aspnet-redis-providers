@@ -4,6 +4,11 @@
     <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
 	  <RootNamespace>Microsoft.Web.RedisOutputCachingMiddleware</RootNamespace>
 	  <AssemblyName>Microsoft.Web.RedisOutputCachingMiddleware</AssemblyName>
+	  <VersionPrefix>1.0.0</VersionPrefix>
+	  <authors>Microsoft</authors>
+	  <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+	  <PackageLicenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</PackageLicenseUrl>
+	  <PackageProjectUrl>https://github.com/Azure/aspnet-redis-providers</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Shared\LogUtility.cs" />
