@@ -6,6 +6,7 @@
 using System;
 using StackExchange.Redis;
 using System.Reflection;
+using System.Security.Authentication;
 
 namespace Microsoft.Web.Redis
 {
@@ -52,6 +53,7 @@ namespace Microsoft.Web.Redis
                 }
                 _configOption.Password = configuration.AccessKey;
                 _configOption.Ssl = configuration.UseSsl;
+                _configOption.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls;
                 _configOption.AbortOnConnectFail = false;
 
                 if (configuration.ConnectionTimeoutInMilliSec != 0)
