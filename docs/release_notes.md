@@ -6,6 +6,9 @@ Below is a summary of the the main features/bug fixes in the most recent release
 
 ## Session State Provider Release Notes
 
+### v5.0.0
+This release provides an update for the RedisSessionStateProvider nuget package. As a BREAKING CHANGE, the underlying serialization method has changed. SessionStateItemCollection objects are now treated as an atomic unit. The ability to add custom serialization has been removed. These changes were made for necessary security improvements.
+
 **Note:** v4.0+ requires .NET Framework 4.6.2 or higher. v3.0+ requires .NET Framework 4.5.2 or higher. If you are using .net 4.0, 4.5.0 or 4.5.1, then please use an older version of Session State Provider (i.e. 2.x).
 
 ### v4.0.1
@@ -80,6 +83,9 @@ Updated `StackExchange.Redis.StrongName` to version 1.0.481 from 1.0.394. Due to
 [Details and migration information](v2.0.0_breaking_change.md)
 
 ## Output Cache Provider Release Notes
+
+### v4.0.0
+This release provides an update for the RedisSessionStateProvider nuget package. As a BREAKING CHANGE, the underlying serialization method has changed. The ability to add custom serialization has been removed. These changes were made for necessary security improvements.
 
 **Note:** v4.0+ requires .NET Framework 4.6.2 or higher. v3.0+ requires .NET Framework 4.5.2 or higher. If you are using .net 4.0, 4.5.0 or 4.5.1, then please use an older version of Session State Provider (i.e. 2.x).
 
