@@ -123,18 +123,11 @@ namespace Microsoft.Web.Redis
 
         private byte[] SerializeSessionStateItemCollection(ISessionStateItemCollection sessionStateItemCollection)
         {
-            try
-            {
-                MemoryStream ms = new MemoryStream();
-                BinaryWriter writer = new BinaryWriter(ms);
-                ((SessionStateItemCollection)sessionStateItemCollection).Serialize(writer);
-                writer.Close();
-                return ms.ToArray();
-            }
-            catch
-            {
-                return null;
-            }
+            MemoryStream ms = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(ms);
+            ((SessionStateItemCollection)sessionStateItemCollection).Serialize(writer);
+            writer.Close();
+            return ms.ToArray();
         }
 
         public void Set(ISessionStateItemCollection data, int sessionTimeout)
