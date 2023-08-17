@@ -6,6 +6,10 @@ Below is a summary of the the main features/bug fixes in the most recent release
 
 ## Session State Provider Release Notes
 
+### v5.0.1
+
+Removed try-catch around serialization so it now throws an error. Updated the assembly verions to match the release versions. Downgraded Microsoft.Bcl.AsyncInterfaces to version 5.0.0
+
 ### v5.0.0
 This release provides an update for the RedisSessionStateProvider nuget package. As a BREAKING CHANGE, the underlying serialization method has changed. SessionStateItemCollection objects are now treated as an atomic unit. The ability to add custom serialization has been removed. These changes were made for necessary security improvements.
 
@@ -83,6 +87,10 @@ Updated `StackExchange.Redis.StrongName` to version 1.0.481 from 1.0.394. Due to
 [Details and migration information](v2.0.0_breaking_change.md)
 
 ## Output Cache Provider Release Notes
+
+### v4.0.1
+
+Removed try-catch around serialization so it now throws an error. Updated the assembly verions to match the release versions. Downgraded Microsoft.Bcl.AsyncInterfaces to version 5.0.0
 
 ### v4.0.0
 This release provides an update for the RedisSessionStateProvider nuget package. As a BREAKING CHANGE, the underlying serialization method has changed. The ability to add custom serialization has been removed. These changes were made for necessary security improvements.
