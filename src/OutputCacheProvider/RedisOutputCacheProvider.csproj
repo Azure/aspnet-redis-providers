@@ -8,7 +8,7 @@
     <SignAssembly Condition=" '$(EnableCodeSigning)' == 'true' ">true</SignAssembly>
     <DelaySign Condition=" '$(EnableCodeSigning)' == 'true' ">true</DelaySign>
     <AssemblyOriginatorKeyFile Condition=" '$(EnableCodeSigning)' == 'true' ">dummy.snk</AssemblyOriginatorKeyFile>
-	<VersionPrefix>4.0.0</VersionPrefix>
+	<VersionPrefix>4.0.1</VersionPrefix>
 	<authors>Microsoft</authors>
 	<copyright>© Microsoft Corporation. All rights reserved.</copyright>
 	<PackageLicenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</PackageLicenseUrl>
