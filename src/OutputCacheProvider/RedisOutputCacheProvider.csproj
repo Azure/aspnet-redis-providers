@@ -11,6 +11,8 @@
 	<VersionPrefix>4.0.1</VersionPrefix>
 	<authors>Microsoft</authors>
 	<copyright>© Microsoft Corporation. All rights reserved.</copyright>
+	<Description>Custom output cache provider for redis cache.</Description>
+	<PackageTags>outputcache, outputcacheprovider, azure, microsoft, windowsazureofficial, redis</PackageTags>
 	<PackageLicenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</PackageLicenseUrl>
 	<PackageProjectUrl>https://github.com/Azure/aspnet-redis-providers</PackageProjectUrl>
   </PropertyGroup>
