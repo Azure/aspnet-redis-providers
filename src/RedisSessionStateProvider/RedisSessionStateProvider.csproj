@@ -8,7 +8,7 @@
     <SignAssembly Condition=" '$(EnableCodeSigning)' == 'true' ">true</SignAssembly>
     <DelaySign Condition=" '$(EnableCodeSigning)' == 'true' ">true</DelaySign>
     <AssemblyOriginatorKeyFile Condition=" '$(EnableCodeSigning)' == 'true' ">dummy.snk</AssemblyOriginatorKeyFile>
-	<VersionPrefix>5.0.0</VersionPrefix>
+	<VersionPrefix>5.0.1</VersionPrefix>
 	  <authors>Microsoft</authors>
 	<copyright>© Microsoft Corporation. All rights reserved.</copyright>
 	<PackageLicenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</PackageLicenseUrl>
@@ -23,7 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.SessionState.SessionStateModule" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.96" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="6.0.1" />

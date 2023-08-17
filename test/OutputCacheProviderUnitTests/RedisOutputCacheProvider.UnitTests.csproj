@@ -16,7 +16,7 @@
     <PackageReference Include="Castle.Core" Version="4.4.1" />
     <PackageReference Include="FakeItEasy" Version="7.3.1" />
     <PackageReference Include="Microsoft.AspNet.OutputCache.OutputCacheModuleAsync" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.96" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
