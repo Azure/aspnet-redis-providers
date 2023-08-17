@@ -11,6 +11,8 @@
 	<VersionPrefix>5.0.0</VersionPrefix>
 	  <authors>Microsoft</authors>
 	<copyright>© Microsoft Corporation. All rights reserved.</copyright>
+	<Description>Custom session state provider for redis cache.</Description>
+	<PackageTags>session, sessionstateprovider, azure, microsoft, windowsazureofficial, redis</PackageTags>
 	<PackageLicenseUrl>https://webpifeed.blob.core.windows.net/webpifeed/eula/net_library_eula_enu.htm</PackageLicenseUrl>
 	<PackageProjectUrl>https://github.com/Azure/aspnet-redis-providers</PackageProjectUrl>
   </PropertyGroup>
