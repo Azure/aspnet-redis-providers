@@ -184,8 +184,12 @@ namespace Microsoft.Web.Redis
             return sessionData;
         }
 
-        private SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
+        internal SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
         {
+            if (serializedSessionStateItemCollection is null)
+            {
+                return null;
+            }
             MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
             BinaryReader reader = new BinaryReader(ms);
             return SessionStateItemCollection.Deserialize(reader);
