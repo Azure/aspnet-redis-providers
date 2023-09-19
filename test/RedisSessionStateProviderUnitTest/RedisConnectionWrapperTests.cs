@@ -297,5 +297,23 @@ namespace Microsoft.Web.Redis.Tests
                     o[7].Equals(10)
                 ))).MustHaveHappened();
         }
+
+        [Fact]
+        public void SerializationReturnsNull_IfValueIsNull()
+        {
+            string id = "session_id";
+            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            var result = redisConn.SerializeSessionStateItemCollection(null);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void DeserializationReturnsNull_IfValueIsNull()
+        {
+            StackExchangeClientConnection conn = A.Fake<StackExchangeClientConnection>();
+            var result = conn.DeserializeSessionStateItemCollection(null);
+            Assert.Null(result);
+        }
     }
 }

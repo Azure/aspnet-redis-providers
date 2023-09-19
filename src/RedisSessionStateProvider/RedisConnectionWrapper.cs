@@ -121,8 +121,12 @@ namespace Microsoft.Web.Redis
             }
         }
 
-        private byte[] SerializeSessionStateItemCollection(ISessionStateItemCollection sessionStateItemCollection)
+        internal byte[] SerializeSessionStateItemCollection(ISessionStateItemCollection sessionStateItemCollection)
         {
+            if (sessionStateItemCollection is null)
+            {
+                return null;
+            }
             MemoryStream ms = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(ms);
             ((SessionStateItemCollection)sessionStateItemCollection).Serialize(writer);
