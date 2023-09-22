@@ -186,13 +186,16 @@ namespace Microsoft.Web.Redis
 
         internal SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
         {
-            if (serializedSessionStateItemCollection is null)
+            try
+            {
+                MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
+                BinaryReader reader = new BinaryReader(ms);
+                return SessionStateItemCollection.Deserialize(reader);
+            }
+            catch
             {
                 return null;
             }
-            MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
-            BinaryReader reader = new BinaryReader(ms);
-            return SessionStateItemCollection.Deserialize(reader);
         }
 
         public void Set(string key, byte[] data, DateTime utcExpiry)
