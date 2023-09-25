@@ -6,6 +6,10 @@ Below is a summary of the the main features/bug fixes in the most recent release
 
 ## Session State Provider Release Notes
 
+### v5.0.3
+
+This version fixes a bug in v5.0.2 where the null check during deserialization was not sufficient. We added a try-catch back to the method. 
+
 ### v5.0.2
 
 This version updates Stack Exchange Redis and adds a null check for the serialization methods. 
