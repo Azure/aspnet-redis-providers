@@ -334,16 +334,10 @@ namespace Microsoft.Web.Redis
                 List<object> list = new List<object>();
                 int noOfItemsRemoved = 0;
                 int noOfItemsUpdated = 0;
-                try
-                {
-                    byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection(data);
-                    list.Add("SessionState");
-                    list.Add(serializedSessionStateItemCollection);
-                    noOfItemsUpdated = 1;
-                }
-                catch
-                {
-                }
+                byte[] serializedSessionStateItemCollection = SerializeSessionStateItemCollection(data);
+                list.Add("SessionState");
+                list.Add(serializedSessionStateItemCollection);
+                noOfItemsUpdated = 1;
 
                 keyArgs = new string[] { Keys.LockKey, Keys.DataKey, Keys.InternalKey };
                 valueArgs = new object[list.Count + 8]; // this +8 is for first wight values in ARGV that we will add now
