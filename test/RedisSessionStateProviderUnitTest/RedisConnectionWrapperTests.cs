@@ -8,6 +8,7 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Threading;
+using System.Web;
 using System.Web.SessionState;
 using Xunit;
 
@@ -245,6 +246,22 @@ namespace Microsoft.Web.Redis.Tests
             redisConn.TryRemoveAndReleaseLock(lockId);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                  A<object[]>.That.Matches(o => o.Length == 1))).MustHaveHappened();
+        }
+        
+        [Fact]
+        public void TrySetObjectNotMarkedSerializable()
+        {
+            string id = "session_id";
+            int sessionTimeout = 900;
+            object lockId = DateTime.Now.Ticks;
+            SessionStateItemCollection data = new SessionStateItemCollection();
+            data["Key"] = new {Name = "Hal"}; // try to add anon type, this will throw a serialization error when you try to commit it as the type is not marked as serializable.
+
+            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            redisConn.redisConnection = A.Fake<IRedisClientConnection>();
+            var exception = Assert.Throws<HttpException>(() =>redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout));
+            Assert.Contains("Unable to serialize the session state.", exception.Message);
         }
 
         [Fact]
