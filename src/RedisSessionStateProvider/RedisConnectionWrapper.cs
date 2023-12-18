@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis
@@ -23,7 +22,7 @@ namespace Microsoft.Web.Redis
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
             this.configuration = configuration;
-            Keys = new KeyGenerator(id, configuration.ApplicationName);
+            Keys = new KeyGenerator(id, configuration.ApplicationName, configuration.SessionDataSerializer.StorageTypeName);
 
             // only single object of RedisSharedConnection will be created and then reused
             if (sharedConnection == null)
@@ -127,11 +126,9 @@ namespace Microsoft.Web.Redis
             {
                 return null;
             }
-            MemoryStream ms = new MemoryStream();
-            BinaryWriter writer = new BinaryWriter(ms);
-            ((SessionStateItemCollection)sessionStateItemCollection).Serialize(writer);
-            writer.Close();
-            return ms.ToArray();
+
+            var bytes = configuration.SessionDataSerializer.Serialize((SessionStateItemCollection)sessionStateItemCollection);
+            return bytes;
         }
 
         public void Set(ISessionStateItemCollection data, int sessionTimeout)
@@ -324,6 +321,8 @@ namespace Microsoft.Web.Redis
                 redis.call('SET', KEYS[3], ARGV[2])
                 redis.call('EXPIRE',KEYS[3],ARGV[2])
                 redis.call('DEL',KEYS[1])");
+        private static readonly string removeAndUpdateSessionDataWhilePublishingScript = 
+            $"{removeAndUpdateSessionDataScript}\r\n                redis.call('PUBLISH', KEYS[2], ARGV[10])\r\n                return 1";
 
         private bool TryUpdateAndReleaseLockPrepare(object lockId, ISessionStateItemCollection data, int sessionTimeout, out string[] keyArgs, out object[] valueArgs)
         {
@@ -366,7 +365,9 @@ namespace Microsoft.Web.Redis
             object[] valueArgs;
             if (TryUpdateAndReleaseLockPrepare(lockId, data, sessionTimeout, out keyArgs, out valueArgs))
             {
-                redisConnection.Eval(removeAndUpdateSessionDataScript, keyArgs, valueArgs);
+                redisConnection.Eval(
+                    configuration.PublishSessionChanges ? removeAndUpdateSessionDataWhilePublishingScript :
+                    removeAndUpdateSessionDataScript, keyArgs, valueArgs);
             }
         }
 

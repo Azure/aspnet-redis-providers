@@ -188,9 +188,10 @@ namespace Microsoft.Web.Redis
         {
             try
             {
-                MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
-                BinaryReader reader = new BinaryReader(ms);
-                return SessionStateItemCollection.Deserialize(reader);
+                var bytes = (byte[])serializedSessionStateItemCollection;
+                var data = _configuration.SessionDataSerializer.Deserialize(bytes);
+                return data;
+               
             }
             catch
             {

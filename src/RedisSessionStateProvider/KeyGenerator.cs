@@ -4,6 +4,7 @@
 //
 
 using System;
+using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis
 {
@@ -13,17 +14,19 @@ namespace Microsoft.Web.Redis
         public string DataKey { get; private set; }
         public string LockKey { get; private set; }
         public string InternalKey { get; private set; }
+        public string SessionDataType { get; private set; }
 
         private void GenerateKeys(string id, string app)
         {
             this.id = id;
-            DataKey = $"{{{app}_{id}}}_SessionStateItemCollection";
+            DataKey = $"{{{app}_{id}}}_{SessionDataType}";
             LockKey = $"{{{app}_{id}}}_WriteLock";
             InternalKey = $"{{{app}_{id}}}_SessionTimeout";
         }
 
-        public KeyGenerator(string sessionId, string applicationName)
+        public KeyGenerator(string sessionId, string applicationName, string sessionStateDataType = "SessionStateItemCollection")
         {
+            SessionDataType = sessionStateDataType;
             GenerateKeys(sessionId, applicationName);
         }
 

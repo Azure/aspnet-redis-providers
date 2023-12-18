@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Web.Configuration;
 using System.Web.Hosting;
+using Microsoft.Web.RedisSessionStateProvider;
 
 namespace Microsoft.Web.Redis
 {
@@ -28,6 +29,8 @@ namespace Microsoft.Web.Redis
         public int ConnectionTimeoutInMilliSec { get; set; }
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
+        public ISessionDataSerializer SessionDataSerializer { get; set; } = new BinaryFormattingSessionSerializer();
+        public bool PublishSessionChanges { get; set; }
 
         /* Empty constructor required for testing */
 
@@ -87,6 +90,8 @@ namespace Microsoft.Web.Redis
             // All below parameters are only fetched from web.config
             DatabaseId = GetIntSettings(config, "databaseId", 0);
             ApplicationName = GetStringSettings(config, "applicationName", null);
+            PublishSessionChanges = GetBoolSettings(config, "publishSessionChanges", false);
+
             if (ApplicationName == null)
             {
                 try
@@ -117,6 +122,22 @@ namespace Microsoft.Web.Redis
 
             ConnectionTimeoutInMilliSec = GetIntSettings(config, "connectionTimeoutInMilliseconds", 0);
             OperationTimeoutInMilliSec = GetIntSettings(config, "operationTimeoutInMilliseconds", 0);
+
+            var serializationTypeNameSpace = GetStringSettings(config, "sessionSerializationNamespaceAndType", null);
+            var serializationTypeAssembly = GetStringSettings(config, "sessionSerializationTypeAssembly", null);
+
+            if (!string.IsNullOrEmpty(serializationTypeNameSpace) && !string.IsNullOrEmpty(serializationTypeAssembly))
+            {
+                try
+                {
+                    var serializer = Activator.CreateInstance(serializationTypeAssembly, serializationTypeNameSpace);
+                    SessionDataSerializer = (ISessionDataSerializer)serializer.Unwrap();
+                }
+                catch(Exception e)
+                {
+                    throw new TypeLoadException($"Could not activate Session Serialization Type from assembly {serializationTypeAssembly} and namespace {serializationTypeNameSpace}.", e);
+                }
+            }
         }
 
         // 1) Use key available inside AppSettings
