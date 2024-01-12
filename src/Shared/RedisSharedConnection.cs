@@ -87,7 +87,7 @@ namespace Microsoft.Web.Redis
             var previousReconnect = lastReconnectTime;
             var elapsedSinceLastReconnect = DateTimeOffset.UtcNow - previousReconnect;
 
-            // If mulitple threads call ForceReconnect at the same time, we only want to honor one of them. 
+            // If multiple threads call ForceReconnect at the same time, we only want to honor one of them. 
             if (elapsedSinceLastReconnect > ReconnectFrequency)
             {
                 lock (reconnectLock)

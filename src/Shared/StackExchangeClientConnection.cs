@@ -94,11 +94,11 @@ namespace Microsoft.Web.Redis
         }
 
         /// <summary>
-        /// If retry timout is provide than we will retry first time after 20 ms and after that every 1 sec till retry timout is expired or we get value.
+        /// If retry timeout is provide than we will retry first time after 20 ms and after that every 1 sec till retry timeout is expired or we get value.
         /// </summary>
         private object RetryLogic(Func<object> redisOperation)
         {
-            int timeToSleepBeforeRetryInMiliseconds = 20;
+            int timeToSleepBeforeRetryInMilliseconds = 20;
             DateTime startTime = DateTime.Now;
             while (true)
             {
@@ -118,15 +118,15 @@ namespace Microsoft.Web.Redis
                     {
                         int remainingTimeout = (int)(_configuration.RetryTimeout.TotalMilliseconds - passedTime.TotalMilliseconds);
                         // if remaining time is less than 1 sec than wait only for that much time and than give a last try
-                        if (remainingTimeout < timeToSleepBeforeRetryInMiliseconds)
+                        if (remainingTimeout < timeToSleepBeforeRetryInMilliseconds)
                         {
-                            timeToSleepBeforeRetryInMiliseconds = remainingTimeout;
+                            timeToSleepBeforeRetryInMilliseconds = remainingTimeout;
                         }
                     }
 
                     // First time try after 20 msec after that try after 1 second
-                    System.Threading.Thread.Sleep(timeToSleepBeforeRetryInMiliseconds);
-                    timeToSleepBeforeRetryInMiliseconds = 1000;
+                    System.Threading.Thread.Sleep(timeToSleepBeforeRetryInMilliseconds);
+                    timeToSleepBeforeRetryInMilliseconds = 1000;
                 }
             }
         }

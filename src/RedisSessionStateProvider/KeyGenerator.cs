@@ -3,9 +3,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
-using System;
-using System.Web.SessionState;
-
 namespace Microsoft.Web.Redis
 {
     internal class KeyGenerator
@@ -19,14 +16,13 @@ namespace Microsoft.Web.Redis
         private void GenerateKeys(string id, string app)
         {
             this.id = id;
-            DataKey = $"{{{app}_{id}}}_{SessionDataType}";
+            DataKey = $"{{{app}_{id}}}_SessionStateItemCollection";
             LockKey = $"{{{app}_{id}}}_WriteLock";
             InternalKey = $"{{{app}_{id}}}_SessionTimeout";
         }
 
-        public KeyGenerator(string sessionId, string applicationName, string sessionStateDataType = "SessionStateItemCollection")
+        public KeyGenerator(string sessionId, string applicationName)
         {
-            SessionDataType = sessionStateDataType;
             GenerateKeys(sessionId, applicationName);
         }
 

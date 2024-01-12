@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
+using Microsoft.Web.RedisSessionStateProvider;
 using System;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -10,7 +11,6 @@ using System.IO;
 using System.Reflection;
 using System.Web.Configuration;
 using System.Web.Hosting;
-using Microsoft.Web.RedisSessionStateProvider;
 
 namespace Microsoft.Web.Redis
 {
@@ -29,7 +29,7 @@ namespace Microsoft.Web.Redis
         public int ConnectionTimeoutInMilliSec { get; set; }
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
-        public ISessionDataSerializer SessionDataSerializer { get; set; } = new BinaryFormattingSessionSerializer();
+        public ISessionDataSerializer SessionDataSerializer { get; set; } = new DefaultSessionStateSerializer();
 
         /* Empty constructor required for testing */
 
@@ -80,7 +80,7 @@ namespace Microsoft.Web.Redis
         {
             EnableLoggingIfParametersAvailable(config);
             // Get connection host, port and password.
-            // host, port, accessKey and ssl are firest fetched from appSettings if not found there than taken from web.config
+            // host, port, accessKey and ssl are first fetched from appSettings if not found there than taken from web.config
             ConnectionString = GetConnectionString(config);
             Host = GetStringSettings(config, "host", "127.0.0.1");
             Port = GetIntSettings(config, "port", 0);
@@ -89,7 +89,6 @@ namespace Microsoft.Web.Redis
             // All below parameters are only fetched from web.config
             DatabaseId = GetIntSettings(config, "databaseId", 0);
             ApplicationName = GetStringSettings(config, "applicationName", null);
-
             if (ApplicationName == null)
             {
                 try
@@ -185,7 +184,7 @@ namespace Microsoft.Web.Redis
         }
 
         // 1) Check if literal value is valid integer than use it as it is
-        // 2) Use app setting value corrosponding to this string
+        // 2) Use app setting value corresponding to this string
         // 3) Both are null than use default value.
         private static int GetIntSettings(NameValueCollection config, string attrName, int defaultVal)
         {
@@ -212,7 +211,7 @@ namespace Microsoft.Web.Redis
         }
 
         // 1) Check if literal value is valid bool than use it as it is
-        // 2) Use app setting value corrosponding to this string
+        // 2) Use app setting value corresponding to this string
         // 3) Both are null than use default value.
         private static bool GetBoolSettings(NameValueCollection config, string attrName, bool defaultVal)
         {
@@ -266,7 +265,7 @@ namespace Microsoft.Web.Redis
         // Preference for fetching connection string
         // Either use "settingsClassName" and "settingsMethodName" to provide connectionString
         // Or use "connectionString" web.config settings to fetch value
-        // If using "connectionString" then it trys to do following in order
+        // If using "connectionString" then it tries to do following in order
         // 1) Fetch value from App Settings section for key which is value for "connectionString"
         // 2) If option 1 is not working, Fetch value from Web.Config ConnectionStrings section for key which is value for "connectionString"
         // 3) If option 1 and 2 is not working, use value of "connectionString" as it is

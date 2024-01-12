@@ -22,7 +22,7 @@ namespace Microsoft.Web.Redis
         public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
         {
             this.configuration = configuration;
-            Keys = new KeyGenerator(id, configuration.ApplicationName, configuration.SessionDataSerializer.StorageTypeName);
+            Keys = new KeyGenerator(id, configuration.ApplicationName);
 
             // only single object of RedisSharedConnection will be created and then reused
             if (sharedConnection == null)
@@ -145,10 +145,10 @@ namespace Microsoft.Web.Redis
         /*-------Start of Lock set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // KEYS = { write-lock-id, data-id, internal-id }
-        // ARGV = { write-lock-value-that-we-want-to-set, request-timout }
+        // ARGV = { write-lock-value-that-we-want-to-set, request-timeout }
         // lockValue = 1) (Initially) write lock value that we want to set (ARGV[1]) if we get lock successfully this will return as retArray[1]
         //             2) If another write lock exists than its lock value from cache
-        // retArray = {lockValue , session data if lock was taken successfully, session timeout value if exists, wheather lock was taken or not}
+        // retArray = {lockValue , session data if lock was taken successfully, session timeout value if exists, whether lock was taken or not}
         private static readonly string writeLockAndGetDataScript = (@"
                 local retArray = {}
                 local lockValue = ARGV[1]
