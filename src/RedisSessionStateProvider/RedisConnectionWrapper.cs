@@ -127,8 +127,7 @@ namespace Microsoft.Web.Redis
                 return null;
             }
 
-            var bytes = configuration.SessionDataSerializer.Serialize((SessionStateItemCollection)sessionStateItemCollection);
-            return bytes;
+            return configuration.SessionDataSerializer.Serialize((SessionStateItemCollection)sessionStateItemCollection);
         }
 
         public void Set(ISessionStateItemCollection data, int sessionTimeout)
@@ -321,8 +320,6 @@ namespace Microsoft.Web.Redis
                 redis.call('SET', KEYS[3], ARGV[2])
                 redis.call('EXPIRE',KEYS[3],ARGV[2])
                 redis.call('DEL',KEYS[1])");
-        private static readonly string removeAndUpdateSessionDataWhilePublishingScript = 
-            $"{removeAndUpdateSessionDataScript}\r\n                redis.call('PUBLISH', KEYS[2], ARGV[10])\r\n                return 1";
 
         private bool TryUpdateAndReleaseLockPrepare(object lockId, ISessionStateItemCollection data, int sessionTimeout, out string[] keyArgs, out object[] valueArgs)
         {
@@ -365,9 +362,7 @@ namespace Microsoft.Web.Redis
             object[] valueArgs;
             if (TryUpdateAndReleaseLockPrepare(lockId, data, sessionTimeout, out keyArgs, out valueArgs))
             {
-                redisConnection.Eval(
-                    configuration.PublishSessionChanges ? removeAndUpdateSessionDataWhilePublishingScript :
-                    removeAndUpdateSessionDataScript, keyArgs, valueArgs);
+                redisConnection.Eval(removeAndUpdateSessionDataScript, keyArgs, valueArgs);
             }
         }
 

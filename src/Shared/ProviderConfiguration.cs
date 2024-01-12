@@ -30,7 +30,6 @@ namespace Microsoft.Web.Redis
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
         public ISessionDataSerializer SessionDataSerializer { get; set; } = new BinaryFormattingSessionSerializer();
-        public bool PublishSessionChanges { get; set; }
 
         /* Empty constructor required for testing */
 
@@ -90,7 +89,6 @@ namespace Microsoft.Web.Redis
             // All below parameters are only fetched from web.config
             DatabaseId = GetIntSettings(config, "databaseId", 0);
             ApplicationName = GetStringSettings(config, "applicationName", null);
-            PublishSessionChanges = GetBoolSettings(config, "publishSessionChanges", false);
 
             if (ApplicationName == null)
             {

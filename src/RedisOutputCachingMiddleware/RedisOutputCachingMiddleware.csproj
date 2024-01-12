@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
 	  <RootNamespace>Microsoft.Web.RedisOutputCachingMiddleware</RootNamespace>
 	  <AssemblyName>Microsoft.Web.RedisOutputCachingMiddleware</AssemblyName>
 	  <VersionPrefix>1.0.0</VersionPrefix>

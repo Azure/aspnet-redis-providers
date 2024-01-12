@@ -189,8 +189,7 @@ namespace Microsoft.Web.Redis
             try
             {
                 var bytes = (byte[])serializedSessionStateItemCollection;
-                var data = _configuration.SessionDataSerializer.Deserialize(bytes);
-                return data;
+                return _configuration.SessionDataSerializer.Deserialize(bytes);
                
             }
             catch
