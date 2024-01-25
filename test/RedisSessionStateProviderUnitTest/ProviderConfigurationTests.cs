@@ -4,13 +4,9 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using Xunit;
 
 namespace Microsoft.Web.Redis.Tests
