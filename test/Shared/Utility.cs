@@ -20,9 +20,9 @@ namespace Microsoft.Web.Redis.Tests
             return new SessionStateItemCollection();
         }
 
-        internal static ProviderConfiguration GetDefaultConfigUtility()
+        internal static SessionStateProviderConfiguration GetDefaultConfigUtility()
         {
-            ProviderConfiguration configuration = new ProviderConfiguration();
+            SessionStateProviderConfiguration configuration = new SessionStateProviderConfiguration();
             configuration.SessionTimeout = new TimeSpan(0, 15, 0); //15 min
             configuration.RequestTimeout = new TimeSpan(0, 1, 30); //1.5 min
             configuration.Host = "127.0.0.1";

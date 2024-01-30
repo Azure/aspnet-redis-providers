@@ -12,7 +12,7 @@ namespace Microsoft.Web.Redis
 
     public class RedisOutputCacheProvider : OutputCacheProviderAsync
     {
-        internal static ProviderConfiguration configuration;
+        internal static OutputCacheProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
         internal IOutputCacheConnection cache;
         
@@ -42,7 +42,7 @@ namespace Microsoft.Web.Redis
                 {
                     if (configuration == null)
                     {
-                        configuration = ProviderConfiguration.ProviderConfigurationForOutputCache(config);
+                        configuration = OutputCacheProviderConfiguration.ProviderConfigurationForOutputCache(config);
                     }
                 }
             }

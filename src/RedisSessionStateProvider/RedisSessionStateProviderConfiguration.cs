@@ -14,7 +14,7 @@ using System.Web.Hosting;
 
 namespace Microsoft.Web.Redis
 {
-    internal class ProviderConfiguration
+    internal class SessionStateProviderConfiguration : IProviderConfiguration
     {
         public TimeSpan RequestTimeout { get; set; }
         public TimeSpan SessionTimeout { get; set; }
@@ -29,16 +29,16 @@ namespace Microsoft.Web.Redis
         public int ConnectionTimeoutInMilliSec { get; set; }
         public int OperationTimeoutInMilliSec { get; set; }
         public string ConnectionString { get; set; }
-        public ISessionDataSerializer SessionDataSerializer { get; set; } = new DefaultSessionStateSerializer();
+        public ISessionStateSerializer SessionStateSerializer { get; set; } = new DefaultSessionStateSerializer();
 
         /* Empty constructor required for testing */
 
-        internal ProviderConfiguration()
+        internal SessionStateProviderConfiguration()
         { }
 
-        internal static ProviderConfiguration ProviderConfigurationForSessionState(NameValueCollection config)
+        internal static SessionStateProviderConfiguration ProviderConfigurationForSessionState(NameValueCollection config)
         {
-            ProviderConfiguration configuration = new ProviderConfiguration(config)
+            SessionStateProviderConfiguration configuration = new SessionStateProviderConfiguration(config)
             {
                 ThrowOnError = GetBoolSettings(config, "throwOnError", true)
             };
@@ -57,26 +57,7 @@ namespace Microsoft.Web.Redis
                                             configuration.Host, configuration.Port, configuration.ThrowOnError, configuration.UseSsl, configuration.RetryTimeout, configuration.DatabaseId, configuration.ApplicationName, configuration.RequestTimeout, configuration.SessionTimeout);
             return configuration;
         }
-
-        internal static ProviderConfiguration ProviderConfigurationForOutputCache(NameValueCollection config)
-        {
-            ProviderConfiguration configuration = new ProviderConfiguration(config)
-            {
-                // No retry login for output cache provider
-                RetryTimeout = TimeSpan.Zero,
-
-                // Session state specific attribute which are not applicable to output cache
-                ThrowOnError = true,
-                RequestTimeout = TimeSpan.Zero,
-                SessionTimeout = TimeSpan.Zero
-            };
-
-            LogUtility.LogInfo("Host: {0}, Port: {1}, UseSsl: {2}, DatabaseId: {3}, ApplicationName: {4}",
-                                            configuration.Host, configuration.Port, configuration.UseSsl, configuration.DatabaseId, configuration.ApplicationName);
-            return configuration;
-        }
-
-        private ProviderConfiguration(NameValueCollection config)
+        private SessionStateProviderConfiguration(NameValueCollection config)
         {
             EnableLoggingIfParametersAvailable(config);
             // Get connection host, port and password.
@@ -128,7 +109,7 @@ namespace Microsoft.Web.Redis
                 try
                 {
                     var serializer = Activator.CreateInstance(serializationTypeAssembly, serializationTypeNameSpace);
-                    SessionDataSerializer = (ISessionDataSerializer)serializer.Unwrap();
+                    SessionStateSerializer = (ISessionStateSerializer)serializer.Unwrap();
                 }
                 catch(Exception e)
                 {

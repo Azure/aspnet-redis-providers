@@ -8,7 +8,7 @@ namespace Microsoft.Web.RedisSessionStateProvider
     /// This is the default implementation of the ISessionDataSerializer class.
     /// The implementation uses the serialization and deserialization methods provided by the SessionStateItemCollection class. 
     /// </summary>
-    internal class DefaultSessionStateSerializer : ISessionDataSerializer
+    internal class DefaultSessionStateSerializer : ISessionStateSerializer
     {
         /// <summary>
         /// Deserializes the session state data.

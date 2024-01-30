@@ -23,7 +23,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, "DummyClass");
             config.Add(loggingMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<TypeLoadException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Exception ex = Assert.Throws<TypeLoadException>(() => SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config));
             Assert.Contains("The specified class 'DummyClass' could not be loaded", ex.Message);
         }
 
@@ -34,7 +34,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, "Microsoft.Web.Redis.Tests.ProviderConfigurationTests");
             config.Add(loggingMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config));
             Assert.Contains("DummyMethodName", ex.Message);
         }
 
@@ -45,7 +45,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config));
             Assert.Contains("DummyMethodName", ex.Message);
         }
 
@@ -56,7 +56,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "GetTextWriterInternal");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config));
             Assert.Contains("GetTextWriterInternal", ex.Message);
         }
 
@@ -67,7 +67,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "GetTextWriterWithParam");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config));
             Assert.Contains("GetTextWriterWithParam", ex.Message);
         }
 
@@ -78,7 +78,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "GetTextWriterNonStatic");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config));
             Assert.Contains("GetTextWriterNonStatic", ex.Message);
         }
 
@@ -89,7 +89,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "GetTextWriterWithIntReturn");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.EnableLoggingIfParametersAvailable(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config));
             Assert.Contains("GetTextWriterWithIntReturn", ex.Message);
         }
 
@@ -99,7 +99,7 @@ namespace Microsoft.Web.Redis.Tests
             NameValueCollection config = new NameValueCollection();
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "GetTextWriter");
-            ProviderConfiguration.EnableLoggingIfParametersAvailable(config);
+            SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config);
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace Microsoft.Web.Redis.Tests
             NameValueCollection config = new NameValueCollection();
             config.Add(loggingClassName, typeof(Logger).AssemblyQualifiedName);
             config.Add(loggingMethodName, "GetTextWriterWithStreamWriterReturn");
-            ProviderConfiguration.EnableLoggingIfParametersAvailable(config);
+            SessionStateProviderConfiguration.EnableLoggingIfParametersAvailable(config);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace Microsoft.Web.Redis.Tests
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionString", "RedisSession");
             Assert.Equal(ConfigurationManager.ConnectionStrings["RedisSession"].ConnectionString,
-                ProviderConfiguration.ProviderConfigurationForSessionState(config).ConnectionString);
+                SessionStateProviderConfiguration.ProviderConfigurationForSessionState(config).ConnectionString);
         }
 
         private string settingsClassName = "settingsClassName";
@@ -131,21 +131,21 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, "DummyClass");
             config.Add(settingsMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<ConfigurationErrorsException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<ConfigurationErrorsException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("Either use the combination of parameters \"settingsClassName\" and \"settingsMethodName\" to provide the value of connection string or use the parameter \"connectionString\" but not both.", ex.Message);
 
             NameValueCollection config2 = new NameValueCollection();
             config2.Add("connectionString", "DummyString");
             config2.Add(settingsClassName, "DummyClass");
 
-            Exception ex2 = Assert.Throws<ConfigurationErrorsException>(() => ProviderConfiguration.GetConnectionString(config2));
+            Exception ex2 = Assert.Throws<ConfigurationErrorsException>(() => SessionStateProviderConfiguration.GetConnectionString(config2));
             Assert.Contains("Either use the combination of parameters \"settingsClassName\" and \"settingsMethodName\" to provide the value of connection string or use the parameter \"connectionString\" but not both.", ex2.Message);
             
             NameValueCollection config3 = new NameValueCollection();
             config3.Add("connectionString", "DummyString");
             config3.Add(settingsMethodName, "DummyMethodName");
 
-            Exception ex3 = Assert.Throws<ConfigurationErrorsException>(() => ProviderConfiguration.GetConnectionString(config3));
+            Exception ex3 = Assert.Throws<ConfigurationErrorsException>(() => SessionStateProviderConfiguration.GetConnectionString(config3));
             Assert.Contains("Either use the combination of parameters \"settingsClassName\" and \"settingsMethodName\" to provide the value of connection string or use the parameter \"connectionString\" but not both.", ex3.Message);
         }
 
@@ -156,7 +156,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, "DummyClass");
             config.Add(settingsMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<TypeLoadException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<TypeLoadException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("The specified class 'DummyClass' could not be loaded", ex.Message);
         }
 
@@ -167,7 +167,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, "Microsoft.Web.Redis.Tests.ProviderConfigurationTests");
             config.Add(settingsMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("DummyMethodName", ex.Message);
         }
 
@@ -178,7 +178,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, typeof(SettingsProvider).AssemblyQualifiedName);
             config.Add(settingsMethodName, "DummyMethodName");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("DummyMethodName", ex.Message);
         }
 
@@ -189,7 +189,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, typeof(SettingsProvider).AssemblyQualifiedName);
             config.Add(settingsMethodName, "GetSettingsInternal");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("GetSettingsInternal", ex.Message);
         }
 
@@ -200,7 +200,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, typeof(SettingsProvider).AssemblyQualifiedName);
             config.Add(settingsMethodName, "GetSettingsWithParam");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("GetSettingsWithParam", ex.Message);
         }
 
@@ -211,7 +211,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, typeof(SettingsProvider).AssemblyQualifiedName);
             config.Add(settingsMethodName, "GetSettingsNonStatic");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("GetSettingsNonStatic", ex.Message);
         }
 
@@ -222,7 +222,7 @@ namespace Microsoft.Web.Redis.Tests
             config.Add(settingsClassName, typeof(SettingsProvider).AssemblyQualifiedName);
             config.Add(settingsMethodName, "GetSettingsWithIntReturn");
 
-            Exception ex = Assert.Throws<MissingMethodException>(() => ProviderConfiguration.GetConnectionString(config));
+            Exception ex = Assert.Throws<MissingMethodException>(() => SessionStateProviderConfiguration.GetConnectionString(config));
             Assert.Contains("GetSettingsWithIntReturn", ex.Message);
         }
 
@@ -232,7 +232,7 @@ namespace Microsoft.Web.Redis.Tests
             NameValueCollection config = new NameValueCollection();
             config.Add(settingsClassName, typeof(SettingsProvider).AssemblyQualifiedName);
             config.Add(settingsMethodName, "GetSettings");
-            Assert.Equal("localhost:6380", ProviderConfiguration.GetConnectionString(config));
+            Assert.Equal("localhost:6380", SessionStateProviderConfiguration.GetConnectionString(config));
         }
     }
 

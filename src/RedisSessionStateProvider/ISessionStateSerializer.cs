@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides methods to serialize and deserialize session state data.
 /// </summary>
-public interface ISessionDataSerializer
+public interface ISessionStateSerializer
 {
     /// <summary>
     /// Serializes the session state data.

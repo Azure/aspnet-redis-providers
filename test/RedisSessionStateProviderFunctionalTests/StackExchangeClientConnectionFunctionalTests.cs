@@ -12,7 +12,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             using (RedisServer redisServer = new RedisServer())
             {
                 int databaseId = 7;
-                ProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
+                IProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
                 configuration.DatabaseId = databaseId;
 
                 StackExchangeClientConnection connection = GetStackExchangeClientConnection(configuration);
@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             using (RedisServer redisServer = new RedisServer())
             {
                 int databaseId = 3;
-                ProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
+                IProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
                 configuration.ConnectionString = string.Format("localhost, defaultDatabase={0}", databaseId);
 
                 StackExchangeClientConnection connection = GetStackExchangeClientConnection(configuration);
@@ -42,7 +42,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             using (RedisServer redisServer = new RedisServer())
             {
                 int databaseId = 5;
-                ProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
+                IProviderConfiguration configuration = Utility.GetDefaultConfigUtility();
                 configuration.DatabaseId = databaseId;
                 configuration.ConnectionString = string.Format("localhost");
 
@@ -52,7 +52,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        private StackExchangeClientConnection GetStackExchangeClientConnection(ProviderConfiguration configuration)
+        private StackExchangeClientConnection GetStackExchangeClientConnection(IProviderConfiguration configuration)
         {
             var sharedConnection = new RedisSharedConnection(configuration);
             return new StackExchangeClientConnection(configuration, sharedConnection);

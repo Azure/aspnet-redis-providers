@@ -12,7 +12,7 @@ namespace Microsoft.Web.Redis.Tests
         public void Serialize_ValidData_ReturnsByteArray()
         {
             // Arrange
-            ISessionDataSerializer serializer = A.Fake<ISessionDataSerializer>();
+            ISessionStateSerializer serializer = A.Fake<ISessionStateSerializer>();
             A.CallTo(() => serializer.Serialize(A<SessionStateItemCollection>.That.IsNotNull())).Returns(new byte[1]);
             var sessionData = new SessionStateItemCollection();
             // Add session state items to the collection
@@ -31,7 +31,7 @@ namespace Microsoft.Web.Redis.Tests
         public void Deserialize_ValidData_ReturnsSessionStateItemCollection()
         {
             // Arrange
-            ISessionDataSerializer serializer = A.Fake<ISessionDataSerializer>();
+            ISessionStateSerializer serializer = A.Fake<ISessionStateSerializer>();
             A.CallTo(() => serializer.Deserialize(A<byte[]>.Ignored)).Returns(new SessionStateItemCollection());
             byte[] serializedData = new byte[] { /* Serialized session state data */ };
 

@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
+using StackExchange.Redis;
 using System;
 using System.IO;
 using System.Web.Caching;
@@ -15,9 +16,9 @@ namespace Microsoft.Web.Redis
         private static object lockForSharedConnection = new object();
 
         internal IRedisClientConnection redisConnection;
-        private ProviderConfiguration configuration;
+        private OutputCacheProviderConfiguration configuration;
 
-        public RedisOutputCacheConnectionWrapper(ProviderConfiguration configuration)
+        public RedisOutputCacheConnectionWrapper(OutputCacheProviderConfiguration configuration)
         {
             this.configuration = configuration;
 
@@ -118,6 +119,12 @@ namespace Microsoft.Web.Redis
                 LogUtility.LogWarning("The output cache entry is not one of the specified output-cache types.");
                 return null;
             }
+        }
+
+        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis)
+        {
+            RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
+            return (byte[])rowDataAsRedisResult;
         }
     }
 }

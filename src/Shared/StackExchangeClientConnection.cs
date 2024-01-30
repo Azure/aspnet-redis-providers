@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Web.SessionState;
 using StackExchange.Redis;
 
@@ -13,10 +12,10 @@ namespace Microsoft.Web.Redis
 {
     internal class StackExchangeClientConnection : IRedisClientConnection
     {
-        private ProviderConfiguration _configuration;
+        private IProviderConfiguration _configuration;
         private RedisSharedConnection _sharedConnection;
 
-        public StackExchangeClientConnection(ProviderConfiguration configuration, RedisSharedConnection sharedConnection)
+        public StackExchangeClientConnection(IProviderConfiguration configuration, RedisSharedConnection sharedConnection)
         {
             _configuration = configuration;
             _sharedConnection = sharedConnection;
@@ -164,40 +163,6 @@ namespace Microsoft.Web.Redis
             return (string)lockScriptReturnValueArray[0];
         }
 
-        public ISessionStateItemCollection GetSessionData(object rowDataFromRedis)
-        {
-            RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
-            RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;
-            Debug.Assert(lockScriptReturnValueArray != null);
-
-            SessionStateItemCollection sessionData = null;
-            if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
-            {
-                RedisResult data = lockScriptReturnValueArray[1];
-                var serializedSessionStateItemCollection = data;
-
-                if (serializedSessionStateItemCollection != null)
-                {
-                    sessionData = DeserializeSessionStateItemCollection(serializedSessionStateItemCollection);
-                }
-            }
-            return sessionData;
-        }
-
-        internal SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
-        {
-            try
-            {
-                var bytes = (byte[])serializedSessionStateItemCollection;
-                return _configuration.SessionDataSerializer.Deserialize(bytes);
-               
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         public void Set(string key, byte[] data, DateTime utcExpiry)
         {
             RedisKey redisKey = key;
@@ -217,12 +182,6 @@ namespace Microsoft.Web.Redis
         {
             RedisKey redisKey = key;
             OperationExecutor(() => RealConnection.KeyDelete(redisKey));
-        }
-
-        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis)
-        {
-            RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
-            return (byte[])rowDataAsRedisResult;
         }
     }
 }

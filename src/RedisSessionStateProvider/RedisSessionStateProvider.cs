@@ -22,9 +22,9 @@ namespace Microsoft.Web.Redis
         internal object sessionLockId;
         private const int FROM_MIN_TO_SEC = 60;
 
-        internal static ProviderConfiguration configuration;
+        internal static SessionStateProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
-        internal ICacheConnection cache;
+        internal ISessionStateConnection cache;
 
         private static object _lastException = new object();
 
@@ -57,7 +57,7 @@ namespace Microsoft.Web.Redis
         {
             if (cache == null)
             {
-                cache = new RedisConnectionWrapper(configuration, id);
+                cache = new RedisSessionStateConnectionWrapper(configuration, id);
             }
             else
             {
@@ -92,7 +92,7 @@ namespace Microsoft.Web.Redis
                 {
                     if (configuration == null)
                     {
-                        configuration = ProviderConfiguration.ProviderConfigurationForSessionState(config);
+                        configuration = SessionStateProviderConfiguration.ProviderConfigurationForSessionState(config);
                     }
                 }
             }

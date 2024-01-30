@@ -12,7 +12,7 @@ namespace Microsoft.Web.Redis
 {
     internal class RedisSharedConnection
     {
-        private ProviderConfiguration _configuration;
+        private IProviderConfiguration _configuration;
         private ConfigurationOptions _configOption;
         private Lazy<ConnectionMultiplexer> _redisMultiplexer;
 
@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis
         internal RedisSharedConnection()
         { }
 
-        public RedisSharedConnection(ProviderConfiguration configuration)
+        public RedisSharedConnection(IProviderConfiguration configuration)
         {
             _configuration = configuration;
             _configOption = new ConfigurationOptions();

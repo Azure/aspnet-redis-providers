@@ -16,37 +16,37 @@ namespace Microsoft.Web.Redis.FunctionalTests
     {
         private static int uniqueSessionNumber = 1;
 
-        private RedisConnectionWrapper GetRedisConnectionWrapperWithUniqueSession()
+        private RedisSessionStateConnectionWrapper GetRedisConnectionWrapperWithUniqueSession()
         {
             return GetRedisConnectionWrapperWithUniqueSession(Utility.GetDefaultConfigUtility());
         }
 
-        private RedisConnectionWrapper GetRedisConnectionWrapperWithUniqueSession(ProviderConfiguration pc)
+        private RedisSessionStateConnectionWrapper GetRedisConnectionWrapperWithUniqueSession(SessionStateProviderConfiguration pc)
         {
             string id = Guid.NewGuid().ToString();
             uniqueSessionNumber++;
             // Initial connection with redis
-            RedisConnectionWrapper.sharedConnection = null;
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(pc, id);
+            RedisSessionStateConnectionWrapper.sharedConnection = null;
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(pc, id);
             return redisConn;
         }
 
-        private void DisposeRedisConnectionWrapper(RedisConnectionWrapper redisConn)
+        private void DisposeRedisConnectionWrapper(RedisSessionStateConnectionWrapper redisConn)
         {
-            RedisConnectionWrapper.sharedConnection = null;
+            RedisSessionStateConnectionWrapper.sharedConnection = null;
         }
 
         [Fact()]
         public void Set_ValidData_WithCustomSerializer()
         {
             // this also tests host:port config part
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             pc.ApplicationName = "APPTEST";
             pc.Port = 6379;
 
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -76,13 +76,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         public void Set_ValidData()
         {
             // this also tests host:port config part
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             pc.ApplicationName = "APPTEST";
             pc.Port = 6379;
 
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -112,13 +112,13 @@ namespace Microsoft.Web.Redis.FunctionalTests
         public void Set_NullData()
         {
             // this also tests host:port config part
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             pc.ApplicationName = "APPTEST";
             pc.Port = 6379;
 
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession(pc);
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -147,10 +147,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void Set_ExpireData()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
                 // Inserting data into redis server that expires after 1 second
                 SessionStateItemCollection data = new SessionStateItemCollection();
                 data["key"] = "value";
@@ -172,10 +172,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryTakeWriteLockAndGetData_WithNullData()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -207,10 +207,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryTakeWriteLockAndGetData_WriteLockWithoutAnyOtherLock()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -246,10 +246,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryTakeWriteLockAndGetData_WriteLockWithOtherWriteLock()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -287,10 +287,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryTakeWriteLockAndGetData_WriteLockWithOtherWriteLockWithSameLockId()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -328,10 +328,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryTakeReadLockAndGetData_WithoutAnyLock()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -357,10 +357,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryTakeReadLockAndGetData_WithOtherWriteLock()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -395,10 +395,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryTakeWriteLockAndGetData_ExpireWriteLock()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -432,10 +432,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryReleaseLockIfLockIdMatch_ValidWriteLockRelease()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -468,10 +468,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryReleaseLockIfLockIdMatch_InvalidWriteLockRelease()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -506,10 +506,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryRemoveIfLockIdMatch_ValidLockIdAndRemove()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -540,10 +540,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryUpdateIfLockIdMatch_WithValidUpdateAndDelete()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -589,10 +589,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryUpdateIfLockIdMatch_WithOnlyUpdateAndNoDelete()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -638,10 +638,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryUpdateIfLockIdMatch_WithNoUpdateAndOnlyDelete()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -686,10 +686,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryUpdateIfLockIdMatch_ExpiryTime_OnValidData()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -725,10 +725,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryUpdateAndReleaseLockIfLockIdMatch_LargeLockTime_ExpireManuallyTest()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -754,10 +754,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryRemoveIfLockIdMatch_NullLockId()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -786,10 +786,10 @@ namespace Microsoft.Web.Redis.FunctionalTests
         [Fact()]
         public void TryUpdateIfLockIdMatch_LockIdNull()
         {
-            ProviderConfiguration pc = Utility.GetDefaultConfigUtility();
+            SessionStateProviderConfiguration pc = Utility.GetDefaultConfigUtility();
             using (RedisServer redisServer = new RedisServer())
             {
-                RedisConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
+                RedisSessionStateConnectionWrapper redisConn = GetRedisConnectionWrapperWithUniqueSession();
 
                 // Inserting data into redis server
                 SessionStateItemCollection data = new SessionStateItemCollection();
@@ -825,7 +825,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
             }
         }
 
-        private IDatabase GetRealRedisConnection(RedisConnectionWrapper redisConn)
+        private IDatabase GetRealRedisConnection(RedisSessionStateConnectionWrapper redisConn)
         {
             return (IDatabase)((StackExchangeClientConnection)redisConn.redisConnection).RealConnection;
         }
