@@ -92,7 +92,7 @@ namespace Microsoft.Web.Redis
                 {
                     if (configuration == null)
                     {
-                        configuration = SessionStateProviderConfiguration.ProviderConfigurationForSessionState(config);
+                        configuration = new SessionStateProviderConfiguration(config);
                     }
                 }
             }

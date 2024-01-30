@@ -42,7 +42,7 @@ namespace Microsoft.Web.Redis
                 {
                     if (configuration == null)
                     {
-                        configuration = OutputCacheProviderConfiguration.ProviderConfigurationForOutputCache(config);
+                        configuration = new OutputCacheProviderConfiguration(config);
                     }
                 }
             }

@@ -22,7 +22,7 @@ namespace Microsoft.Web.Redis.Tests
 
         internal static SessionStateProviderConfiguration GetDefaultConfigUtility()
         {
-            SessionStateProviderConfiguration configuration = new SessionStateProviderConfiguration();
+            SessionStateProviderConfiguration configuration = new SessionStateProviderConfiguration(new System.Collections.Specialized.NameValueCollection());
             configuration.SessionTimeout = new TimeSpan(0, 15, 0); //15 min
             configuration.RequestTimeout = new TimeSpan(0, 1, 30); //1.5 min
             configuration.Host = "127.0.0.1";
