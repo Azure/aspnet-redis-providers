@@ -3,14 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Web.SessionState;
 
 namespace Microsoft.Web.Redis
 {
-    internal class RedisConnectionWrapper : ICacheConnection
+    internal class RedisSessionStateConnectionWrapper : ISessionStateConnection
     {
         internal static RedisSharedConnection sharedConnection;
         private static object lockForSharedConnection = new object();
@@ -18,9 +19,9 @@ namespace Microsoft.Web.Redis
         public KeyGenerator Keys { set; get; }
 
         internal IRedisClientConnection redisConnection;
-        private ProviderConfiguration configuration;
+        private SessionStateProviderConfiguration configuration;
 
-        public RedisConnectionWrapper(ProviderConfiguration configuration, string id)
+        public RedisSessionStateConnectionWrapper(SessionStateProviderConfiguration configuration, string id)
         {
             this.configuration = configuration;
             Keys = new KeyGenerator(id, configuration.ApplicationName);
@@ -127,11 +128,8 @@ namespace Microsoft.Web.Redis
             {
                 return null;
             }
-            MemoryStream ms = new MemoryStream();
-            BinaryWriter writer = new BinaryWriter(ms);
-            ((SessionStateItemCollection)sessionStateItemCollection).Serialize(writer);
-            writer.Close();
-            return ms.ToArray();
+
+            return configuration.SessionStateSerializer.Serialize((SessionStateItemCollection)sessionStateItemCollection);
         }
 
         public void Set(ISessionStateItemCollection data, int sessionTimeout)
@@ -149,10 +147,10 @@ namespace Microsoft.Web.Redis
         /*-------Start of Lock set operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // KEYS = { write-lock-id, data-id, internal-id }
-        // ARGV = { write-lock-value-that-we-want-to-set, request-timout }
+        // ARGV = { write-lock-value-that-we-want-to-set, request-timeout }
         // lockValue = 1) (Initially) write lock value that we want to set (ARGV[1]) if we get lock successfully this will return as retArray[1]
         //             2) If another write lock exists than its lock value from cache
-        // retArray = {lockValue , session data if lock was taken successfully, session timeout value if exists, wheather lock was taken or not}
+        // retArray = {lockValue , session data if lock was taken successfully, session timeout value if exists, whether lock was taken or not}
         private static readonly string writeLockAndGetDataScript = (@"
                 local retArray = {}
                 local lockValue = ARGV[1]
@@ -199,7 +197,7 @@ namespace Microsoft.Web.Redis
             if (!isLocked && lockId.ToString().Equals(expectedLockId))
             {
                 ret = true;
-                data = redisConnection.GetSessionData(rowDataFromRedis);
+                data = GetSessionData(rowDataFromRedis);
             }
             return ret;
         }
@@ -247,7 +245,7 @@ namespace Microsoft.Web.Redis
                 // If lockId = "" means no lock exists and we got data from store.
                 lockId = null;
                 ret = true;
-                data = redisConnection.GetSessionData(rowDataFromRedis);
+                data = GetSessionData(rowDataFromRedis);
             }
             return ret;
         }
@@ -371,5 +369,44 @@ namespace Microsoft.Web.Redis
         }
 
         /*-------End of TryUpdateIfLockIdMatch operation-----------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        internal SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
+        {
+            try
+            {
+                var bytes = (byte[])serializedSessionStateItemCollection;
+                if (bytes is null)
+                {
+                    return null;
+                }
+                return configuration.SessionStateSerializer.Deserialize(bytes);
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public virtual ISessionStateItemCollection GetSessionData(object rowDataFromRedis)
+        {
+
+            RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
+            RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;
+            Debug.Assert(lockScriptReturnValueArray != null);
+
+            SessionStateItemCollection sessionData = null;
+            if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
+            {
+                RedisResult data = lockScriptReturnValueArray[1];
+                var serializedSessionStateItemCollection = data;
+
+                if (serializedSessionStateItemCollection != null)
+                {
+                    sessionData = DeserializeSessionStateItemCollection(serializedSessionStateItemCollection);
+                }
+            }
+            return sessionData;
+        }
     }
 }

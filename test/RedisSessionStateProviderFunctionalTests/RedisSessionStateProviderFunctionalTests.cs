@@ -17,14 +17,14 @@ namespace Microsoft.Web.Redis.FunctionalTests
     {
         private string ResetRedisConnectionWrapperAndConfiguration()
         {
-            RedisConnectionWrapper.sharedConnection = null;
+            RedisSessionStateConnectionWrapper.sharedConnection = null;
             RedisSessionStateProvider.configuration = Utility.GetDefaultConfigUtility();
             return Guid.NewGuid().ToString();
         }
 
         private void DisposeRedisConnectionWrapper()
         {
-            RedisConnectionWrapper.sharedConnection = null;
+            RedisSessionStateConnectionWrapper.sharedConnection = null;
         }
 
         [Fact()]
@@ -162,7 +162,7 @@ namespace Microsoft.Web.Redis.FunctionalTests
 
         private IDatabase GetRealRedisConnection()
         {
-            return RedisConnectionWrapper.sharedConnection.Connection;
+            return RedisSessionStateConnectionWrapper.sharedConnection.Connection;
         }
 
         [Fact(Skip = "Only used to evaluate performance")]

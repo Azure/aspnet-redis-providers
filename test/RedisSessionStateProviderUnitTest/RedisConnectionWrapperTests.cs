@@ -20,8 +20,8 @@ namespace Microsoft.Web.Redis.Tests
         public void UpdateExpiryTime_Valid()
         {
             string sessionId = "session_id";
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), sessionId);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), sessionId);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             redisConn.UpdateExpiryTime(90);
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 2),
@@ -31,8 +31,8 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void GetLockAge_ValidTicks()
         {
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), "");
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), "");
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             var ticks = DateTime.Now.Ticks;
             Thread.Sleep(1000);
@@ -42,8 +42,8 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void GetLockAge_InValidTicks()
         {
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), "");
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), "");
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             Assert.NotEqual(0, redisConn.GetLockAge("Invalid-tics").TotalHours);
         }
@@ -52,8 +52,8 @@ namespace Microsoft.Web.Redis.Tests
         public void Set_ValidData()
         {
             string sessionId = "session_id";
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), sessionId);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), sessionId);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             SessionStateItemCollection data = new SessionStateItemCollection();
             data["key"] = "value";
@@ -65,7 +65,6 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void TryTakeWriteLockAndGetData_UnableToLock()
         {
-            string id = "session_id";
             DateTime lockTime = DateTime.Now;
             int lockTimeout = 90;
             object lockId;
@@ -73,8 +72,8 @@ namespace Microsoft.Web.Redis.Tests
 
             object[] returnFromRedis = { "Diff-lock-id", "", "15", true };
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = A.Fake<RedisSessionStateConnectionWrapper>();
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
@@ -92,14 +91,13 @@ namespace Microsoft.Web.Redis.Tests
                 A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetLockId(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.IsLocked(A<object>.Ignored)).MustHaveHappened();
-            A.CallTo(() => redisConn.redisConnection.GetSessionData(A<object>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => redisConn.GetSessionData(A<object>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).MustHaveHappened();
         }
 
         [Fact]
         public void TryTakeWriteLockAndGetData_UnableToLockWithSameLockId()
         {
-            string id = "session_id";
             DateTime lockTime = DateTime.Now;
             int lockTimeout = 90;
             object lockId;
@@ -107,8 +105,8 @@ namespace Microsoft.Web.Redis.Tests
 
             object[] returnFromRedis = { lockTime.Ticks.ToString(), "", "15", true };
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = A.Fake<RedisSessionStateConnectionWrapper>();
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
@@ -126,21 +124,20 @@ namespace Microsoft.Web.Redis.Tests
                 A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetLockId(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.IsLocked(A<object>.Ignored)).MustHaveHappened();
-            A.CallTo(() => redisConn.redisConnection.GetSessionData(A<object>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => redisConn.GetSessionData(A<object>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).MustHaveHappened();
         }
 
         [Fact]
         public void TryTakeWriteLockAndGetData_Valid()
         {
-            string id = "session_id";
             DateTime lockTime = DateTime.Now;
             int lockTimeout = 90;
             object lockId;
             ISessionStateItemCollection data;
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = A.Fake<RedisSessionStateConnectionWrapper>();
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
             SessionStateItemCollection sessionDataReturn = new SessionStateItemCollection();
@@ -160,7 +157,7 @@ namespace Microsoft.Web.Redis.Tests
                  A<object[]>.That.Matches(o => o.Length == 2))).Returns(returnFromRedis);
             A.CallTo(() => redisConn.redisConnection.GetLockId(A<object>.Ignored)).Returns(lockTime.Ticks.ToString());
             A.CallTo(() => redisConn.redisConnection.IsLocked(A<object>.Ignored)).Returns(false);
-            A.CallTo(() => redisConn.redisConnection.GetSessionData(A<object>.Ignored)).Returns(sessionDataReturn);
+            A.CallTo(() => redisConn.GetSessionData(A<object>.Ignored)).Returns(sessionDataReturn);
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).Returns(15);
 
             int sessionTimeout;
@@ -172,19 +169,18 @@ namespace Microsoft.Web.Redis.Tests
                 A<object[]>.That.Matches(o => o.Length == 2))).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetLockId(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.IsLocked(A<object>.Ignored)).MustHaveHappened();
-            A.CallTo(() => redisConn.redisConnection.GetSessionData(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => redisConn.GetSessionData(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).MustHaveHappened();
         }
 
         [Fact]
         public void TryCheckWriteLockAndGetData_Valid()
         {
-            string id = "session_id";
             object lockId;
             ISessionStateItemCollection data;
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = A.Fake<RedisSessionStateConnectionWrapper>();
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
             SessionStateItemCollection sessionDataReturn = new SessionStateItemCollection();
@@ -203,7 +199,7 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                  A<object[]>.That.Matches(o => o.Length == 0))).Returns(returnFromRedis);
             A.CallTo(() => redisConn.redisConnection.GetLockId(A<object>.Ignored)).Returns("");
-            A.CallTo(() => redisConn.redisConnection.GetSessionData(A<object>.Ignored)).Returns(sessionDataReturn);
+            A.CallTo(() => redisConn.GetSessionData(A<object>.Ignored)).Returns(sessionDataReturn);
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).Returns(15);
 
             int sessionTimeout;
@@ -214,7 +210,7 @@ namespace Microsoft.Web.Redis.Tests
             A.CallTo(() => redisConn.redisConnection.Eval(A<string>.Ignored, A<string[]>.That.Matches(s => s.Length == 3),
                 A<object[]>.That.Matches(o => o.Length == 0))).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetLockId(A<object>.Ignored)).MustHaveHappened();
-            A.CallTo(() => redisConn.redisConnection.GetSessionData(A<object>.Ignored)).MustHaveHappened();
+            A.CallTo(() => redisConn.GetSessionData(A<object>.Ignored)).MustHaveHappened();
             A.CallTo(() => redisConn.redisConnection.GetSessionTimeout(A<object>.Ignored)).MustHaveHappened();
         }
 
@@ -224,8 +220,8 @@ namespace Microsoft.Web.Redis.Tests
             string id = "session_id";
             object lockId = DateTime.Now.Ticks;
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
             redisConn.TryReleaseLockIfLockIdMatch(lockId, 900);
@@ -239,8 +235,8 @@ namespace Microsoft.Web.Redis.Tests
             string id = "session_id";
             object lockId = DateTime.Now.Ticks;
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
 
             redisConn.TryRemoveAndReleaseLock(lockId);
@@ -257,8 +253,8 @@ namespace Microsoft.Web.Redis.Tests
             SessionStateItemCollection data = new SessionStateItemCollection();
             data["Key"] = new {Name = "Hal"}; // try to add anon type, this will throw a serialization error when you try to commit it as the type is not marked as serializable.
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             var exception = Assert.Throws<HttpException>(() =>redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout));
             Assert.Contains("Unable to serialize the session state.", exception.Message);
@@ -272,8 +268,8 @@ namespace Microsoft.Web.Redis.Tests
             object lockId = DateTime.Now.Ticks;
             SessionStateItemCollection data = new SessionStateItemCollection();
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout);
 
@@ -299,8 +295,8 @@ namespace Microsoft.Web.Redis.Tests
             data["Key"] = "value";
             data.Remove("KeyDel");
 
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             redisConn.redisConnection = A.Fake<IRedisClientConnection>();
             redisConn.TryUpdateAndReleaseLock(lockId, data, sessionTimeout);
 
@@ -319,8 +315,8 @@ namespace Microsoft.Web.Redis.Tests
         public void SerializationReturnsNull_IfValueIsNull()
         {
             string id = "session_id";
-            RedisConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
-            RedisConnectionWrapper redisConn = new RedisConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
             var result = redisConn.SerializeSessionStateItemCollection(null);
             Assert.Null(result);
         }
@@ -328,8 +324,10 @@ namespace Microsoft.Web.Redis.Tests
         [Fact]
         public void DeserializationReturnsNull_IfValueIsNull()
         {
-            StackExchangeClientConnection conn = A.Fake<StackExchangeClientConnection>();
-            var result = conn.DeserializeSessionStateItemCollection(null);
+            string id = "session_id";
+            RedisSessionStateConnectionWrapper.sharedConnection = A.Fake<RedisSharedConnection>();
+            RedisSessionStateConnectionWrapper redisConn = new RedisSessionStateConnectionWrapper(Utility.GetDefaultConfigUtility(), id);
+            var result = redisConn.DeserializeSessionStateItemCollection(null);
             Assert.Null(result);
         }
     }

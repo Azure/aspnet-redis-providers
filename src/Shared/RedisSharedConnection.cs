@@ -12,7 +12,7 @@ namespace Microsoft.Web.Redis
 {
     internal class RedisSharedConnection
     {
-        private ProviderConfiguration _configuration;
+        private IProviderConfiguration _configuration;
         private ConfigurationOptions _configOption;
         private Lazy<ConnectionMultiplexer> _redisMultiplexer;
 
@@ -27,7 +27,7 @@ namespace Microsoft.Web.Redis
         internal RedisSharedConnection()
         { }
 
-        public RedisSharedConnection(ProviderConfiguration configuration)
+        public RedisSharedConnection(IProviderConfiguration configuration)
         {
             _configuration = configuration;
             _configOption = new ConfigurationOptions();
@@ -87,7 +87,7 @@ namespace Microsoft.Web.Redis
             var previousReconnect = lastReconnectTime;
             var elapsedSinceLastReconnect = DateTimeOffset.UtcNow - previousReconnect;
 
-            // If mulitple threads call ForceReconnect at the same time, we only want to honor one of them. 
+            // If multiple threads call ForceReconnect at the same time, we only want to honor one of them. 
             if (elapsedSinceLastReconnect > ReconnectFrequency)
             {
                 lock (reconnectLock)

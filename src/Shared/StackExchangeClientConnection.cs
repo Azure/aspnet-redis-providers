@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Web.SessionState;
 using StackExchange.Redis;
 
@@ -13,10 +12,10 @@ namespace Microsoft.Web.Redis
 {
     internal class StackExchangeClientConnection : IRedisClientConnection
     {
-        private ProviderConfiguration _configuration;
+        private IProviderConfiguration _configuration;
         private RedisSharedConnection _sharedConnection;
 
-        public StackExchangeClientConnection(ProviderConfiguration configuration, RedisSharedConnection sharedConnection)
+        public StackExchangeClientConnection(IProviderConfiguration configuration, RedisSharedConnection sharedConnection)
         {
             _configuration = configuration;
             _sharedConnection = sharedConnection;
@@ -94,11 +93,11 @@ namespace Microsoft.Web.Redis
         }
 
         /// <summary>
-        /// If retry timout is provide than we will retry first time after 20 ms and after that every 1 sec till retry timout is expired or we get value.
+        /// If retry timeout is provide than we will retry first time after 20 ms and after that every 1 sec till retry timeout is expired or we get value.
         /// </summary>
         private object RetryLogic(Func<object> redisOperation)
         {
-            int timeToSleepBeforeRetryInMiliseconds = 20;
+            int timeToSleepBeforeRetryInMilliseconds = 20;
             DateTime startTime = DateTime.Now;
             while (true)
             {
@@ -118,15 +117,15 @@ namespace Microsoft.Web.Redis
                     {
                         int remainingTimeout = (int)(_configuration.RetryTimeout.TotalMilliseconds - passedTime.TotalMilliseconds);
                         // if remaining time is less than 1 sec than wait only for that much time and than give a last try
-                        if (remainingTimeout < timeToSleepBeforeRetryInMiliseconds)
+                        if (remainingTimeout < timeToSleepBeforeRetryInMilliseconds)
                         {
-                            timeToSleepBeforeRetryInMiliseconds = remainingTimeout;
+                            timeToSleepBeforeRetryInMilliseconds = remainingTimeout;
                         }
                     }
 
                     // First time try after 20 msec after that try after 1 second
-                    System.Threading.Thread.Sleep(timeToSleepBeforeRetryInMiliseconds);
-                    timeToSleepBeforeRetryInMiliseconds = 1000;
+                    System.Threading.Thread.Sleep(timeToSleepBeforeRetryInMilliseconds);
+                    timeToSleepBeforeRetryInMilliseconds = 1000;
                 }
             }
         }
@@ -164,40 +163,6 @@ namespace Microsoft.Web.Redis
             return (string)lockScriptReturnValueArray[0];
         }
 
-        public ISessionStateItemCollection GetSessionData(object rowDataFromRedis)
-        {
-            RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
-            RedisResult[] lockScriptReturnValueArray = (RedisResult[])rowDataAsRedisResult;
-            Debug.Assert(lockScriptReturnValueArray != null);
-
-            SessionStateItemCollection sessionData = null;
-            if (lockScriptReturnValueArray.Length > 1 && lockScriptReturnValueArray[1] != null)
-            {
-                RedisResult data = lockScriptReturnValueArray[1];
-                var serializedSessionStateItemCollection = data;
-
-                if (serializedSessionStateItemCollection != null)
-                {
-                    sessionData = DeserializeSessionStateItemCollection(serializedSessionStateItemCollection);
-                }
-            }
-            return sessionData;
-        }
-
-        internal SessionStateItemCollection DeserializeSessionStateItemCollection(RedisResult serializedSessionStateItemCollection)
-        {
-            try
-            {
-                MemoryStream ms = new MemoryStream((byte[])serializedSessionStateItemCollection);
-                BinaryReader reader = new BinaryReader(ms);
-                return SessionStateItemCollection.Deserialize(reader);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         public void Set(string key, byte[] data, DateTime utcExpiry)
         {
             RedisKey redisKey = key;
@@ -217,12 +182,6 @@ namespace Microsoft.Web.Redis
         {
             RedisKey redisKey = key;
             OperationExecutor(() => RealConnection.KeyDelete(redisKey));
-        }
-
-        public byte[] GetOutputCacheDataFromResult(object rowDataFromRedis)
-        {
-            RedisResult rowDataAsRedisResult = (RedisResult)rowDataFromRedis;
-            return (byte[])rowDataAsRedisResult;
         }
     }
 }

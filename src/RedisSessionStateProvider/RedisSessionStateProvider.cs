@@ -22,14 +22,14 @@ namespace Microsoft.Web.Redis
         internal object sessionLockId;
         private const int FROM_MIN_TO_SEC = 60;
 
-        internal static ProviderConfiguration configuration;
+        internal static SessionStateProviderConfiguration configuration;
         internal static object configurationCreationLock = new object();
-        internal ICacheConnection cache;
+        internal ISessionStateConnection cache;
 
         private static object _lastException = new object();
 
         /// <summary>
-        /// We do not want to throw exception from session state provider because this will break customer application and they can't get chance to handel it.
+        /// We do not want to throw exception from session state provider because this will break customer application and they can't get chance to handle it.
         /// So if exception occurs because of some problem we store it in HttpContext using a key that we know and return null to customer. Now, when customer
         /// get null from any of session operation they should call this method to identify if there was any exception and because of that got null.
         /// </summary>
@@ -57,7 +57,7 @@ namespace Microsoft.Web.Redis
         {
             if (cache == null)
             {
-                cache = new RedisConnectionWrapper(configuration, id);
+                cache = new RedisSessionStateConnectionWrapper(configuration, id);
             }
             else
             {
@@ -92,7 +92,7 @@ namespace Microsoft.Web.Redis
                 {
                     if (configuration == null)
                     {
-                        configuration = ProviderConfiguration.ProviderConfigurationForSessionState(config);
+                        configuration = new SessionStateProviderConfiguration(config);
                     }
                 }
             }
@@ -166,7 +166,7 @@ namespace Microsoft.Web.Redis
                 ISessionStateItemCollection sessionData = new SessionStateItemCollection();
                 sessionData["SessionStateActions"] = SessionStateActions.InitializeItem;
                 GetAccessToStore(id);
-                // Converting timout from min to sec
+                // Converting timeout from min to sec
                 cache.Set(sessionData, (timeout * FROM_MIN_TO_SEC));
             }
             catch (Exception e)
@@ -257,7 +257,7 @@ namespace Microsoft.Web.Redis
 
                 if (sessionData == null)
                 {
-                    // If session data do not exists means it might be exipred and removed. So return null so that asp.net can call CreateUninitializedItem and start again.
+                    // If session data do not exists means it might be expired and removed. So return null so that asp.net can call CreateUninitializedItem and start again.
                     // But we just locked the record so first release it
                     ReleaseItemExclusiveAsync(context, id, lockId, cancellationToken).Wait();
                     return null;
@@ -394,7 +394,7 @@ namespace Microsoft.Web.Redis
                         sessionItems.Remove("SessionStateActions");
                     }
 
-                    // Converting timout from min to sec
+                    // Converting timeout from min to sec
                     cache.Set(sessionItems, (item.Timeout * FROM_MIN_TO_SEC));
                     LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => created new item in session.", id, this.GetHashCode());
                 } // If update if lock matches
@@ -406,7 +406,7 @@ namespace Microsoft.Web.Redis
                         {
                             item.Items.Remove("SessionStateActions");
                         }
-                        // Converting timout from min to sec
+                        // Converting timeout from min to sec
                         cache.TryUpdateAndReleaseLock(lockId, item.Items, (item.Timeout * FROM_MIN_TO_SEC));
                         LogUtility.LogInfo("SetAndReleaseItemExclusive => Session Id: {0}, Session provider object: {1} => updated item in session, Lock ID: {2}.", id, this.GetHashCode(), lockId);
                     }

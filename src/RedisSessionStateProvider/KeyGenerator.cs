@@ -3,8 +3,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 //
 
-using System;
-
 namespace Microsoft.Web.Redis
 {
     internal class KeyGenerator

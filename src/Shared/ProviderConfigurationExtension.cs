@@ -1,128 +1,64 @@
-﻿//
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-//
-
 using System;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Reflection;
-using System.Web.Configuration;
 using System.Web.Hosting;
 
 namespace Microsoft.Web.Redis
 {
-    internal class ProviderConfiguration
+
+    internal class ProviderConfigurationExtension
     {
-        public TimeSpan RequestTimeout { get; set; }
-        public TimeSpan SessionTimeout { get; set; }
-        public int Port { get; set; }
-        public string Host { get; set; }
-        public string AccessKey { get; set; }
-        public TimeSpan RetryTimeout { get; set; }
-        public bool ThrowOnError { get; set; }
-        public bool UseSsl { get; set; }
-        public int DatabaseId { get; set; }
-        public string ApplicationName { get; set; }
-        public int ConnectionTimeoutInMilliSec { get; set; }
-        public int OperationTimeoutInMilliSec { get; set; }
-        public string ConnectionString { get; set; }
-
-        /* Empty constructor required for testing */
-
-        internal ProviderConfiguration()
-        { }
-
-        internal static ProviderConfiguration ProviderConfigurationForSessionState(NameValueCollection config)
-        {
-            ProviderConfiguration configuration = new ProviderConfiguration(config)
-            {
-                ThrowOnError = GetBoolSettings(config, "throwOnError", true)
-            };
-            int retryTimeoutInMilliSec = GetIntSettings(config, "retryTimeoutInMilliseconds", 5000);
-            configuration.RetryTimeout = new TimeSpan(0, 0, 0, 0, retryTimeoutInMilliSec);
-
-            // Get request timeout from config
-            HttpRuntimeSection httpRuntimeSection = ConfigurationManager.GetSection("system.web/httpRuntime") as HttpRuntimeSection;
-            configuration.RequestTimeout = httpRuntimeSection.ExecutionTimeout;
-
-            // Get session timeout from config
-            SessionStateSection sessionStateSection = (SessionStateSection)WebConfigurationManager.GetSection("system.web/sessionState");
-            configuration.SessionTimeout = sessionStateSection.Timeout;
-
-            LogUtility.LogInfo("Host: {0}, Port: {1}, ThrowOnError: {2}, UseSsl: {3}, RetryTimeout: {4}, DatabaseId: {5}, ApplicationName: {6}, RequestTimeout: {7}, SessionTimeout: {8}",
-                                            configuration.Host, configuration.Port, configuration.ThrowOnError, configuration.UseSsl, configuration.RetryTimeout, configuration.DatabaseId, configuration.ApplicationName, configuration.RequestTimeout, configuration.SessionTimeout);
-            return configuration;
-        }
-
-        internal static ProviderConfiguration ProviderConfigurationForOutputCache(NameValueCollection config)
-        {
-            ProviderConfiguration configuration = new ProviderConfiguration(config)
-            {
-                // No retry login for output cache provider
-                RetryTimeout = TimeSpan.Zero,
-
-                // Session state specific attribute which are not applicable to output cache
-                ThrowOnError = true,
-                RequestTimeout = TimeSpan.Zero,
-                SessionTimeout = TimeSpan.Zero
-            };
-
-            LogUtility.LogInfo("Host: {0}, Port: {1}, UseSsl: {2}, DatabaseId: {3}, ApplicationName: {4}",
-                                            configuration.Host, configuration.Port, configuration.UseSsl, configuration.DatabaseId, configuration.ApplicationName);
-            return configuration;
-        }
-
-        private ProviderConfiguration(NameValueCollection config)
+        internal static void GetIProviderConfiguration(NameValueCollection config, IProviderConfiguration providerConfiguration)
         {
             EnableLoggingIfParametersAvailable(config);
             // Get connection host, port and password.
-            // host, port, accessKey and ssl are firest fetched from appSettings if not found there than taken from web.config
-            ConnectionString = GetConnectionString(config);
-            Host = GetStringSettings(config, "host", "127.0.0.1");
-            Port = GetIntSettings(config, "port", 0);
-            AccessKey = GetStringSettings(config, "accessKey", null);
-            UseSsl = GetBoolSettings(config, "ssl", true);
+            // host, port, accessKey and ssl are first fetched from appSettings if not found there than taken from web.config
+            providerConfiguration.ConnectionString = GetConnectionString(config);
+            providerConfiguration.Host = GetStringSettings(config, "host", "127.0.0.1");
+            providerConfiguration.Port = GetIntSettings(config, "port", 0);
+            providerConfiguration.AccessKey = GetStringSettings(config, "accessKey", null);
+            providerConfiguration.UseSsl = GetBoolSettings(config, "ssl", true);
             // All below parameters are only fetched from web.config
-            DatabaseId = GetIntSettings(config, "databaseId", 0);
-            ApplicationName = GetStringSettings(config, "applicationName", null);
-            if (ApplicationName == null)
+            providerConfiguration.DatabaseId = GetIntSettings(config, "databaseId", 0);
+            providerConfiguration.ApplicationName = GetStringSettings(config, "applicationName", null);
+            if (providerConfiguration.ApplicationName == null)
             {
                 try
                 {
-                    ApplicationName = HostingEnvironment.ApplicationVirtualPath;
-                    if (String.IsNullOrEmpty(ApplicationName))
+                    providerConfiguration.ApplicationName = HostingEnvironment.ApplicationVirtualPath;
+                    if (String.IsNullOrEmpty(providerConfiguration.ApplicationName))
                     {
-                        ApplicationName = System.Diagnostics.Process.GetCurrentProcess().MainModule.ModuleName;
+                        providerConfiguration.ApplicationName = System.Diagnostics.Process.GetCurrentProcess().MainModule.ModuleName;
 
-                        int indexOfDot = ApplicationName.IndexOf('.');
+                        int indexOfDot = providerConfiguration.ApplicationName.IndexOf('.');
                         if (indexOfDot != -1)
                         {
-                            ApplicationName = ApplicationName.Remove(indexOfDot);
+                            providerConfiguration.ApplicationName = providerConfiguration.ApplicationName.Remove(indexOfDot);
                         }
                     }
 
-                    if (String.IsNullOrEmpty(ApplicationName))
+                    if (String.IsNullOrEmpty(providerConfiguration.ApplicationName))
                     {
-                        ApplicationName = "/";
+                        providerConfiguration.ApplicationName = "/";
                     }
                 }
                 catch (Exception e)
                 {
-                    ApplicationName = "/";
+                    providerConfiguration.ApplicationName = "/";
                     LogUtility.LogInfo(e.Message);
                 }
             }
 
-            ConnectionTimeoutInMilliSec = GetIntSettings(config, "connectionTimeoutInMilliseconds", 0);
-            OperationTimeoutInMilliSec = GetIntSettings(config, "operationTimeoutInMilliseconds", 0);
+            providerConfiguration.ConnectionTimeoutInMilliSec = GetIntSettings(config, "connectionTimeoutInMilliseconds", 0);
+            providerConfiguration.OperationTimeoutInMilliSec = GetIntSettings(config, "operationTimeoutInMilliseconds", 0);
         }
 
         // 1) Use key available inside AppSettings
         // 2) Use literal value as given in config
         // 3) Both are null than use default value.
-        private static string GetStringSettings(NameValueCollection config, string attrName, string defaultVal)
+        internal static string GetStringSettings(NameValueCollection config, string attrName, string defaultVal)
         {
             string literalValue = GetFromConfig(config, attrName);
             if (string.IsNullOrEmpty(literalValue))
@@ -142,7 +78,7 @@ namespace Microsoft.Web.Redis
         // 2) Use key available inside ConnectionStrings section
         // 3) Use literal value as given in config
         // 4) Both are null than use default value.
-        private static string GetConnectionStringFromConfig(NameValueCollection config, string attrName, string defaultVal)
+        internal static string GetConnectionStringFromConfig(NameValueCollection config, string attrName, string defaultVal)
         {
             string literalValue = GetFromConfig(config, attrName);
             if (string.IsNullOrEmpty(literalValue))
@@ -166,9 +102,9 @@ namespace Microsoft.Web.Redis
         }
 
         // 1) Check if literal value is valid integer than use it as it is
-        // 2) Use app setting value corrosponding to this string
+        // 2) Use app setting value corresponding to this string
         // 3) Both are null than use default value.
-        private static int GetIntSettings(NameValueCollection config, string attrName, int defaultVal)
+        internal static int GetIntSettings(NameValueCollection config, string attrName, int defaultVal)
         {
             string literalValue = null;
             try
@@ -193,9 +129,9 @@ namespace Microsoft.Web.Redis
         }
 
         // 1) Check if literal value is valid bool than use it as it is
-        // 2) Use app setting value corrosponding to this string
+        // 2) Use app setting value corresponding to this string
         // 3) Both are null than use default value.
-        private static bool GetBoolSettings(NameValueCollection config, string attrName, bool defaultVal)
+        internal static bool GetBoolSettings(NameValueCollection config, string attrName, bool defaultVal)
         {
             string literalValue = null;
             try
@@ -220,7 +156,7 @@ namespace Microsoft.Web.Redis
         }
 
         // Reads value from app settings (mostly azure app settings)
-        private static string GetFromAppSetting(string attrName)
+        internal static string GetFromAppSetting(string attrName)
         {
             if (!string.IsNullOrEmpty(attrName))
             {
@@ -234,7 +170,7 @@ namespace Microsoft.Web.Redis
         }
 
         // Reads string value from web.config session state section
-        private static string GetFromConfig(NameValueCollection config, string attrName)
+        internal static string GetFromConfig(NameValueCollection config, string attrName)
         {
             string[] attrValues = config.GetValues(attrName);
             if (attrValues != null && attrValues.Length > 0 && !string.IsNullOrEmpty(attrValues[0]))
@@ -247,7 +183,7 @@ namespace Microsoft.Web.Redis
         // Preference for fetching connection string
         // Either use "settingsClassName" and "settingsMethodName" to provide connectionString
         // Or use "connectionString" web.config settings to fetch value
-        // If using "connectionString" then it trys to do following in order
+        // If using "connectionString" then it tries to do following in order
         // 1) Fetch value from App Settings section for key which is value for "connectionString"
         // 2) If option 1 is not working, Fetch value from Web.Config ConnectionStrings section for key which is value for "connectionString"
         // 3) If option 1 and 2 is not working, use value of "connectionString" as it is
